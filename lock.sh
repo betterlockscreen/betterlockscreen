@@ -97,7 +97,7 @@ case "$1" in
 	    echo
         ;;
 
-    -l | -lock)
+    -l | --lock)
 
 
     case "$2" in
