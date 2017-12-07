@@ -7,6 +7,18 @@ I wanted something that was fast and still should have all the effects I want fo
 This script generates or already caches the variant for your custom images before hand so they can be later used any number of time as lockscreen background,
 without the need to apply same effect again and again
 
+## Screenshots
+
+Screenshots or it didnt happen... :P
+
+![scrot1](https://github.com/pavanjadhaw/betterlockscreen/raw/master/demo/scrot1.png "scrot1.png")
+
+![scrot2](https://github.com/pavanjadhaw/betterlockscreen/raw/master/demo/scrot2.png "scrot2.png")
+
+### demo.mp4
+
+* [demo.mp4](https://www.youtube.com/watch?v=9Ng5FZwnn6M&feature=youtu.be) - youtube.com
+
 ## Getting Started
 
 Clone this repo, push this script somewhere handy or you can even copy this script to /usr/local/bin so that it can be used from your i3config without defining whole path.
