@@ -4,7 +4,7 @@ A simple lock script for i3lock
 Most of i3lock script out there converts your defined image to add blur, glitch or dim effect to image and it feels so slow and btw who needs dynamic lock background,
 its not like I change lockscreen background every 5 minutes.
 I wanted something that was fast and still should have all the effects I want for lockscreen background.
-This script generates or already caches the variant for your custom images before hand so they can be later used any number of time as lockscreen backgroun,
+This script generates or already caches the variant for your custom images before hand so they can be later used any number of time as lockscreen background,
 without the need to apply same effect again and again
 
 ## Getting Started
@@ -86,6 +86,15 @@ exec lock.sh -w
 If you are i3wm user, add following line to your i3config (~/.config/i3/config or ~/.i3/config)
 
 ```
+# custom keybinding to lockscreen, use --lock dim or --lock blur below for different backgrounds
+bindsym $mod+shift+x exec lock.sh --lock
+# bindsym $mod+shift+x exec lock.sh --lock dim
+# bindsym $mod+shift+x exec lock.sh --lock blur
+
+# Update image cache
+exec --no-startup-id lock.sh -U ~/.wall.png
+
+# Set last used image as desktop background, comment out below line if you use different desktop background utility
 exec --no-startup-id lock.sh -w
 ```
 
