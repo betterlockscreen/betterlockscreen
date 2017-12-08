@@ -1,5 +1,9 @@
 #!/usr/bin/bash
 
+# Author : Pavan Jadhaw
+# Github Profile : https://github.com/pavanjadhaw
+# Project Repository : https://github.com/pavanjadhaw/betterlockscreen
+
 # ratio for rectangle to be drawn for time background on lockscreen
 rectangles=" "
 SR=$(xrandr --query | grep ' connected' | grep -o '[0-9][0-9]*x[0-9][0-9]*[^ ]*')
@@ -36,11 +40,13 @@ resized="$folder/resized.png" # resized image for your resolution
 # images to be used as wallpaper
 dim="$folder/dim.png" # image with subtle overlay of black
 blur="$folder/blur.png" # blurred version
+dimblur="$folder/dimblur.png"
 
 # lockscreen images (images to be used as lockscreen background)
 l_resized="$folder/l_resized.png"
 l_dim="$folder/l_dim.png"
 l_blur="$folder/l_blur.png"
+l_dimblur="$folder/l_dimblur.png"
 
 
 # Options
@@ -54,7 +60,17 @@ case "$1" in
             echo "See also : For other set of options and help use help command."
             echo "Ex. ./lock.sh -h or ./lock.sh --help"
             echo
-            echo "See : github.com/pavanjadhaw/better_lock for addition info..."
+            echo "See : https://github.com/pavanjadhaw/betterlockscreen for addition info..."
+            exit 1
+        else
+            echo
+            echo "Seems you havent provided any argument, see below for usage info"
+            echo
+            echo "See also : For other set of options and help use help command."
+            echo "Ex. ./lock.sh -h or ./lock.sh --help"
+            echo
+            echo "See : https://github.com/pavanjadhaw/betterlockscreen for addition info..."
+            echo
             exit 1
         fi
 
@@ -64,10 +80,8 @@ case "$1" in
 
         echo "Important : Update the image cache, Ex: ./lock.sh -g path/to/image.jpg"
         echo
-        echo "See also : For other set of options and help use help command."
-        echo "Ex. ./lock.sh -h or ./lock.sh --help"
         echo
-        echo "See : github.com/pavanjadhaw/better_lock for additional info..."
+        echo "See : https://github.com/pavanjadhaw/betterlockscreen for additional info..."
         echo
         echo
 	    echo "Options:"
@@ -86,6 +100,7 @@ case "$1" in
         echo "              you can also use dimmed or blurred background for lockscreen"
         echo "              Ex: ./lock.sh -l dim (for dimmed background)"
         echo "              Ex: ./lock.sh -l blur (for blurred background)"
+        echo "              Ex: ./lock.sh -l dimblur (for dimmed + blurred background)"
         echo
         echo
         echo "          -w --wall"
@@ -94,6 +109,7 @@ case "$1" in
         echo "              you can also use dimmed or blurred variants"
         echo "              Ex: ./lock.sh -w dim (for dimmed wallpaper)"
         echo "              Ex: ./lock.sh -w blur (for blurred wallpaper)"
+        echo "              Ex: ./lock.sh -w dimblur (for dimmed + blurred wallpaper)"
 	    echo
         ;;
 
@@ -104,11 +120,10 @@ case "$1" in
 
     "")
 
-        # just lockscreen with dimmed wallpaper if no argument is provided by user.
+        # default lockscreen
         # stop dunst from showing notifications on lockscreen
         pkill -u "$USER" -USR1 dunst
 
-        # you will need to have i3lock-color package availble on aur(arch user repository)
         i3lock \
         -n -i "$l_resized" \
         --timepos="x-90:h-ch+30" \
@@ -129,11 +144,10 @@ case "$1" in
     dim)
 
 
-        # Just lockscreen with dimmed wallpaper if no argument is provided by user.
+        # lockscreen with dimmed background
         # stop dunst from showing notifications on lockscreen
         pkill -u "$USER" -USR1 dunst
 
-        # you will need to have i3lock-color package availble on AUR(arch user repository)
         i3lock \
         -n -i "$l_dim" \
         --timepos="x-90:h-ch+30" \
@@ -153,13 +167,36 @@ case "$1" in
     blur)
 
 
-        # Just lockscreen with dimmed wallpaper if no argument is provided by user.
+        # set lockscreen with blurred background
         # stop dunst from showing notifications on lockscreen
         pkill -u "$USER" -USR1 dunst
 
-        # you will need to have i3lock-color package availble on AUR(arch user repository)
         i3lock \
         -n -i "$l_blur" \
+        --timepos="x-90:h-ch+30" \
+        --datepos="tx+24:ty+25" \
+        --clock --datestr "Type password to unlock..." \
+        --insidecolor=00000000 --ringcolor=ffffffff --line-uses-inside \
+        --keyhlcolor=d23c3dff --bshlcolor=d23c3dff --separatorcolor=00000000 \
+        --insidevercolor=fecf4dff --insidewrongcolor=d23c3dff \
+        --ringvercolor=ffffffff --ringwrongcolor=ffffffff --indpos="x+280:h-70" \
+        --radius=20 --ring-width=3 --veriftext="" --wrongtext="" \
+        --textcolor="ffffffff" --timecolor="ffffffff" --datecolor="ffffffff"
+
+        # enable notifications once unlocked
+        pkill -u "$USER" -USR2 dunst
+        ;;
+
+
+    dimblur)
+
+
+        # set lockscreen with dimmed + blurred background
+        # stop dunst from showing notifications on lockscreen
+        pkill -u "$USER" -USR1 dunst
+
+        i3lock \
+        -n -i "$l_dimblur" \
         --timepos="x-90:h-ch+30" \
         --datepos="tx+24:ty+25" \
         --clock --datestr "Type password to unlock..." \
@@ -178,23 +215,40 @@ case "$1" in
     esac
     ;;
 
+
     -w | --wall)
 
 
         # w = set wallpaper
         case "$2" in
             "")
+
+
                 # set resized image as wallpaper if no argument is supplied by user
                 feh --bg-fill $resized
                 ;;
+
+
             dim)
+
                 # set dimmed image as wallpaper
                 feh --bg-fill $dim
                 ;;
+
+
             blur)
+
                 # set blurred image as wallpaper
                 feh --bg-fill $blur
                 ;;
+
+
+            dimblur)
+
+                # set dimmed + blurred image as wallpaper
+                feh --bg-fill $dimblur
+                ;;
+
 
             esac
 
@@ -226,14 +280,21 @@ case "$1" in
         # wallpapers {{{
 
 
+        echo
+        echo "Converting provided image to match your resolution..."
         # resize image
         convert "$orig_wall" -resize "$y_res""^" -gravity center -extent "$y_res" "$resized"
 
+        echo
+        echo "Applying dim and blur effect to resized image"
         # dim
         convert "$resized" -fill black -colorize 40% "$dim"
 
         # blur
         convert "$resized" -blur 0x5 "$blur"
+
+        # dimblur
+        convert "$dim" -blur 0x5 "$dimblur"
 
 
         # }}}
@@ -242,6 +303,8 @@ case "$1" in
         # lockscreen backgrounds {{{
 
 
+        echo
+        echo "caching images for faster screen locking"
         # resized
         convert "$resized" -draw "fill black fill-opacity 0.4 $rectangles" "$l_resized"
 
@@ -251,12 +314,18 @@ case "$1" in
         # blur
         convert "$blur" -draw "fill black fill-opacity 0.4 $rectangles" "$l_blur"
 
+        # blur
+        convert "$dimblur" -draw "fill black fill-opacity 0.4 $rectangles" "$l_dimblur"
+
+
 
         # }}}
 
-        echo "All required images have been generated"
+
+        echo
+        echo "All required changes have been applied"
         ;;
 
 
-esac
+    esac
 

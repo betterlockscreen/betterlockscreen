@@ -32,6 +32,28 @@ Make sure you have following packages installed.
 * [feh](https://feh.finalrewind.org/) - used to set custom wallpaper
 * [background.jpg](https://unsplash.com/) - find your fav background image
 
+### Arch users
+
+To install required packages
+
+Install feh and imagemagick
+
+```
+pacman -S imagemagick feh
+```
+
+Install i3lock-color-git from AUR
+
+Pacaur Users
+```
+pacaur -S aur/i3lock-color-git
+```
+
+Yaourt users
+```
+yaourt -S i3lock-color-git
+```
+
 ### How to get started
 
 Clone this repo
@@ -52,7 +74,11 @@ grab your fav image for lockscreen background
 ./lock.sh -u path/to/image.img
 ```
 
-well, now lockscreen (original image)
+---
+
+### To lockscreen
+
+Original image as background
 
 ```
 ./lock.sh -l
@@ -70,7 +96,11 @@ Use blurred image as lockscreen background
 ./lock.sh -l blur
 ```
 
-well, now set wallpaper (original image)
+---
+
+### To set wallpaper
+
+Original Image
 
 ```
 ./lock.sh -w
@@ -88,10 +118,19 @@ Use blurred image as desktop background
 ./lock.sh -w blur
 ```
 
+Use dim + blurred image as desktop background
+
+```
+./lock.sh -w dimblur
+```
+
+---
 
 To set desktop background on startup, add following lines to your .xintrc after pushing script to your path or you can use absolute path to script too
 
 ```
+exec lock -u ~/.wall.png &
+
 exec lock.sh -w
 ```
 
@@ -109,6 +148,8 @@ exec --no-startup-id lock.sh -U ~/.wall.png
 # Set last used image as desktop background, comment out below line if you use different desktop background utility
 exec --no-startup-id lock.sh -w
 ```
+
+---
 
 ## Feel free to use and distribute
 
