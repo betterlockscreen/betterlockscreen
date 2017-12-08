@@ -11,9 +11,9 @@ without the need to apply same effect again and again
 
 Screenshots or it didnt happen... :P
 
-![scrot1](https://github.com/pavanjadhaw/betterlockscreen/raw/master/demo/scrot1.png "scrot1.png")
+![scrot1](https://github.com/pavanjadhaw/betterlockscreen.demo/raw/master/scrots/scrot1.png "scrot1.png")
 
-![scrot2](https://github.com/pavanjadhaw/betterlockscreen/raw/master/demo/scrot2.png "scrot2.png")
+![scrot2](https://github.com/pavanjadhaw/betterlockscreen.demo/raw/master/scrots/scrot2.png "scrot2.png")
 
 ### demo.mp4
 
