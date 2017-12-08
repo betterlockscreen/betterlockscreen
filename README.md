@@ -56,7 +56,7 @@ yaourt -S i3lock-color-git
 
 ### How to get started
 
-Clone this repo
+#### Clone this repo
 
 ```
 git clone https://github.com/pavanjadhaw/betterlockscreen
@@ -67,6 +67,18 @@ navigate to cloned repository
 ```
 cd betterlockscreen
 ```
+
+---
+
+#### If you dont want to clone the repo and save some bandwidth and diskspace you can do the following
+
+```
+wget https://raw.githubusercontent.com/pavanjadhaw/betterlockscreen/master/lock.sh
+
+chmod +x lock.sh
+```
+
+---
 
 grab your fav image for lockscreen background
 
