@@ -96,6 +96,12 @@ Use blurred image as lockscreen background
 ./lock.sh -l blur
 ```
 
+Use dim + blurred image as lockscreen background
+
+```
+./lock.sh -l dimblur
+```
+
 ---
 
 ### To set wallpaper
