@@ -72,6 +72,10 @@ grab your fav image for lockscreen background
 
 ```
 ./lock.sh -u path/to/image.img
+
+# OR use wallaper.jpg supplied from this repo
+
+./lock.sh -u wallaper.jpg
 ```
 
 ---
