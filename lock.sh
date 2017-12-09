@@ -123,7 +123,7 @@ case "$1" in
 			"")
 				# default lockscreen
 				prelock
-				playerctl pause
+				playerctl pause > /dev/null 2>&1
 				lock "$l_resized"
 				postlock
 				;;
