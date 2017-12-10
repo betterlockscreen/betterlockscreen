@@ -57,6 +57,17 @@ postlock() {
 	pkill -u "$USER" -USR2 dunst
 }
 
+rec_get_random() {
+    dir="$1"
+    if [ ! -d "$dir" ]; then
+        user_input="$dir"
+        return
+    fi
+    dir=($dir/*)
+    dir=${dir[RANDOM % ${#dir[@]}]}
+    rec_get_random "$dir"
+}
+
 
 # Options
 case "$1" in
@@ -98,6 +109,7 @@ case "$1" in
 		echo "          -u --update"
 		echo "              to update image cache, you should do this before using any other options"
 		echo "              Ex: ./lock.sh -u path/to/image.png when image.png is custom background"
+        echo "              Or you can use ./lock.sh -u path/to/imagedir and a random file will be selected"
 		echo
 		echo
 		echo "          -l --lock"
@@ -198,12 +210,8 @@ case "$1" in
 		fi
 
 		# get random file in dir if passed argument is a dir
-		user_input=$2
-		if [ -d $user_input ]; then
-			user_input=($user_input/*)
-			user_input=${user_input[RANDOM % ${#user_input[@]}]}
-		fi
-		
+		rec_get_random "$2"
+
 		# get user image
 		cp "$user_input" "$user_image"
 		if [ ! -f $user_image ]; then
