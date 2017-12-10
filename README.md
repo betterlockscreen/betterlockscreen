@@ -27,7 +27,7 @@ Clone this repo, push this script somewhere handy or you can even copy this scri
 
 Make sure you have following packages installed.
 
-* [i3lock-color](https://github.com/PandorasFox/i3lock-color) - i3lock fork with additional features
+* [i3lock-color](https://github.com/PandorasFox/i3lock-color) - i3lock fork with additional features (use development branch while building from source for arch use i3lock-color-git from AUR)
 * [imagemagick](https://www.imagemagick.org/script/index.php) - to apply effects to images
 * [feh](https://feh.finalrewind.org/) - used to set custom wallpaper
 * [xdpyinfo](https://www.x.org/archive/X11R7.7/doc/man/man1/xdpyinfo.1.xhtml) - find your screen resolution (to resize images accordingly)
