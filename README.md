@@ -48,7 +48,7 @@ Install xrandr and xdpyinfo (currently used to find screenresolution)
 If anyone knows better way so that these dependencies could be minimized, please open issue.
 
 ```
-pacman -S xrandr xorg-xdpyinfo
+pacman -S xorg-xrandr xorg-xdpyinfo
 ```
 
 Install i3lock-color-git from AUR
