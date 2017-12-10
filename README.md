@@ -30,6 +30,8 @@ Make sure you have following packages installed.
 * [i3lock-color](https://github.com/PandorasFox/i3lock-color) - i3lock fork with additional features
 * [imagemagick](https://www.imagemagick.org/script/index.php) - to apply effects to images
 * [feh](https://feh.finalrewind.org/) - used to set custom wallpaper
+* [xdpyinfo](https://www.x.org/archive/X11R7.7/doc/man/man1/xdpyinfo.1.xhtml) - find your screen resolution (to resize images accordingly)
+* [xrandr](https://www.x.org/wiki/Projects/XRandR/) - depends for xdpyinfo
 * [background.jpg](https://unsplash.com/) - find your fav background image
 
 ### Arch users
@@ -40,6 +42,13 @@ Install feh and imagemagick
 
 ```
 pacman -S imagemagick feh
+```
+
+Install xrandr and xdpyinfo (currently used to find screenresolution)
+If anyone knows better way so that these dependencies could be minimized, please open issue.
+
+```
+pacman -S xrandr xorg-xdpyinfo
 ```
 
 Install i3lock-color-git from AUR
@@ -178,6 +187,7 @@ exec --no-startup-id lock.sh -w
 This is my first bash script so if you think this could be improved or if you have any suggestion. Feel free.
 
 * Hat tip to anyone who's code was used
+* Thanks to those who contributed to make it better
 * Inspiration - r/unixporn
 * etc
 
