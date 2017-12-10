@@ -58,14 +58,14 @@ postlock() {
 }
 
 rec_get_random() {
-    dir="$1"
-    if [ ! -d "$dir" ]; then
-        user_input="$dir"
-        return
-    fi
-    dir=($dir/*)
-    dir=${dir[RANDOM % ${#dir[@]}]}
-    rec_get_random "$dir"
+	dir="$1"
+	if [ ! -d "$dir" ]; then
+		user_input="$dir"
+		return
+	fi
+	dir=($dir/*)
+	dir=${dir[RANDOM % ${#dir[@]}]}
+	rec_get_random "$dir"
 }
 
 
@@ -109,7 +109,7 @@ case "$1" in
 		echo "          -u --update"
 		echo "              to update image cache, you should do this before using any other options"
 		echo "              Ex: ./lock.sh -u path/to/image.png when image.png is custom background"
-        echo "              Or you can use ./lock.sh -u path/to/imagedir and a random file will be selected"
+		echo "              Or you can use ./lock.sh -u path/to/imagedir and a random file will be selected"
 		echo
 		echo
 		echo "          -l --lock"
