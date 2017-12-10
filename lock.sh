@@ -197,8 +197,15 @@ case "$1" in
 			mkdir -p "$folder"
 		fi
 
+		# get random file in dir if passed argument is a dir
+		user_input=$2
+		if [ -d $user_input ]; then
+			user_input=($user_input/*)
+			user_input=${user_input[RANDOM % ${#user_input[@]}]}
+		fi
+		
 		# get user image
-		cp "$2" "$user_image"
+		cp "$user_input" "$user_image"
 		if [ ! -f $user_image ]; then
 			echo "Please specify the path to the image you would like to use"
 			exit 1
