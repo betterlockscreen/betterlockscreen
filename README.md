@@ -173,16 +173,29 @@ exec lock.sh -w
 
 If you are i3wm user, add following line to your i3config (~/.config/i3/config or ~/.i3/config)
 
+*custom shortcut to lockscreen*
 ```
 # custom keybinding to lockscreen, use --lock dim or --lock blur below for different backgrounds
 bindsym $mod+shift+x exec lock.sh --lock
-# bindsym $mod+shift+x exec lock.sh --lock dim
-# bindsym $mod+shift+x exec lock.sh --lock blur
+```
 
+*update image cache and set last cached image as desktop background*
+```
 # Update image cache
 exec --no-startup-id lock.sh -u ~/.wall.png
 
 # Set last used image as desktop background, comment out below line if you use different desktop background utility
+exec --no-startup-id lock.sh -w
+```
+
+**OR**
+
+*use following if you would like to be surprised by random wallpaper from directory of your choice on each startup*
+```
+# where Pictures/Wallpapers is the directory you would want to get random wallpapers from
+exec --no-startup-id lock.sh -u ~/Pictures/Wallpapers
+
+# add this only if you want to use same random image as desktop background too (you might want to )
 exec --no-startup-id lock.sh -w
 ```
 
