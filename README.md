@@ -196,7 +196,9 @@ exec --no-startup-id lock.sh -w
 # where Pictures/Wallpapers is the directory you would want to get random wallpapers from
 exec --no-startup-id lock.sh -u ~/Pictures/Wallpapers
 
-# add this only if you want to use same random image as desktop background too (you might want to )
+# add this only if you want to use same random image as desktop background too (you might want to)
+# it might not work as it takes few seconds for images to be cached,
+# try adding delay of 5 seconds if thats the case
 exec --no-startup-id lock.sh -w
 ```
 
