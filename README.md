@@ -184,7 +184,8 @@ bindsym $mod+shift+x exec lock.sh --lock
 # Update image cache
 exec --no-startup-id lock.sh -u ~/.wall.png
 
-# Set last used image as desktop background, comment out below line if you use different desktop background utility
+# Set last used image as desktop background
+# comment out below line if you use different desktop background utility
 exec --no-startup-id lock.sh -w
 ```
 
