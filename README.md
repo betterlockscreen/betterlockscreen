@@ -1,9 +1,11 @@
 # better_lockscreen
 
 A simple lock script for i3lock
+
 Most of i3lock script out there converts your defined image to add blur, glitch or dim effect to image and it feels so slow and btw who needs dynamic lock background,
 its not like I change lockscreen background every 5 minutes.
 I wanted something that was fast and still should have all the effects I want for lockscreen background.
+
 This script generates or already caches the variant for your custom images before hand so they can be later used any number of time as lockscreen background,
 without the need to apply same effect again and again
 
@@ -15,9 +17,9 @@ Screenshots or it didnt happen... :P
 
 ![scrot2](https://github.com/pavanjadhaw/betterlockscreen.demo/raw/master/scrots/scrot2.png "scrot2.png")
 
-### demo.mp4
+### Demo
 
-* [demo.mp4](https://www.youtube.com/watch?v=9Ng5FZwnn6M&feature=youtu.be) - youtube.com
+* [Demonstration](https://www.youtube.com/watch?v=9Ng5FZwnn6M&feature=youtu.be) - youtube.com
 
 ## Getting Started
 
@@ -89,14 +91,18 @@ chmod +x lock.sh
 
 ---
 
-grab your fav image for lockscreen background
+### Load/Update the image cache
+
+Grab your favourite image for lockscreen background
 
 ```
 ./lock.sh -u path/to/image.img
+```
 
-# OR use wallaper.jpg supplied from this repo
+Or supply a directory with images, and a random one will be used
 
-./lock.sh -u wallaper.jpg
+```
+./lock.sh -u path/to/imagedir
 ```
 
 ---
