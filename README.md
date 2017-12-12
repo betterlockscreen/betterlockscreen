@@ -1,6 +1,5 @@
 # better_lockscreen
-
-A simple lock script for i3lock
+*A simple lock script for i3lock*
 
 Most of i3lock script out there converts your defined image to add blur, glitch or dim effect to image and it feels so slow and btw who needs dynamic lock background,
 its not like I change lockscreen background every 5 minutes.
@@ -93,16 +92,22 @@ chmod +x lock.sh
 
 ### Load/Update the image cache
 
-Grab your favourite image for lockscreen background
+*Grab your favourite image for lockscreen background*
 
 ```
 ./lock.sh -u path/to/image.img
 ```
 
-Or supply a directory with images, and a random one will be used
+*if you want to use random image from specific directory*
 
 ```
 ./lock.sh -u path/to/imagedir
+```
+
+*set random image as desktop background too*
+
+```
+./lock.sh -u path/to/imagedir && ./lock.sh -w
 ```
 
 ---
