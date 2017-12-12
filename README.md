@@ -171,7 +171,8 @@ Use dim + blurred image as desktop background
 To set desktop background on startup, add following lines to your .xintrc after pushing script to your path or you can use absolute path to script too
 
 ```
-exec lock.sh -u ~/.wall.png &
+# below line no longer needed as cached images are now permanently stored
+# exec lock.sh -u ~/.wall.png &
 
 exec lock.sh -w
 ```
@@ -187,7 +188,8 @@ bindsym $mod+shift+x exec lock.sh --lock
 *update image cache and set last cached image as desktop background*
 ```
 # Update image cache
-exec --no-startup-id lock.sh -u ~/.wall.png
+# no longer required as cached images are permanently stored
+# exec --no-startup-id lock.sh -u ~/.wall.png
 
 # Set last used image as desktop background
 # comment out below line if you use different desktop background utility

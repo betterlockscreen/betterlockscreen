@@ -9,7 +9,7 @@
 orig_wall=$HOME/.wall.png
 
 # create folder in /tmp directory
-folder="/tmp/lock"
+folder="$HOME/.cache/i3lock"
 
 # Versions (from here)
 # You can use these images to set different versions as wallpaper
