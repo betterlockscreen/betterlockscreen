@@ -248,7 +248,7 @@ case "$1" in
 		# lockscreen backgrounds
 
 		echo
-		echo "caching images for faster screen locking"
+		echo "Caching images for faster screen locking"
 		# resized
 		convert "$resized" -draw "fill black fill-opacity 0.4 $rectangles" "$l_resized"
 
