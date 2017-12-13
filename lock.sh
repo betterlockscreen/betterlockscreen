@@ -4,12 +4,12 @@
 # Github Profile : https://github.com/pavanjadhaw
 # Project Repository : https://github.com/pavanjadhaw/betterlockscreen
 
+# create folder in ~/.cache/i3lock directory
+folder="$HOME/.cache/i3lock"
+
 # ratio for rectangle to be drawn for time background on lockscreen
 # Original Image
-orig_wall=$HOME/.wall.png
-
-# create folder in /tmp directory
-folder="$HOME/.cache/i3lock"
+orig_wall="$folder/.wall.png"
 
 # Versions (from here)
 # You can use these images to set different versions as wallpaper
@@ -94,7 +94,8 @@ case "$1" in
 		;;
 
 	-h | --help)
-		echo "Important : Update the image cache, Ex: ./lock.sh -g path/to/image.jpg"
+		echo "Important : Update the image cache, Ex: ./lock.sh -u path/to/image.jpg"
+		echo "            Image cache must be updated to initially configure or update wallpaper used"
 		echo
 		echo
 		echo "See : https://github.com/pavanjadhaw/betterlockscreen for additional info..."
@@ -185,7 +186,6 @@ case "$1" in
 				feh --bg-fill $dimblur
 				;;
 		esac
-
 		;;
 
 	-u | --update)
@@ -205,7 +205,8 @@ case "$1" in
 		y_res=$(xdpyinfo | grep dimensions | sed -r 's/^[^0-9]*([0-9]+x[0-9]+).*$/\1/')
 
 		# create folder
-		if ! [[ -d $folder ]]; then
+		if [ ! -d $folder ]; then
+			echo "Creating '$folder' directory to cache processed images."
 			mkdir -p "$folder"
 		fi
 
@@ -247,7 +248,7 @@ case "$1" in
 		# lockscreen backgrounds
 
 		echo
-		echo "caching images for faster screen locking"
+		echo "Caching images for faster screen locking"
 		# resized
 		convert "$resized" -draw "fill black fill-opacity 0.4 $rectangles" "$l_resized"
 
