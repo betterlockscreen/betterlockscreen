@@ -94,7 +94,8 @@ case "$1" in
 		;;
 
 	-h | --help)
-		echo "Important : Update the image cache, Ex: ./lock.sh -g path/to/image.jpg"
+		echo "Important : Update the image cache, Ex: ./lock.sh -u path/to/image.jpg"
+		echo "            Image cache must be updated to initially configure or update wallpaper used"
 		echo
 		echo
 		echo "See : https://github.com/pavanjadhaw/betterlockscreen for additional info..."
