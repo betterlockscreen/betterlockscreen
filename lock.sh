@@ -205,7 +205,8 @@ case "$1" in
 		y_res=$(xdpyinfo | grep dimensions | sed -r 's/^[^0-9]*([0-9]+x[0-9]+).*$/\1/')
 
 		# create folder
-		if ! [[ -d $folder ]]; then
+		if [ ! -d $folder ]; then
+			echo "Creating '$folder' directory to cache processed images."
 			mkdir -p "$folder"
 		fi
 
