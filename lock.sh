@@ -4,12 +4,12 @@
 # Github Profile : https://github.com/pavanjadhaw
 # Project Repository : https://github.com/pavanjadhaw/betterlockscreen
 
+# create folder in ~/.cache/i3lock directory
+folder="$HOME/.cache/i3lock"
+
 # ratio for rectangle to be drawn for time background on lockscreen
 # Original Image
-orig_wall=$HOME/.wall.png
-
-# create folder in /tmp directory
-folder="$HOME/.cache/i3lock"
+orig_wall="$folder/.wall.png"
 
 # Versions (from here)
 # You can use these images to set different versions as wallpaper
