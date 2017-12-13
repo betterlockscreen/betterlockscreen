@@ -186,7 +186,6 @@ case "$1" in
 				feh --bg-fill $dimblur
 				;;
 		esac
-
 		;;
 
 	-u | --update)
