@@ -73,10 +73,10 @@ rec_get_random() {
 case "$1" in
 	"")
 		if [ ! -f $l_dim ]; then
-			echo "Important : Update the image cache, Ex. ./lock.sh -g path/to/image.jpg"
+			echo "Important : Update the image cache, Ex. betterlockscreen -g path/to/image.jpg"
 			echo
 			echo "See also : For other set of options and help use help command."
-			echo "Ex. ./lock.sh -h or ./lock.sh --help"
+			echo "Ex. betterlockscreen -h or betterlockscreen --help"
 			echo
 			echo "See : https://github.com/pavanjadhaw/betterlockscreen for addition info..."
 			exit 1
@@ -85,7 +85,7 @@ case "$1" in
 			echo "Seems you havent provided any argument, see below for usage info"
 			echo
 			echo "See also : For other set of options and help use help command."
-			echo "Ex. ./lock.sh -h or ./lock.sh --help"
+			echo "Ex. betterlockscreen -h or betterlockscreen --help"
 			echo
 			echo "See : https://github.com/pavanjadhaw/betterlockscreen for addition info..."
 			echo
@@ -94,7 +94,7 @@ case "$1" in
 		;;
 
 	-h | --help)
-		echo "Important : Update the image cache, Ex: ./lock.sh -g path/to/image.jpg"
+		echo "Important : Update the image cache, Ex: betterlockscreen -g path/to/image.jpg"
 		echo
 		echo
 		echo "See : https://github.com/pavanjadhaw/betterlockscreen for additional info..."
@@ -103,30 +103,30 @@ case "$1" in
 		echo "Options:"
 		echo
 		echo "          -h --help"
-		echo "              For help. Ex: ./lock.sh -h or ./lock.sh --help"
+		echo "              For help. Ex: betterlockscreen -h or betterlockscreen --help"
 		echo
 		echo
 		echo "          -u --update"
 		echo "              to update image cache, you should do this before using any other options"
-		echo "              Ex: ./lock.sh -u path/to/image.png when image.png is custom background"
-		echo "              Or you can use ./lock.sh -u path/to/imagedir and a random file will be selected"
+		echo "              Ex: betterlockscreen -u path/to/image.png when image.png is custom background"
+		echo "              Or you can use betterlockscreen -u path/to/imagedir and a random file will be selected"
 		echo
 		echo
 		echo "          -l --lock"
-		echo "              to lock screen, Ex. ./lock.sh -l"
+		echo "              to lock screen, Ex. betterlockscreen -l"
 		echo "              you can also use dimmed or blurred background for lockscreen"
-		echo "              Ex: ./lock.sh -l dim (for dimmed background)"
-		echo "              Ex: ./lock.sh -l blur (for blurred background)"
-		echo "              Ex: ./lock.sh -l dimblur (for dimmed + blurred background)"
+		echo "              Ex: betterlockscreen -l dim (for dimmed background)"
+		echo "              Ex: betterlockscreen -l blur (for blurred background)"
+		echo "              Ex: betterlockscreen -l dimblur (for dimmed + blurred background)"
 		echo
 		echo
 		echo "          -w --wall"
 		echo "              you can also set lockscreen background as wallpaper"
-		echo "              to set wallpaper. Ex ./lock.sh -w or ./lock.sh --wall"
+		echo "              to set wallpaper. Ex betterlockscreen -w or betterlockscreen --wall"
 		echo "              you can also use dimmed or blurred variants"
-		echo "              Ex: ./lock.sh -w dim (for dimmed wallpaper)"
-		echo "              Ex: ./lock.sh -w blur (for blurred wallpaper)"
-		echo "              Ex: ./lock.sh -w dimblur (for dimmed + blurred wallpaper)"
+		echo "              Ex: betterlockscreen -w dim (for dimmed wallpaper)"
+		echo "              Ex: betterlockscreen -w blur (for blurred wallpaper)"
+		echo "              Ex: betterlockscreen -w dimblur (for dimmed + blurred wallpaper)"
 		echo
 		;;
 
