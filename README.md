@@ -83,9 +83,9 @@ cd betterlockscreen
 #### If you dont want to clone the repo and save some bandwidth and diskspace you can do the following
 
 ```
-wget https://raw.githubusercontent.com/pavanjadhaw/betterlockscreen/master/lock.sh
+wget https://raw.githubusercontent.com/pavanjadhaw/betterlockscreen/master/betterlockscreen
 
-chmod +x lock.sh
+chmod u+x betterlockscreen
 ```
 
 ---
@@ -172,9 +172,9 @@ To set desktop background on startup, add following lines to your .xintrc after 
 
 ```
 # below line no longer needed as cached images are now permanently stored
-# exec lock.sh -u ~/.wall.png &
+# exec betterlockscreen -u ~/.wall.png &
 
-exec lock.sh -w
+exec betterlockscreen -w
 ```
 
 If you are i3wm user, add following line to your i3config (~/.config/i3/config or ~/.i3/config)
@@ -182,18 +182,18 @@ If you are i3wm user, add following line to your i3config (~/.config/i3/config o
 *custom shortcut to lockscreen*
 ```
 # custom keybinding to lockscreen, use --lock dim or --lock blur below for different backgrounds
-bindsym $mod+shift+x exec lock.sh --lock
+bindsym $mod+shift+x exec betterlockscreen --lock
 ```
 
 *update image cache and set last cached image as desktop background*
 ```
 # Update image cache
 # no longer required as cached images are permanently stored
-# exec --no-startup-id lock.sh -u ~/.wall.png
+# exec --no-startup-id betterlockscreen -u ~/.wall.png
 
 # Set last used image as desktop background
 # comment out below line if you use different desktop background utility
-exec --no-startup-id lock.sh -w
+exec --no-startup-id betterlockscreen -w
 ```
 
 **OR**
@@ -201,12 +201,12 @@ exec --no-startup-id lock.sh -w
 *use following if you would like to be surprised by random wallpaper from directory of your choice on each startup*
 ```
 # where Pictures/Wallpapers is the directory you would want to get random wallpapers from
-exec --no-startup-id lock.sh -u ~/Pictures/Wallpapers
+exec --no-startup-id betterlockscreen -u ~/Pictures/Wallpapers
 
 # add this only if you want to use same random image as desktop background too (you might want to)
 # it might not work as it takes few seconds for images to be cached,
 # try adding delay of 5 seconds if thats the case
-exec --no-startup-id lock.sh -w
+exec --no-startup-id betterlockscreen -w
 ```
 
 ---
