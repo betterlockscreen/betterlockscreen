@@ -4,12 +4,13 @@
 # Github Profile : https://github.com/pavanjadhaw
 # Project Repository : https://github.com/pavanjadhaw/betterlockscreen
 
+
+# create folder in ~/.cache/i3lock directory
+folder="$HOME/.cache/i3lock"
+
 # ratio for rectangle to be drawn for time background on lockscreen
 # Original Image
-orig_wall=$HOME/.wall.png
-
-# create folder in /tmp directory
-folder="$HOME/.cache/i3lock"
+orig_wall="$folder/wall.png"
 
 # Versions (from here)
 # You can use these images to set different versions as wallpaper
@@ -73,10 +74,12 @@ rec_get_random() {
 case "$1" in
 	"")
 		if [ ! -f $l_dim ]; then
-			echo "Important : Update the image cache, Ex. betterlockscreen -g path/to/image.jpg"
+
+			echo "Important : Update the image cache, Ex. betterlockscreen -u path/to/image.jpg"
 			echo
 			echo "See also : For other set of options and help use help command."
 			echo "Ex. betterlockscreen -h or betterlockscreen --help"
+
 			echo
 			echo "See : https://github.com/pavanjadhaw/betterlockscreen for addition info..."
 			exit 1
@@ -85,7 +88,9 @@ case "$1" in
 			echo "Seems you havent provided any argument, see below for usage info"
 			echo
 			echo "See also : For other set of options and help use help command."
+
 			echo "Ex. betterlockscreen -h or betterlockscreen --help"
+
 			echo
 			echo "See : https://github.com/pavanjadhaw/betterlockscreen for addition info..."
 			echo
@@ -94,7 +99,9 @@ case "$1" in
 		;;
 
 	-h | --help)
+
 		echo "Important : Update the image cache, Ex: betterlockscreen -g path/to/image.jpg"
+    echo "            Image cache must be updated to initially configure or update wallpaper used"
 		echo
 		echo
 		echo "See : https://github.com/pavanjadhaw/betterlockscreen for additional info..."
@@ -103,11 +110,13 @@ case "$1" in
 		echo "Options:"
 		echo
 		echo "          -h --help"
+
 		echo "              For help. Ex: betterlockscreen -h or betterlockscreen --help"
 		echo
 		echo
 		echo "          -u --update"
 		echo "              to update image cache, you should do this before using any other options"
+
 		echo "              Ex: betterlockscreen -u path/to/image.png when image.png is custom background"
 		echo "              Or you can use betterlockscreen -u path/to/imagedir and a random file will be selected"
 		echo
@@ -185,7 +194,6 @@ case "$1" in
 				feh --bg-fill $dimblur
 				;;
 		esac
-
 		;;
 
 	-u | --update)
@@ -205,7 +213,8 @@ case "$1" in
 		y_res=$(xdpyinfo | grep dimensions | sed -r 's/^[^0-9]*([0-9]+x[0-9]+).*$/\1/')
 
 		# create folder
-		if ! [[ -d $folder ]]; then
+		if [ ! -d $folder ]; then
+			echo "Creating '$folder' directory to cache processed images."
 			mkdir -p "$folder"
 		fi
 
@@ -247,7 +256,7 @@ case "$1" in
 		# lockscreen backgrounds
 
 		echo
-		echo "caching images for faster screen locking"
+		echo "Caching images for faster screen locking"
 		# resized
 		convert "$resized" -draw "fill black fill-opacity 0.4 $rectangles" "$l_resized"
 
