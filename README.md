@@ -1,4 +1,4 @@
-# better_lockscreen
+# betterlockscreen
 *A simple lock script for i3lock*
 
 Most of i3lock script out there converts your defined image to add blur, glitch or dim effect to image and it feels so slow and btw who needs dynamic lock background,
