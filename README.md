@@ -22,6 +22,20 @@ Screenshots or it didnt happen... :P
 
 ## Getting Started
 
+## Installation via [AUR package](https://aur.archlinux.org/packages/betterlockscreen-git/)
+
+Pacaur Users
+```
+pacaur -S aur/betterlockscreen-git
+```
+
+Yaourt users
+```
+yaourt -S betterlockscreen-git
+```
+
+## Manual Installation
+
 Clone this repo, push this script somewhere handy or you can even copy this script to /usr/local/bin so that it can be used from your i3config without defining whole path.
 
 ### Prerequisites
