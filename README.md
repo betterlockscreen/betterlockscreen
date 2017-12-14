@@ -95,19 +95,19 @@ chmod +x lock.sh
 *Grab your favourite image for lockscreen background*
 
 ```
-./lock.sh -u path/to/image.img
+betterlockscreen -u path/to/image.img
 ```
 
 *if you want to use random image from specific directory*
 
 ```
-./lock.sh -u path/to/imagedir
+betterlockscreen -u path/to/imagedir
 ```
 
 *set random image as desktop background too*
 
 ```
-./lock.sh -u path/to/imagedir && ./lock.sh -w
+betterlockscreen -u path/to/imagedir && betterlockscreen -w
 ```
 
 ---
@@ -117,25 +117,25 @@ chmod +x lock.sh
 Original image as background
 
 ```
-./lock.sh -l
+betterlockscreen -l
 ```
 
 Use dimmed image as lockscreen background
 
 ```
-./lock.sh -l dim
+betterlockscreen -l dim
 ```
 
 Use blurred image as lockscreen background
 
 ```
-./lock.sh -l blur
+betterlockscreen -l blur
 ```
 
 Use dim + blurred image as lockscreen background
 
 ```
-./lock.sh -l dimblur
+betterlockscreen -l dimblur
 ```
 
 ---
@@ -145,25 +145,25 @@ Use dim + blurred image as lockscreen background
 Original Image
 
 ```
-./lock.sh -w
+betterlockscreen -w
 ```
 
 Use dimmed image as desktop background
 
 ```
-./lock.sh -w dim
+betterlockscreen -w dim
 ```
 
 Use blurred image as desktop background
 
 ```
-./lock.sh -w blur
+betterlockscreen -w blur
 ```
 
 Use dim + blurred image as desktop background
 
 ```
-./lock.sh -w dimblur
+betterlockscreen -w dimblur
 ```
 
 ---
