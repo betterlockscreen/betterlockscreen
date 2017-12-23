@@ -42,7 +42,7 @@ lock() {
 	background=00000000
 	foreground=ffffffff
 	i3lock \
-		-n -i "$1" \
+		-t -n -i "$1" \
 		--timepos="x-90:h-ch+30" \
 		--datepos="tx+24:ty+25" \
 		--clock --datestr "Type password to unlock..." \
@@ -140,6 +140,13 @@ case "$1" in
 		echo "              Ex: betterlockscreen -w blur (for blurred wallpaper)"
 		echo "              Ex: betterlockscreen -w dimblur (for dimmed + blurred wallpaper)"
 		echo
+		echo
+		echo "          -r --resolution"
+		echo "              to be used after -u"
+		echo "              used to set a custom resolution for the image cache."
+		echo "              Ex: betterlockscreen -u path/to/image.png -r 1920x1080"
+		echo "              Ex: betterlockscreen -u path/to/image.png --resolution 3840x1080"
+    echo
 		;;
 
 	-l | --lock)
@@ -212,8 +219,11 @@ case "$1" in
 		user_image="$folder/user_image.png"
 
 		# find your resolution so images can be resized to match your screen resolution
-		y_res=$(xdpyinfo | grep dimensions | sed -r 's/^[^0-9]*([0-9]+x[0-9]+).*$/\1/')
-
+    if [ "$3" == "-r" ] || [ "$3" == "--resolution" ]; then
+      y_res=$4
+    else
+  		y_res=$(xdpyinfo | grep dimensions | sed -r 's/^[^0-9]*([0-9]+x[0-9]+).*$/\1/')
+    fi
 		# create folder
 		if [ ! -d $folder ]; then
 			echo "Creating '$folder' directory to cache processed images."
