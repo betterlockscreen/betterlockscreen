@@ -49,6 +49,8 @@ Make sure you have following packages installed.
 * [xrandr](https://www.x.org/wiki/Projects/XRandR/) - depends for xdpyinfo
 * [background.jpg](https://unsplash.com/) - find your fav background image
 
+*Note: systemd is required for the suspend feature.*
+
 ### Arch users
 
 To install required packages
@@ -150,6 +152,34 @@ Use dim + blurred image as lockscreen background
 
 ```
 betterlockscreen -l dimblur
+```
+
+---
+
+### To suspend system with lockscreen
+
+Original image as background
+
+```
+betterlockscreen -s
+```
+
+Use dimmed image as lockscreen background
+
+```
+betterlockscreen -s dim
+```
+
+Use blurred image as lockscreen background
+
+```
+betterlockscreen -s blur
+```
+
+Use dim + blurred image as lockscreen background
+
+```
+betterlockscreen -s dimblur
 ```
 
 ---
