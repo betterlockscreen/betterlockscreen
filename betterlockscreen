@@ -132,6 +132,14 @@ case "$1" in
 		echo "              Ex: betterlockscreen -l dimblur (for dimmed + blurred background)"
 		echo
 		echo
+		echo "          -s --suspend"
+		echo "              to suspend system and lock screen, Ex. betterlockscreen -s"
+		echo "              you can also use dimmed or blurred background for lockscreen"
+		echo "              Ex: betterlockscreen -s dim (for dimmed background)"
+		echo "              Ex: betterlockscreen -s blur (for blurred background)"
+		echo "              Ex: betterlockscreen -s dimblur (for dimmed + blurred background)"
+		echo
+		echo
 		echo "          -w --wall"
 		echo "              you can also set lockscreen background as wallpaper"
 		echo "              to set wallpaper. Ex betterlockscreen -w or betterlockscreen --wall"
@@ -173,6 +181,39 @@ case "$1" in
 				;;
 		esac
 		;;
+
+	-s | --suspend)
+		case "$2" in
+			"")
+				# default lockscreen
+				prelock
+				systemctl suspend && lock "$l_resized"
+				postlock
+				;;
+
+			dim)
+				# lockscreen with dimmed background
+				prelock
+				systemctl suspend && lock "$l_dim"
+				postlock
+				;;
+
+			blur)
+				# set lockscreen with blurred background
+				prelock
+				systemctl suspend && lock "$l_blur"
+				postlock
+				;;
+
+			dimblur)
+				# set lockscreen with dimmed + blurred background
+				prelock
+				systemctl suspend && lock "$l_dimblur"
+				postlock
+				;;
+		esac
+		;;
+
 
 	-w | --wall)
 		case "$2" in
