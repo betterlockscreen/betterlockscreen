@@ -70,41 +70,10 @@ rec_get_random() {
 	rec_get_random "$dir"
 }
 
+usage() {
 
-# Options
-case "$1" in
-	"")
-		if [ ! -f $l_dim ]; then
-
-			echo "Important : Update the image cache, Ex. betterlockscreen -u path/to/image.jpg"
-			echo
-            echo "            Image cache must be updated to initially configure or update wallpaper used"
-            echo
-			echo "See also : For other set of options and help use help command."
-			echo "Ex. betterlockscreen -h or betterlockscreen --help"
-
-			echo
-			echo "See : https://github.com/pavanjadhaw/betterlockscreen for addition info..."
-			exit 1
-		else
-			echo
-			echo "Seems you havent provided any argument, see below for usage info"
-			echo
-			echo "See also : For other set of options and help use help command."
-
-			echo "Ex. betterlockscreen -h or betterlockscreen --help"
-
-			echo
-			echo "See : https://github.com/pavanjadhaw/betterlockscreen for addition info..."
-			echo
-			exit 1
-		fi
-		;;
-
-	-h | --help)
-
-		echo "Important : Update the image cache, Ex: betterlockscreen -g path/to/image.jpg"
-    echo "            Image cache must be updated to initially configure or update wallpaper used"
+        echo "Important : Update the image cache, Ex: betterlockscreen -g path/to/image.jpg"
+        echo "            Image cache must be updated to initially configure or update wallpaper used"
 		echo
 		echo
 		echo "See : https://github.com/pavanjadhaw/betterlockscreen for additional info..."
@@ -160,7 +129,44 @@ case "$1" in
 		echo "              used to set blur intensity. Default to 1."
 		echo "              Ex: betterlockscreen -u path/to/image.png -b 3"
 		echo "              Ex: betterlockscreen -u path/to/image.png --blur 0.5"
-    echo
+        echo
+
+}
+
+# Options
+case "$1" in
+	"")
+		if [ ! -f $l_dim ]; then
+
+			echo "Important : Update the image cache, Ex. betterlockscreen -u path/to/image.jpg"
+			echo
+            echo "            Image cache must be updated to initially configure or update wallpaper used"
+            echo
+			echo "See also : For other set of options and help use help command."
+			echo "Ex. betterlockscreen -h or betterlockscreen --help"
+
+			echo
+			echo "See : https://github.com/pavanjadhaw/betterlockscreen for addition info..."
+			exit 1
+		else
+			echo
+			echo "Seems you havent provided any argument, see below for usage info"
+			echo
+			echo "See also : For other set of options and help use help command."
+
+			echo "Ex. betterlockscreen -h or betterlockscreen --help"
+
+			echo
+			echo "See : https://github.com/pavanjadhaw/betterlockscreen for addition info..."
+			echo
+			exit 1
+		fi
+		;;
+
+	-h | --help)
+
+        usage
+
 		;;
 
 	-l | --lock)
