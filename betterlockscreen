@@ -72,7 +72,7 @@ rec_get_random() {
 
 usage() {
 
-        echo "Important : Update the image cache, Ex: betterlockscreen -g path/to/image.jpg"
+        echo "Important : Update the image cache, Ex: betterlockscreen -u path/to/image.jpg"
         echo "            Image cache must be updated to initially configure or update wallpaper used"
 		echo
 		echo
