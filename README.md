@@ -43,7 +43,7 @@ In this case a random image from the directory is chosen, and converted to a 192
 
 ## Installation via AUR package
 
-### [release](https://aur.archlinux.org/packages/betterlockscreen/)
+### [release](https://aur.archlinux.org/packages/betterlockscreen/) - less than 10kb
 ```
 pacaur -S aur/betterlockscreen
 ```
@@ -51,7 +51,7 @@ pacaur -S aur/betterlockscreen
 yaourt -S betterlockscreen
 ```
 
-### [dev](https://aur.archlinux.org/packages/betterlockscreen-git/)
+### [dev](https://aur.archlinux.org/packages/betterlockscreen-git/) - 8mb+ (includes git history)
 ```
 pacaur -S aur/betterlockscreen-git
 ```
