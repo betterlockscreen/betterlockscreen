@@ -41,14 +41,20 @@ In this case a random image from the directory is chosen, and converted to a 192
 ```
 
 
-## Installation via [AUR package](https://aur.archlinux.org/packages/betterlockscreen-git/)
+## Installation via AUR package
 
-Pacaur Users
+### [release](https://aur.archlinux.org/packages/betterlockscreen/)
+```
+pacaur -S aur/betterlockscreen
+```
+```
+yaourt -S betterlockscreen
+```
+
+### [dev](https://aur.archlinux.org/packages/betterlockscreen-git/)
 ```
 pacaur -S aur/betterlockscreen-git
 ```
-
-Yaourt users
 ```
 yaourt -S betterlockscreen-git
 ```
