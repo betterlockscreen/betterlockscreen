@@ -42,7 +42,7 @@ lock() {
 	background=00000000
 	foreground=ffffffff
 	i3lock \
-		-t -n -i "$1" \
+		-t -i "$1" \
 		--timepos="x-90:h-ch+30" \
 		--datepos="tx+24:ty+25" \
 		--clock --datestr "Type password to unlock..." \
@@ -206,28 +206,28 @@ case "$1" in
 			"")
 				# default lockscreen
 				prelock
-				systemctl suspend && lock "$l_resized"
+				lock "$l_resized" && systemctl suspend
 				postlock
 				;;
 
 			dim)
 				# lockscreen with dimmed background
 				prelock
-				systemctl suspend && lock "$l_dim"
+				lock "$l_dim" && systemctl suspend
 				postlock
 				;;
 
 			blur)
 				# set lockscreen with blurred background
 				prelock
-				systemctl suspend && lock "$l_blur"
+				lock "$l_blur" && systemctl suspend
 				postlock
 				;;
 
 			dimblur)
 				# set lockscreen with dimmed + blurred background
 				prelock
-				systemctl suspend && lock "$l_dimblur"
+				lock "$l_dimblur" && systemctl suspend
 				postlock
 				;;
 		esac
