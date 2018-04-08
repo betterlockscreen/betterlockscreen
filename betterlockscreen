@@ -51,7 +51,7 @@ lock() {
 		--insidevercolor=$passwordCorrect --insidewrongcolor=$passwordIncorrect \
 		--ringvercolor=$foreground --ringwrongcolor=$foreground --indpos="x+280:h-70" \
 		--radius=20 --ring-width=4 --veriftext="" --wrongtext="" \
-		--textcolor="$foreground" --timecolor="$foreground" --datecolor="$foreground" \
+		--verifcolor="$foreground" --timecolor="$foreground" --datecolor="$foreground" \
 		--force-clock
 }
 
