@@ -353,16 +353,16 @@ case "$1" in
 		echo
 		echo "Caching images for faster screen locking"
 		# resized
-		convert "$resized" -draw "fill black fill-opacity 0.4 $rectangles" "$l_resized"
+		convert "$resized" -draw "fill '#00000096' $rectangles" "$l_resized"
 
 		# dim
-		convert "$dim" -draw "fill black fill-opacity 0.4 $rectangles" "$l_dim"
+		convert "$dim" -draw "fill '#00000096' $rectangles" "$l_dim"
 
 		# blur
-		convert "$blur" -draw "fill black fill-opacity 0.4 $rectangles" "$l_blur"
+		convert "$blur" -draw "fill '#00000096' $rectangles" "$l_blur"
 
 		# blur
-		convert "$dimblur" -draw "fill black fill-opacity 0.4 $rectangles" "$l_dimblur"
+		convert "$dimblur" -draw "fill '#00000096' $rectangles" "$l_dimblur"
 
 		echo
 		echo "All required changes have been applied"
