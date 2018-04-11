@@ -84,7 +84,7 @@ chmod u+x betterlockscreen
 
 Make sure you have following packages installed.
 
-* [i3lock-color](https://github.com/PandorasFox/i3lock-color) - i3lock fork with additional features (currently supported versions are 2.10.1c and 2.10.1-1-c due to a wip rewrite of it)
+* [i3lock-color](https://github.com/PandorasFox/i3lock-color) - i3lock fork with additional features (currently supported versions are 2.11-c and newer)
 * [imagemagick](https://www.imagemagick.org/script/index.php) - to apply effects to images
 * [xdpyinfo](https://www.x.org/archive/X11R7.7/doc/man/man1/xdpyinfo.1.xhtml) - find your screen resolution (to resize images accordingly)
 * [xrandr](https://www.x.org/wiki/Projects/XRandR/) - depends for xdpyinfo
