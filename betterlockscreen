@@ -102,6 +102,129 @@ lockselect() {
 	esac
 }
 
+update_cache() {
+	background="$2"
+	shift 2
+
+	# find your resolution so images can be resized to match your screen resolution
+	y_res=$(xdpyinfo | grep dimensions | sed -r 's/^[^0-9]*([0-9]+x[0-9]+).*$/\1/')
+	# default blur level
+	blur_level=1
+	force_update=false
+
+	# parse update arguments
+	while [ $# -gt 0 ]; do
+		case "$1" in
+		-r | --resolution )
+			y_res="$2"
+			shift 2
+			;;
+		-b | --blur )
+			blur_level="$2"
+			shift 2
+			;;
+		-f | --force )
+			force_update=true
+			shift ;;
+		*)
+			shift ;;
+		esac
+	done
+
+	# Check if update options have changed
+	if [ "$force_update" = false ] && [ -f "$folder/.cache_options" ] && [ "$background $y_res $blur_level" = "$(cat "$folder/.cache_options")" ]; then
+		echo "Update options haven't changed, skipping update."
+		return
+	fi
+
+	rectangles=" "
+	SR=$(xrandr --query | grep ' connected' | grep -o '[0-9][0-9]*x[0-9][0-9]*[^ ]*')
+	for RES in $SR; do
+		SRA=(${RES//[x+]/ })
+		CX=$((${SRA[2]} + 25))
+		CY=$((${SRA[1]} - 30))
+		rectangles+="rectangle $CX,$CY $((CX+300)),$((CY-80)) "
+	done
+
+	# User supplied Image
+	user_image="$folder/user_image.png"
+
+	# create folder
+	if [ ! -d $folder ]; then
+		echo "Creating '$folder' directory to cache processed images."
+		mkdir -p "$folder"
+	fi
+
+	# get random file in dir if passed argument is a dir
+	rec_get_random "$background"
+
+	# get user image
+	cp "$user_input" "$user_image"
+	if [ ! -f $user_image ]; then
+		echo "Please specify the path to the image you would like to use"
+		exit 1
+	fi
+
+	# replace orignal with user image
+	cp "$user_image" "$orig_wall"
+	rm "$user_image"
+
+	echo "Generating alternate images based on the image you specified,"
+	echo "please wait this might take few seconds..."
+
+	# wallpapers
+
+	echo
+	echo "Converting provided image to match your resolution..."
+	# resize image
+	convert "$orig_wall" -resize "$y_res""^" -gravity center -extent "$y_res" "$resized"
+
+	echo
+	echo "Applying dim and blur effect to resized image"
+	# dim
+	convert "$resized" -fill black -colorize 40% "$dim"
+
+	# blur
+	blur_shrink=$(echo "scale=2; 20 / $blur_level" | bc)
+	blur_sigma=$(echo "scale=2; 0.6 * $blur_level" | bc)
+	convert "$resized" \
+		-filter Gaussian \
+		-resize "$blur_shrink%" \
+		-define "filter:sigma=$blur_sigma" \
+		-resize "$y_res^" -gravity center -extent "$y_res" \
+		"$blur"
+
+	# dimblur
+	convert "$dim" \
+		-filter Gaussian \
+		-resize "$blur_shrink%" \
+		-define "filter:sigma=$blur_sigma" \
+		-resize "$y_res^" -gravity center -extent "$y_res" \
+		"$dimblur"
+
+	# lockscreen backgrounds
+
+	echo
+	echo "Caching images for faster screen locking"
+	# resized
+	convert "$resized" -draw "fill rgba(0, 0, 0, 0.4) $rectangles" "$l_resized"
+
+	# dim
+	convert "$dim" -draw "fill rgba(0, 0, 0, 0.4) $rectangles" "$l_dim"
+
+	# blur
+	convert "$blur" -draw "fill rgba(0, 0, 0, 0.4) $rectangles" "$l_blur"
+
+	# blur
+	convert "$dimblur" -draw "fill rgba(0, 0, 0, 0.4) $rectangles" "$l_dimblur"
+
+	# Save current cache options
+	echo "$background $y_res $blur_level" > "$folder/.cache_options"
+
+	echo
+	echo "All required changes have been applied"
+}
+
 usage() {
 
 		echo "Important : Update the image cache, Ex: betterlockscreen -u path/to/image.jpg"
@@ -120,6 +243,8 @@ usage() {
 		echo
 		echo "	-u --update"
 		echo "		to update image cache, you should do this before using any other options"
+		echo "		Note: If the options passed to --update don't change, the image cache won't"
+		echo "		be refreshed to save battery/electricity. Pass -f/--force to force a refresh."
 		echo "		Ex: betterlockscreen -u path/to/image.png when image.png is custom background"
 		echo "		Or you can use betterlockscreen -u path/to/imagedir and a random file will be selected"
 		echo
@@ -161,6 +286,12 @@ usage() {
 		echo "		used to set blur intensity. Default to 1."
 		echo "		Ex: betterlockscreen -u path/to/image.png -b 3"
 		echo "		Ex: betterlockscreen -u path/to/image.png --blur 0.5"
+		echo
+		echo "	-f --force"
+		echo "		to be used after -u"
+		echo "		used to force update even if options are the same as last time"
+		echo "		Ex: betterlockscreen -u path/to/image.png -f"
+		echo "		Ex: betterlockscreen -u path/to/image.png --force"
 }
 
 # Options
@@ -231,112 +362,7 @@ case "$1" in
 		;;
 
 	-u | --update)
-		background="$2"
-		shift 2
-
-		# find your resolution so images can be resized to match your screen resolution
-		y_res=$(xdpyinfo | grep dimensions | sed -r 's/^[^0-9]*([0-9]+x[0-9]+).*$/\1/')
-		# default blur level
-		blur_level=1
-
-		# parse update arguments
-		while [ $# -gt 0 ]; do
-			case "$1" in
-			-r | --resolution )
-				y_res="$2"
-				shift 2
-				;;
-			-b | --blur )
-				blur_level="$2"
-				shift 2
-				;;
-			*)
-				shift ;;
-			esac
-		done
-
-		rectangles=" "
-		SR=$(xrandr --query | grep ' connected' | grep -o '[0-9][0-9]*x[0-9][0-9]*[^ ]*')
-		for RES in $SR; do
-			SRA=(${RES//[x+]/ })
-			CX=$((${SRA[2]} + 25))
-			CY=$((${SRA[1]} - 30))
-			rectangles+="rectangle $CX,$CY $((CX+300)),$((CY-80)) "
-		done
-
-		# User supplied Image
-		user_image="$folder/user_image.png"
-
-		# create folder
-		if [ ! -d $folder ]; then
-			echo "Creating '$folder' directory to cache processed images."
-			mkdir -p "$folder"
-		fi
-
-		# get random file in dir if passed argument is a dir
-		rec_get_random "$background"
-
-		# get user image
-		cp "$user_input" "$user_image"
-		if [ ! -f $user_image ]; then
-			echo "Please specify the path to the image you would like to use"
-			exit 1
-		fi
-
-		# replace orignal with user image
-		cp "$user_image" "$orig_wall"
-		rm "$user_image"
-
-		echo "Generating alternate images based on the image you specified,"
-		echo "please wait this might take few seconds..."
-
-		# wallpapers
-
-		echo
-		echo "Converting provided image to match your resolution..."
-		# resize image
-		convert "$orig_wall" -resize "$y_res""^" -gravity center -extent "$y_res" "$resized"
-
-		echo
-		echo "Applying dim and blur effect to resized image"
-		# dim
-		convert "$resized" -fill black -colorize 40% "$dim"
-
-		# blur
-		blur_shrink=$(echo "scale=2; 20 / $blur_level" | bc)
-		blur_sigma=$(echo "scale=2; 0.6 * $blur_level" | bc)
-		convert "$resized" \
-			-filter Gaussian \
-			-resize "$blur_shrink%" \
-			-define "filter:sigma=$blur_sigma" \
-			-resize "$y_res^" -gravity center -extent "$y_res" \
-			"$blur"
-
-		# dimblur
-		convert "$dim" \
-			-filter Gaussian \
-			-resize "$blur_shrink%" \
-			-define "filter:sigma=$blur_sigma" \
-			-resize "$y_res^" -gravity center -extent "$y_res" \
-			"$dimblur"
-
-		# lockscreen backgrounds
-
-		echo
-		echo "Caching images for faster screen locking"
-		# resized
-	convert "$resized" -draw "fill rgba(0, 0, 0, 0.4) $rectangles" "$l_resized"
-
-		# dim
-		convert "$dim" -draw "fill rgba(0, 0, 0, 0.4) $rectangles" "$l_dim"
-
-		# blur
-		convert "$blur" -draw "fill rgba(0, 0, 0, 0.4) $rectangles" "$l_blur"
-
-		# blur
-		convert "$dimblur" -draw "fill rgba(0, 0, 0, 0.4) $rectangles" "$l_dimblur"
-		echo
-		echo "All required changes have been applied"
+		update_cache "$@"
 		;;
 
 	*)

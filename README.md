@@ -28,7 +28,7 @@ betterlockscreen -w | --wall [modifier]
 # Suspend system
 betterlockscreen -s | --suspend [modifier]
 # Update image cache
-betterlockscreen -u | --update (path/to/image.png | path/to/directory) [-r | --resolution <resolution>] [-b | --blur <factor>]
+betterlockscreen -u | --update (path/to/image.png | path/to/directory) [-r | --resolution <resolution>] [-b | --blur <factor>] [-f | --force]
 
 Modifiers:
 dim
@@ -43,8 +43,8 @@ In this case a random image from the directory is chosen, and converted to a 192
 
 ## Installation via AUR package
 
-### [release](https://aur.archlinux.org/packages/betterlockscreen/)  
-recommended if you want to spend less on bandwidth(less than 10kb) 
+### [release](https://aur.archlinux.org/packages/betterlockscreen/)
+recommended if you want to spend less on bandwidth(less than 10kb)
 ```
 pacaur -S aur/betterlockscreen
 ```
@@ -52,7 +52,7 @@ pacaur -S aur/betterlockscreen
 yaourt -S betterlockscreen
 ```
 
-### [dev](https://aur.archlinux.org/packages/betterlockscreen-git/)  
+### [dev](https://aur.archlinux.org/packages/betterlockscreen-git/)
 latest features but includes git history so 8mb+ of downloading.
 ```
 pacaur -S aur/betterlockscreen-git
@@ -66,7 +66,7 @@ yaourt -S betterlockscreen-git
 Clone this repo, push this script somewhere handy or you can even copy this script to /usr/local/bin so that it can be used from your i3config without defining whole path.
 
 ```
-git clone https://github.com/pavanjadhaw/betterlockscreen 
+git clone https://github.com/pavanjadhaw/betterlockscreen
 # optionally copy the script to /usr/local/bin so you can execute it everywhere
 cp betterlockscreen/betterlockscreen /usr/local/bin/betterlockscreen
 ```
