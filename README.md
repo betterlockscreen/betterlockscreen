@@ -117,6 +117,12 @@ yaourt -S i3lock-color
 ```
 ---
 
+### Debian based users
+
+UtkarshVerma was so kind to provide an installation script for debian based systems, [check it out here.](https://github.com/UtkarshVerma/installer-scripts/blob/master/betterlockscreen.sh)
+
+---
+
 To set desktop background on startup, add following lines to your .xintrc after pushing script to your path or you can use absolute path to script too
 
 ```
