@@ -30,317 +30,316 @@ l_dimblur="$folder/l_dimblur.png"
 
 
 prelock() {
-	pkill -u "$USER" -USR1 dunst
+    pkill -u "$USER" -USR1 dunst
 }
 
 lock() {
-	#$1 image path
-	letterEnteredColor=d23c3dff
-	letterRemovedColor=d23c3dff
-	passwordCorrect=00000000
-	passwordIncorrect=d23c3dff
-	background=00000000
-	foreground=ffffffff
-	i3lock \
-		-t -i "$1" \
-		--timepos="110:h-70" \
-		--datepos="135:h-45" \
-		--clock --datestr "Type password to unlock..." \
-		--insidecolor=$background --ringcolor=$foreground --line-uses-inside \
-		--keyhlcolor=$letterEnteredColor --bshlcolor=$letterRemovedColor --separatorcolor=$background \
-		--insidevercolor=$passwordCorrect --insidewrongcolor=$passwordIncorrect \
-		--ringvercolor=$foreground --ringwrongcolor=$foreground --indpos="x+280:h-70" \
-		--radius=20 --ring-width=4 --veriftext="" --wrongtext="" \
-		--verifcolor="$foreground" --timecolor="$foreground" --datecolor="$foreground" \
-		--noinputtext="" --force-clock $lockargs
+    #$1 image path
+    letterEnteredColor=d23c3dff
+    letterRemovedColor=d23c3dff
+    passwordCorrect=00000000
+    passwordIncorrect=d23c3dff
+    background=00000000
+    foreground=ffffffff
+    i3lock \
+	-t -i "$1" \
+	--timepos="110:h-70" \
+	--datepos="135:h-45" \
+	--clock --datestr "Type password to unlock..." \
+	--insidecolor=$background --ringcolor=$foreground --line-uses-inside \
+	--keyhlcolor=$letterEnteredColor --bshlcolor=$letterRemovedColor --separatorcolor=$background \
+	--insidevercolor=$passwordCorrect --insidewrongcolor=$passwordIncorrect \
+	--ringvercolor=$foreground --ringwrongcolor=$foreground --indpos="x+280:h-70" \
+	--radius=20 --ring-width=4 --veriftext="" --wrongtext="" \
+	--verifcolor="$foreground" --timecolor="$foreground" --datecolor="$foreground" \
+	--noinputtext="" --force-clock $lockargs
 }
 
 postlock() {
-	pkill -u "$USER" -USR2 dunst
+    pkill -u "$USER" -USR2 dunst
 }
 
 rec_get_random() {
-	dir="$1"
-	if [ ! -d "$dir" ]; then
-		user_input="$dir"
-		return
-	fi
-	dir=($dir/*)
-	dir=${dir[RANDOM % ${#dir[@]}]}
-	rec_get_random "$dir"
+    dir="$1"
+    if [ ! -d "$dir" ]; then
+	user_input="$dir"
+	return
+    fi
+    dir=($dir/*)
+    dir=${dir[RANDOM % ${#dir[@]}]}
+    rec_get_random "$dir"
 }
 
 lockselect() {
-	case "$1" in
-		"")
-			# default lockscreen
-			prelock
-			lock "$l_resized" && $2
-			postlock
-			;;
+    case "$1" in
+	"")
+	    # default lockscreen
+	    prelock
+	    lock "$l_resized" && $2
+	    postlock
+	    ;;
 
-		dim)
-			# lockscreen with dimmed background
-			prelock
-			lock "$l_dim" && $2
-			postlock
-			;;
+	dim)
+	    # lockscreen with dimmed background
+	    prelock
+	    lock "$l_dim" && $2
+	    postlock
+	    ;;
 
-		blur)
-			# set lockscreen with blurred background
-			prelock
-			lock "$l_blur" && $2
-			postlock
-			;;
+	blur)
+	    # set lockscreen with blurred background
+	    prelock
+	    lock "$l_blur" && $2
+	    postlock
+	    ;;
 
-		dimblur)
-			# set lockscreen with dimmed + blurred background
-			prelock
-			lock "$l_dimblur" && $2
-			postlock
-			;;
-	esac
+	dimblur)
+	    # set lockscreen with dimmed + blurred background
+	    prelock
+	    lock "$l_dimblur" && $2
+	    postlock
+	    ;;
+    esac
 }
 
 usage() {
 
-		echo "Important : Update the image cache, Ex: betterlockscreen -u path/to/image.jpg"
-		echo "	Image cache must be updated to initially configure or update wallpaper used"
-		echo
-		echo
-		echo "See : https://github.com/pavanjadhaw/betterlockscreen for additional info..."
-		echo
-		echo
-		echo "Options:"
-		echo
-		echo "	-h --help"
+    echo "Important : Update the image cache, Ex: betterlockscreen -u path/to/image.jpg"
+    echo "	Image cache must be updated to initially configure or update wallpaper used"
+    echo
+    echo
+    echo "See : https://github.com/pavanjadhaw/betterlockscreen for additional info..."
+    echo
+    echo
+    echo "Options:"
+    echo
+    echo "	-h --help"
 
-		echo "		For help. Ex: betterlockscreen -h or betterlockscreen --help"
-		echo
-		echo
-		echo "	-u --update"
-		echo "		to update image cache, you should do this before using any other options"
-		echo "		Ex: betterlockscreen -u path/to/image.png when image.png is custom background"
-		echo "		Or you can use betterlockscreen -u path/to/imagedir and a random file will be selected"
-		echo
-		echo
-		echo "	-l --lock"
-		echo "		to lock screen, Ex. betterlockscreen -l"
-		echo "		you can also use dimmed or blurred background for lockscreen"
-		echo "		Ex: betterlockscreen -l dim (for dimmed background)"
-		echo "		Ex: betterlockscreen -l blur (for blurred background)"
-		echo "		Ex: betterlockscreen -l dimblur (for dimmed + blurred background)"
-		echo
-		echo
-		echo "	-s --suspend"
-		echo "		to suspend system and lock screen, Ex. betterlockscreen -s"
-		echo "		you can also use dimmed or blurred background for lockscreen"
-		echo "		Ex: betterlockscreen -s dim (for dimmed background)"
-		echo "		Ex: betterlockscreen -s blur (for blurred background)"
-		echo "		Ex: betterlockscreen -s dimblur (for dimmed + blurred background)"
-		echo
-		echo
-		echo "	-w --wall"
-		echo "		you can also set lockscreen background as wallpaper"
-		echo "		to set wallpaper. Ex betterlockscreen -w or betterlockscreen --wall"
-		echo "		you can also use dimmed or blurred variants"
-		echo "		Ex: betterlockscreen -w dim (for dimmed wallpaper)"
-		echo "		Ex: betterlockscreen -w blur (for blurred wallpaper)"
-		echo "		Ex: betterlockscreen -w dimblur (for dimmed + blurred wallpaper)"
-		echo
-		echo
-		echo "	-r --resolution"
-		echo "		to be used after -u"
-		echo "		used to set a custom resolution for the image cache."
-		echo "		Ex: betterlockscreen -u path/to/image.png -r 1920x1080"
-		echo "		Ex: betterlockscreen -u path/to/image.png --resolution 3840x1080"
-		echo
-		echo
-		echo "	-b --blur"
-		echo "		to be used after -u"
-		echo "		used to set blur intensity. Default to 1."
-		echo "		Ex: betterlockscreen -u path/to/image.png -b 3"
-		echo "		Ex: betterlockscreen -u path/to/image.png --blur 0.5"
+    echo "		For help. Ex: betterlockscreen -h or betterlockscreen --help"
+    echo
+    echo
+    echo "	-u --update"
+    echo "		to update image cache, you should do this before using any other options"
+    echo "		Ex: betterlockscreen -u path/to/image.png when image.png is custom background"
+    echo "		Or you can use betterlockscreen -u path/to/imagedir and a random file will be selected"
+    echo
+    echo
+    echo "	-l --lock"
+    echo "		to lock screen, Ex. betterlockscreen -l"
+    echo "		you can also use dimmed or blurred background for lockscreen"
+    echo "		Ex: betterlockscreen -l dim (for dimmed background)"
+    echo "		Ex: betterlockscreen -l blur (for blurred background)"
+    echo "		Ex: betterlockscreen -l dimblur (for dimmed + blurred background)"
+    echo
+    echo
+    echo "	-s --suspend"
+    echo "		to suspend system and lock screen, Ex. betterlockscreen -s"
+    echo "		you can also use dimmed or blurred background for lockscreen"
+    echo "		Ex: betterlockscreen -s dim (for dimmed background)"
+    echo "		Ex: betterlockscreen -s blur (for blurred background)"
+    echo "		Ex: betterlockscreen -s dimblur (for dimmed + blurred background)"
+    echo
+    echo
+    echo "	-w --wall"
+    echo "		you can also set lockscreen background as wallpaper"
+    echo "		to set wallpaper. Ex betterlockscreen -w or betterlockscreen --wall"
+    echo "		you can also use dimmed or blurred variants"
+    echo "		Ex: betterlockscreen -w dim (for dimmed wallpaper)"
+    echo "		Ex: betterlockscreen -w blur (for blurred wallpaper)"
+    echo "		Ex: betterlockscreen -w dimblur (for dimmed + blurred wallpaper)"
+    echo
+    echo
+    echo "	-r --resolution"
+    echo "		to be used after -u"
+    echo "		used to set a custom resolution for the image cache."
+    echo "		Ex: betterlockscreen -u path/to/image.png -r 1920x1080"
+    echo "		Ex: betterlockscreen -u path/to/image.png --resolution 3840x1080"
+    echo
+    echo
+    echo "	-b --blur"
+    echo "		to be used after -u"
+    echo "		used to set blur intensity. Default to 1."
+    echo "		Ex: betterlockscreen -u path/to/image.png -b 3"
+    echo "		Ex: betterlockscreen -u path/to/image.png --blur 0.5"
 }
 
 # Options
 case "$1" in
-	"")
-		if [ ! -f $l_dim ]; then
-			echo "Important : Update the image cache, Ex. betterlockscreen -u path/to/image.jpg"
-			echo
-			echo "		Image cache must be updated to initially configure or update wallpaper used"
-			echo
-			echo "See also : For other set of options and help use help command."
-			echo "Ex. betterlockscreen -h or betterlockscreen --help"
+    "")
+	if [ ! -f $l_dim ]; then
+	    echo "Important : Update the image cache, Ex. betterlockscreen -u path/to/image.jpg"
+	    echo
+	    echo "		Image cache must be updated to initially configure or update wallpaper used"
+	    echo
+	    echo "See also : For other set of options and help use help command."
+	    echo "Ex. betterlockscreen -h or betterlockscreen --help"
 
-			echo
-			echo "See : https://github.com/pavanjadhaw/betterlockscreen for addition info..."
-			exit 1
-		else
-			echo
-			echo "Seems you havent provided any argument, see below for usage info"
-			echo
-			echo "See also : For other set of options and help use help command."
+	    echo
+	    echo "See : https://github.com/pavanjadhaw/betterlockscreen for addition info..."
+	    exit 1
+	else
+	    echo
+	    echo "Seems you havent provided any argument, see below for usage info"
+	    echo
+	    echo "See also : For other set of options and help use help command."
 
-			echo "Ex. betterlockscreen -h or betterlockscreen --help"
+	    echo "Ex. betterlockscreen -h or betterlockscreen --help"
 
-			echo
-			echo "See : https://github.com/pavanjadhaw/betterlockscreen for addition info..."
-			echo
-			exit 1
-		fi
-		;;
+	    echo
+	    echo "See : https://github.com/pavanjadhaw/betterlockscreen for addition info..."
+	    echo
+	    exit 1
+	fi
+	;;
 
-	-h | --help)
+    -h | --help)
 
 	usage
+	;;
+
+    -l | --lock)
+	lockargs="-n"
+	lockselect "$2"
+	;;
+
+    -s | --suspend)
+	lockselect "$2" "systemctl suspend"
+	;;
+
+    -w | --wall)
+	case "$2" in
+	    "")
+		# set resized image as wallpaper if no argument is supplied by user
+		feh --bg-fill $resized
 		;;
 
-	-l | --lock)
-		lockargs="-n"
-		lockselect "$2"
+	    dim)
+		# set dimmed image as wallpaper
+		feh --bg-fill $dim
 		;;
 
-	-s | --suspend)
-		lockselect "$2" "systemctl suspend"
+	    blur)
+		# set blurred image as wallpaper
+		feh --bg-fill $blur
 		;;
 
-	-w | --wall)
-		case "$2" in
-			"")
-				# set resized image as wallpaper if no argument is supplied by user
-				feh --bg-fill $resized
-				;;
-
-			dim)
-				# set dimmed image as wallpaper
-				feh --bg-fill $dim
-				;;
-
-			blur)
-				# set blurred image as wallpaper
-				feh --bg-fill $blur
-				;;
-
-			dimblur)
-				# set dimmed + blurred image as wallpaper
-				feh --bg-fill $dimblur
-				;;
-		esac
+	    dimblur)
+		# set dimmed + blurred image as wallpaper
+		feh --bg-fill $dimblur
 		;;
+	esac
+	;;
 
-	-u | --update)
-		background="$2"
-		shift 2
+    -u | --update)
+	background="$2"
+	shift 2
 
-		# find your resolution so images can be resized to match your screen resolution
-		y_res=$(xdpyinfo | grep dimensions | sed -r 's/^[^0-9]*([0-9]+x[0-9]+).*$/\1/')
-		# default blur level
-		blur_level=1
+	# find your resolution so images can be resized to match your screen resolution
+	y_res=$(xdpyinfo | grep dimensions | sed -r 's/^[^0-9]*([0-9]+x[0-9]+).*$/\1/')
+	# default blur level
+	blur_level=1
 
-		# parse update arguments
-		while [ $# -gt 0 ]; do
-			case "$1" in
-			-r | --resolution )
-				y_res="$2"
-				shift 2
-				;;
-			-b | --blur )
-				blur_level="$2"
-				shift 2
-				;;
-			*)
-				shift ;;
-			esac
-		done
+	# parse update arguments
+	while [ $# -gt 0 ]; do
+	    case "$1" in
+		-r | --resolution )
+		    y_res="$2"
+		    shift 2
+		    ;;
+		-b | --blur )
+		    blur_level="$2"
+		    shift 2
+		    ;;
+		*)
+		    shift ;;
+	    esac
+	done
 
-		rectangles=" "
-		SR=$(xrandr --query | grep ' connected' | grep -o '[0-9][0-9]*x[0-9][0-9]*[^ ]*')
-		for RES in $SR; do
-			SRA=(${RES//[x+]/ })
-			CX=$((${SRA[2]} + 25))
-			CY=$((${SRA[1]} - 30))
-			rectangles+="rectangle $CX,$CY $((CX+300)),$((CY-80)) "
-		done
+	rectangles=" "
+	SR=$(xrandr --query | grep ' connected' | grep -o '[0-9][0-9]*x[0-9][0-9]*[^ ]*')
+	for RES in $SR; do
+	    SRA=(${RES//[x+]/ })
+	    CX=$((${SRA[2]} + 25))
+	    CY=$((${SRA[1]} - 30))
+	    rectangles+="rectangle $CX,$CY $((CX+300)),$((CY-80)) "
+	done
 
-		# User supplied Image
-		user_image="$folder/user_image.png"
+	# User supplied Image
+	user_image="$folder/user_image.png"
 
-		# create folder
-		if [ ! -d $folder ]; then
-			echo "Creating '$folder' directory to cache processed images."
-			mkdir -p "$folder"
-		fi
+	# create folder
+	if [ ! -d $folder ]; then
+	    echo "Creating '$folder' directory to cache processed images."
+	    mkdir -p "$folder"
+	fi
 
-		# get random file in dir if passed argument is a dir
-		rec_get_random "$background"
+	# get random file in dir if passed argument is a dir
+	rec_get_random "$background"
 
-		# get user image
-		cp "$user_input" "$user_image"
-		if [ ! -f $user_image ]; then
-			echo "Please specify the path to the image you would like to use"
-			exit 1
-		fi
+	# get user image
+	cp "$user_input" "$user_image"
+	if [ ! -f $user_image ]; then
+	    echo "Please specify the path to the image you would like to use"
+	    exit 1
+	fi
 
-		# replace orignal with user image
-		cp "$user_image" "$orig_wall"
-		rm "$user_image"
+	# replace orignal with user image
+	cp "$user_image" "$orig_wall"
+	rm "$user_image"
 
-		echo "Generating alternate images based on the image you specified,"
-		echo "please wait this might take few seconds..."
+	echo "Generating alternate images based on the image you specified,"
+	echo "please wait this might take few seconds..."
 
-		# wallpapers
+	# wallpapers
 
-		echo
-		echo "Converting provided image to match your resolution..."
-		# resize image
-		convert "$orig_wall" -resize "$y_res""^" -gravity center -extent "$y_res" "$resized"
+	echo
+	echo "Converting provided image to match your resolution..."
+	# resize image
+	convert "$orig_wall" -resize "$y_res""^" -gravity center -extent "$y_res" "$resized"
 
-		echo
-		echo "Applying dim and blur effect to resized image"
-		# dim
-		convert "$resized" -fill black -colorize 40% "$dim"
+	echo
+	echo "Applying dim and blur effect to resized image"
+	# dim
+	convert "$resized" -fill black -colorize 40% "$dim"
 
-		# blur
-		blur_shrink=$(echo "scale=2; 20 / $blur_level" | bc)
-		blur_sigma=$(echo "scale=2; 0.6 * $blur_level" | bc)
-		convert "$resized" \
-			-filter Gaussian \
-			-resize "$blur_shrink%" \
-			-define "filter:sigma=$blur_sigma" \
-			-resize "$y_res^" -gravity center -extent "$y_res" \
-			"$blur"
+	# blur
+	blur_shrink=$(echo "scale=2; 20 / $blur_level" | bc)
+	blur_sigma=$(echo "scale=2; 0.6 * $blur_level" | bc)
+	convert "$resized" \
+		-filter Gaussian \
+		-resize "$blur_shrink%" \
+		-define "filter:sigma=$blur_sigma" \
+		-resize "$y_res^" -gravity center -extent "$y_res" \
+		"$blur"
 
-		# dimblur
-		convert "$dim" \
-			-filter Gaussian \
-			-resize "$blur_shrink%" \
-			-define "filter:sigma=$blur_sigma" \
-			-resize "$y_res^" -gravity center -extent "$y_res" \
-			"$dimblur"
+	# dimblur
+	convert "$dim" \
+		-filter Gaussian \
+		-resize "$blur_shrink%" \
+		-define "filter:sigma=$blur_sigma" \
+		-resize "$y_res^" -gravity center -extent "$y_res" \
+		"$dimblur"
 
-		# lockscreen backgrounds
+	# lockscreen backgrounds
 
-		echo
-		echo "Caching images for faster screen locking"
-		# resized
+	echo
+	echo "Caching images for faster screen locking"
+	# resized
 	convert "$resized" -draw "fill rgba(0, 0, 0, 0.4) $rectangles" "$l_resized"
 
-		# dim
-		convert "$dim" -draw "fill rgba(0, 0, 0, 0.4) $rectangles" "$l_dim"
+	# dim
+	convert "$dim" -draw "fill rgba(0, 0, 0, 0.4) $rectangles" "$l_dim"
 
-		# blur
-		convert "$blur" -draw "fill rgba(0, 0, 0, 0.4) $rectangles" "$l_blur"
+	# blur
+	convert "$blur" -draw "fill rgba(0, 0, 0, 0.4) $rectangles" "$l_blur"
 
-		# blur
-		convert "$dimblur" -draw "fill rgba(0, 0, 0, 0.4) $rectangles" "$l_dimblur"
-		echo
-		echo "All required changes have been applied"
-		;;
+	# blur
+	convert "$dimblur" -draw "fill rgba(0, 0, 0, 0.4) $rectangles" "$l_dimblur"
+	echo
+	echo "All required changes have been applied"
+	;;
 
-	*)
-		echo "invalid argument"
-		;;
+    *)
+	echo "invalid argument"
+	;;
 esac
-
