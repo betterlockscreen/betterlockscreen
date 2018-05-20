@@ -104,7 +104,7 @@ lockselect() {
 
 usage() {
 
-		echo "Important: Update the image cache, Ex: betterlockscreen -u path/to/image.jpg"
+		echo "Important: Update the image cache (e.g. betterlockscreen -u path/to/image.jpg)."
 		echo "	Image cache must be updated to initially configure or update wallpaper used"
 		echo
 		echo
@@ -115,64 +115,64 @@ usage() {
 		echo
 		echo "	-h --help"
 
-		echo "		For help. Ex: betterlockscreen -h or betterlockscreen --help"
+		echo "		For help (e.g. betterlockscreen -h or betterlockscreen --help)."
 		echo
 		echo
 		echo "	-u --update"
 		echo "		to update image cache, you should do this before using any other options"
-		echo "		Ex: betterlockscreen -u path/to/image.png when image.png is custom background"
-		echo "		Or you can use betterlockscreen -u path/to/imagedir and a random file will be selected"
+		echo "		E.g: betterlockscreen -u path/to/image.png when image.png is custom background"
+		echo "		Or you can use betterlockscreen -u path/to/imagedir and a random file will be selected."
 		echo
 		echo
 		echo "	-l --lock"
-		echo "		to lock screen, Ex. betterlockscreen -l"
-		echo "		you can also use dimmed or blurred background for lockscreen"
-		echo "		Ex: betterlockscreen -l dim (for dimmed background)"
-		echo "		Ex: betterlockscreen -l blur (for blurred background)"
-		echo "		Ex: betterlockscreen -l dimblur (for dimmed + blurred background)"
+		echo "		to lock screen (e.g. betterlockscreen -l)"
+		echo "		you can also use dimmed or blurred background for lockscreen."
+		echo "		E.g: betterlockscreen -l dim (for dimmed background)"
+		echo "		E.g: betterlockscreen -l blur (for blurred background)"
+		echo "		E.g: betterlockscreen -l dimblur (for dimmed + blurred background)"
 		echo
 		echo
 		echo "	-s --suspend"
-		echo "		to suspend system and lock screen, Ex. betterlockscreen -s"
-		echo "		you can also use dimmed or blurred background for lockscreen"
-		echo "		Ex: betterlockscreen -s dim (for dimmed background)"
-		echo "		Ex: betterlockscreen -s blur (for blurred background)"
-		echo "		Ex: betterlockscreen -s dimblur (for dimmed + blurred background)"
+		echo "		to suspend system and lock screen (e.g. betterlockscreen -s)"
+		echo "		you can also use dimmed or blurred background for lockscreen."
+		echo "		E.g: betterlockscreen -s dim (for dimmed background)"
+		echo "		E.g: betterlockscreen -s blur (for blurred background)"
+		echo "		E.g: betterlockscreen -s dimblur (for dimmed + blurred background)"
 		echo
 		echo
 		echo "	-w --wall"
 		echo "		you can also set lockscreen background as wallpaper"
-		echo "		to set wallpaper. Ex betterlockscreen -w or betterlockscreen --wall"
-		echo "		you can also use dimmed or blurred variants"
-		echo "		Ex: betterlockscreen -w dim (for dimmed wallpaper)"
-		echo "		Ex: betterlockscreen -w blur (for blurred wallpaper)"
-		echo "		Ex: betterlockscreen -w dimblur (for dimmed + blurred wallpaper)"
+		echo "		to set wallpaper (e.g. betterlockscreen -w or betterlockscreen --wall)"
+		echo "		you can also use dimmed or blurred variants."
+		echo "		E.g: betterlockscreen -w dim (for dimmed wallpaper)"
+		echo "		E.g: betterlockscreen -w blur (for blurred wallpaper)"
+		echo "		E.g: betterlockscreen -w dimblur (for dimmed + blurred wallpaper)"
 		echo
 		echo
 		echo "	-r --resolution"
 		echo "		to be used after -u"
 		echo "		used to set a custom resolution for the image cache."
-		echo "		Ex: betterlockscreen -u path/to/image.png -r 1920x1080"
-		echo "		Ex: betterlockscreen -u path/to/image.png --resolution 3840x1080"
+		echo "		E.g: betterlockscreen -u path/to/image.png -r 1920x1080"
+		echo "		E.g: betterlockscreen -u path/to/image.png --resolution 3840x1080"
 		echo
 		echo
 		echo "	-b --blur"
 		echo "		to be used after -u"
 		echo "		used to set blur intensity. Default to 1."
-		echo "		Ex: betterlockscreen -u path/to/image.png -b 3"
-		echo "		Ex: betterlockscreen -u path/to/image.png --blur 0.5"
+		echo "		E.g: betterlockscreen -u path/to/image.png -b 3"
+		echo "		E.g: betterlockscreen -u path/to/image.png --blur 0.5"
 }
 
 # Options
 case "$1" in
 	"")
 		if [ ! -f $l_dim ]; then
-			echo "Important: Update the image cache, Ex. betterlockscreen -u path/to/image.jpg"
+			echo "Important: Update the image cache (e.g. betterlockscreen -u path/to/image.jpg)."
 			echo
 			echo "		Image cache must be updated to initially configure or update wallpaper used"
 			echo
 			echo "See also: For other set of options and help use help command."
-			echo "Ex. betterlockscreen -h or betterlockscreen --help"
+			echo "E.g. betterlockscreen -h or betterlockscreen --help"
 
 			echo
 			echo "See: https://github.com/pavanjadhaw/betterlockscreen for addition info..."
@@ -183,7 +183,7 @@ case "$1" in
 			echo
 			echo "See also: For other set of options and help use help command."
 
-			echo "Ex. betterlockscreen -h or betterlockscreen --help"
+			echo "E.g. betterlockscreen -h or betterlockscreen --help"
 
 			echo
 			echo "See: https://github.com/pavanjadhaw/betterlockscreen for addition info..."
