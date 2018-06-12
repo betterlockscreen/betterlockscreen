@@ -4,30 +4,37 @@
 # Github Profile : https://github.com/pavanjadhaw
 # Project Repository : https://github.com/pavanjadhaw/betterlockscreen
 
+# find your resolution so images can be resized to match your screen resolution
+res=$(xdpyinfo | grep dimensions | sed -r 's/^[^0-9]*([0-9]+x[0-9]+).*$/\1/')
 
-# create folder in ~/.cache/i3lock directory
-folder="$HOME/.cache/i3lock"
+init_filenames() {
+	#$1 resolution
 
-# ratio for rectangle to be drawn for time background on lockscreen
-# Original Image
-orig_wall="$folder/wall.png"
+	# create folder in ~/.cache/i3lock directory
+	folder="$HOME/.cache/i3lock/$1"
 
-# Versions (from here)
-# You can use these images to set different versions as wallpaper
-# lockscreen background.
-resized="$folder/resized.png" # resized image for your resolution
+	# ratio for rectangle to be drawn for time background on lockscreen
+	# Original Image
+	orig_wall="$folder/wall.png"
 
-# images to be used as wallpaper
-dim="$folder/dim.png" # image with subtle overlay of black
-blur="$folder/blur.png" # blurred version
-dimblur="$folder/dimblur.png"
+	# Versions (from here)
+	# You can use these images to set different versions as wallpaper
+	# lockscreen background.
+	resized="$folder/resized.png" # resized image for your resolution
 
-# lockscreen images (images to be used as lockscreen background)
-l_resized="$folder/l_resized.png"
-l_dim="$folder/l_dim.png"
-l_blur="$folder/l_blur.png"
-l_dimblur="$folder/l_dimblur.png"
+	# images to be used as wallpaper
+	dim="$folder/dim.png" # image with subtle overlay of black
+	blur="$folder/blur.png" # blurred version
+	dimblur="$folder/dimblur.png"
 
+	# lockscreen images (images to be used as lockscreen background)
+	l_resized="$folder/l_resized.png"
+	l_dim="$folder/l_dim.png"
+	l_blur="$folder/l_blur.png"
+	l_dimblur="$folder/l_dimblur.png"
+}
+
+init_filenames $res
 
 prelock() {
 	pkill -u "$USER" -USR1 dunst
@@ -43,8 +50,8 @@ lock() {
 	foreground=ffffffff
 	i3lock \
 		-t -i "$1" \
-		--timepos="110:h-70" \
-		--datepos="135:h-45" \
+		--timepos="x+110:h-70" \
+		--datepos="x+135:h-45" \
 		--clock --datestr "Type password to unlock..." \
 		--insidecolor=$background --ringcolor=$foreground --line-uses-inside \
 		--keyhlcolor=$letterEnteredColor --bshlcolor=$letterRemovedColor --separatorcolor=$background \
@@ -234,8 +241,6 @@ case "$1" in
 		background="$2"
 		shift 2
 
-		# find your resolution so images can be resized to match your screen resolution
-		y_res=$(xdpyinfo | grep dimensions | sed -r 's/^[^0-9]*([0-9]+x[0-9]+).*$/\1/')
 		# default blur level
 		blur_level=1
 
@@ -243,7 +248,8 @@ case "$1" in
 		while [ $# -gt 0 ]; do
 			case "$1" in
 			-r | --resolution )
-				y_res="$2"
+				res="$2"
+				init_filenames $res
 				shift 2
 				;;
 			-b | --blur )
@@ -295,7 +301,7 @@ case "$1" in
 		echo
 		echo "Converting provided image to match your resolution..."
 		# resize image
-		convert "$orig_wall" -resize "$y_res""^" -gravity center -extent "$y_res" "$resized"
+		convert "$orig_wall" -resize "$res""^" -gravity center -extent "$res" "$resized"
 
 		echo
 		echo "Applying dim and blur effect to resized image"
@@ -309,7 +315,7 @@ case "$1" in
 			-filter Gaussian \
 			-resize "$blur_shrink%" \
 			-define "filter:sigma=$blur_sigma" \
-			-resize "$y_res^" -gravity center -extent "$y_res" \
+			-resize "$res^" -gravity center -extent "$res" \
 			"$blur"
 
 		# dimblur
@@ -317,7 +323,7 @@ case "$1" in
 			-filter Gaussian \
 			-resize "$blur_shrink%" \
 			-define "filter:sigma=$blur_sigma" \
-			-resize "$y_res^" -gravity center -extent "$y_res" \
+			-resize "$res^" -gravity center -extent "$res" \
 			"$dimblur"
 
 		# lockscreen backgrounds
