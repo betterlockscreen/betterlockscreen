@@ -8,7 +8,7 @@
 res=$(xdpyinfo | grep dimensions | sed -r 's/^[^0-9]*([0-9]+x[0-9]+).*$/\1/')
 
 init_filenames() {
-	#$1 resolution
+	#$1 dimensions
 
 	# create folder in ~/.cache/i3lock directory
 	folder="$HOME/.cache/i3lock/$1"
@@ -249,7 +249,6 @@ case "$1" in
 			case "$1" in
 			-r | --resolution )
 				res="$2"
-				init_filenames $res
 				shift 2
 				;;
 			-b | --blur )
