@@ -37,7 +37,9 @@ init_filenames() {
 init_filenames $res
 
 prelock() {
-	pkill -u "$USER" -USR1 dunst
+    if [ ! -z "$(pidof dunst)" ] ; then
+        pkill -u "$USER" -USR1 dunst
+    fi
 }
 
 lock() {
@@ -63,7 +65,9 @@ lock() {
 }
 
 postlock() {
-	pkill -u "$USER" -USR2 dunst
+    if [ ! -z "$(pidof dunst)" ] ; then
+        pkill -u "$USER" -USR2 dunst
+    fi
 }
 
 rec_get_random() {
