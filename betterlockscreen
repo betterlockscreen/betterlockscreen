@@ -6,6 +6,7 @@
 
 # find your resolution so images can be resized to match your screen resolution
 res=$(xdpyinfo | grep dimensions | sed -r 's/^[^0-9]*([0-9]+x[0-9]+).*$/\1/')
+locktext="Type password to unlock..."
 
 init_filenames() {
 	#$1 resolution
@@ -37,9 +38,9 @@ init_filenames() {
 init_filenames $res
 
 prelock() {
-    if [ ! -z "$(pidof dunst)" ] ; then
-        pkill -u "$USER" -USR1 dunst
-    fi
+	if [ ! -z "$(pidof dunst)" ] ; then
+		pkill -u "$USER" -USR1 dunst
+	fi
 }
 
 lock() {
@@ -53,8 +54,8 @@ lock() {
 	i3lock \
 		-t -i "$1" \
 		--timepos="x+110:h-70" \
-		--datepos="x+135:h-45" \
-		--clock --datestr "Type password to unlock..." \
+		--datepos="x+43:h-45" \
+		--clock --date-align 1 --datestr "$locktext" \
 		--insidecolor=$background --ringcolor=$foreground --line-uses-inside \
 		--keyhlcolor=$letterEnteredColor --bshlcolor=$letterRemovedColor --separatorcolor=$background \
 		--insidevercolor=$passwordCorrect --insidewrongcolor=$passwordIncorrect \
@@ -65,9 +66,9 @@ lock() {
 }
 
 postlock() {
-    if [ ! -z "$(pidof dunst)" ] ; then
-        pkill -u "$USER" -USR2 dunst
-    fi
+	if [ ! -z "$(pidof dunst)" ] ; then
+		pkill -u "$USER" -USR2 dunst
+	fi
 }
 
 rec_get_random() {
@@ -172,7 +173,24 @@ usage() {
 		echo "		used to set blur intensity. Default to 1."
 		echo "		E.g: betterlockscreen -u path/to/image.png -b 3"
 		echo "		E.g: betterlockscreen -u path/to/image.png --blur 0.5"
+		echo
+		echo
+		echo "	-t --text"
+		echo "		to set custom lockscreen text (max 31 chars)"
+		echo "		E.g: betterlockscreen -l dim -t \"Don't touch my machine!\""
+		echo "		E.g: betterlockscreen --text \"Hi, user!\" -s blur"
 }
+
+# check if --text argument is given
+if [ $# -gt 2 ] ; then
+	if [ "$1" == "-t" -o "$1" == "--text" ] ; then
+		locktext="$2"
+		# delete first 2 arguments and reset numbering ( 3 -> 1, 4 -> 2, ...)
+		set -- "${@:3}"
+	elif [ \( "$3" == "-t" -o "$3" == "--text" \) -a $# -gt 3 ] ; then
+		locktext="$4"
+	fi
+fi
 
 # Options
 case "$1" in
