@@ -11,7 +11,14 @@ init_filenames() {
 	#$1 resolution
 
 	# create folder in ~/.cache/i3lock directory
-	folder="$HOME/.cache/i3lock/$1"
+	res_folder="$HOME/.cache/i3lock/$1"
+	folder="$HOME/.cache/i3lock/current"
+        echo "Got" $@ $res_folder
+	if [ ! -d  $folder -o -n "$2" ]
+	then
+	    rm $folder
+	    ln -s $res_folder $folder
+	fi
 
 	# ratio for rectangle to be drawn for time background on lockscreen
 	# Original Image
@@ -253,7 +260,7 @@ case "$1" in
 			case "$1" in
 			-r | --resolution )
 				res="$2"
-				init_filenames $res
+				init_filenames $res force
 				shift 2
 				;;
 			-b | --blur )
