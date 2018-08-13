@@ -93,28 +93,28 @@ lockselect() {
 		"")
 			# default lockscreen
 			prelock
-			lock "$l_resized" && $2
+			lock "$l_resized"
 			postlock
 			;;
 
 		dim)
 			# lockscreen with dimmed background
 			prelock
-			lock "$l_dim" && $2
+			lock "$l_dim"
 			postlock
 			;;
 
 		blur)
 			# set lockscreen with blurred background
 			prelock
-			lock "$l_blur" && $2
+			lock "$l_blur"
 			postlock
 			;;
 
 		dimblur)
 			# set lockscreen with dimmed + blurred background
 			prelock
-			lock "$l_dimblur" && $2
+			lock "$l_dimblur"
 			postlock
 			;;
 	esac
@@ -221,7 +221,8 @@ case "$1" in
 		;;
 
 	-s | --suspend)
-		lockselect "$2" "systemctl suspend"
+		lockselect "$2" 
+		systemctl suspend
 		;;
 
 	-w | --wall)
