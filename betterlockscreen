@@ -361,3 +361,5 @@ case "$1" in
 		echo "invalid argument"
 		;;
 esac
+
+exit 0

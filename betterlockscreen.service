@@ -1,0 +1,13 @@
+[Unit]
+Description = Lock screen when going to sleep/suspend
+
+[Service]
+User=user
+Type=forking
+Environment=DISPLAY=:0
+ExecStart=/usr/bin/betterlockscreen --lock
+TimeoutSec=infinity
+
+[Install]
+WantedBy=sleep.target
+WantedBy=suspend.target
