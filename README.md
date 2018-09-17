@@ -43,7 +43,8 @@ dimblur
 
 Example update image cache:
 betterlockscreen -u path/to/directory -r 1920x1080 -b 0.5
-In this case a random image from the directory is chosen, and converted to a 1920x1080 resolution with the blur factor set to 0.5
+In this case a random image from the directory is chosen
+and converted to a 1920x1080 resolution with the blur factor set to 0.5
 ```
 
 ## Installation via AUR package
