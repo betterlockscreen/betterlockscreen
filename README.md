@@ -40,6 +40,22 @@ betterlockscreen -u path/to/directory -r 1920x1080 -b 0.5
 In this case a random image from the directory is chosen, and converted to a 1920x1080 resolution with the blur factor set to 0.5
 ```
 
+## Lockscreen when suspended
+
+```
+# move service file to proper dir
+cp betterlockscreen@.service /etc/systemd/system/betterlockscreen@.service
+
+# enable systemd service
+systemctl enable betterlockscreen@$USER.service
+
+# disable systemd service
+systemctl disable betterlockscreen@$USER.service
+
+
+Note: Now you can call systemctl suspend to suspend your system and betterlockscreen service will be activated
+so when your system wakes you will have screenlocked.
+```
 
 ## Installation via AUR package
 
