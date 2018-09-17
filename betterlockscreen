@@ -229,17 +229,17 @@ case "$1" in
 		case "$2" in
 			"")
 				# set resized image as wallpaper if no argument is supplied by user
-				feh --bg-fill $resized
+				feh --bg-fill --no-fehbg $resized
 				;;
 
 			dim)
 				# set dimmed image as wallpaper
-				feh --bg-fill $dim
+				feh --bg-fill --no-fehbg $dim
 				;;
 
 			blur)
 				# set blurred image as wallpaper
-				feh --bg-fill $blur
+				feh --bg-fill --no-fehbg $blur
 				;;
 
 			dimblur)
