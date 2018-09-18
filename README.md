@@ -14,42 +14,173 @@ without the need to apply same effect again and again
 
 ![scrot2](https://github.com/pavanjadhaw/betterlockscreen.demo/raw/master/scrots/scrot2.png "scrot2.png")
 
-### Demo
+## In action
 
 * [Demonstration](https://www.youtube.com/watch?v=9Ng5FZwnn6M&feature=youtu.be) - youtube.com
 
-## Features
+## Table of Contents
 
+- **[Requirements](#requirements)**
+    - [Dependencies](#dependencies)
+- **[Installation](#installation)**
+    - [Manual/Git install](#manualgit-install)
+    - [OS/Distro Packages](#osdistro-packages)
+        - [Arch Linux](#arch-linux)
+        - [Debian and derivatives](#debian-and-derivatives)
+- **[Usage](#usage)**
+- **[Desktop Background](#set-desktop-background-on-startup)**
+- **[i3wm keybinding](#i3wm-keybinding-for-lockscreen)**
+- **[Lockscreen whenever suspended](#lockscreen-when-suspendedsystemd-service)**
+
+
+## Requirements
+
+### Dependencies
+
+- [i3lock-color](https://github.com/PandorasFox/i3lock-color)
+	- i3lock fork with additional features( >= 2.11-c )
+- [imagemagick](https://www.imagemagick.org/script/index.php)
+	- To apply effects to images
+- [xdpyinfo](https://www.x.org/archive/X11R7.7/doc/man/man1/xdpyinfo.1.xhtml), [xrandr](https://www.x.org/wiki/Projects/XRandR/), [bc](https://www.gnu.org/software/bc/) and [feh](https://feh.finalrewind.org/)
+	- To find screen resolution, set custom blur level and wallpaper handling.
+
+Note: Make sure all dependencies are satisfied beforehand.
+
+## Installation
+
+### Manual/Git install
+
+```sh
+git clone https://github.com/pavanjadhaw/betterlockscreen 
+cd betterlockscreen
+cp betterlockscreen ~/.local/bin
+
+# or wget the script ~12KB
+wget -O betterlockscreen https://git.io/fASUJ
+chmod u+x betterlockscreen
+cp betterlockscreen ~/.local/bin
+
+# Add betterlockscreen to PATH:
+# (In your .bashrc, .zshrc etc)
+export PATH="${PATH}:${HOME}/.local/bin/"
 ```
-# Lock screen
-betterlockscreen -l | --lock [modifier]
 
-# Lock screen with custom text
-betterlockscreen -l | --lock [modifier] -t | --text "custom lockscreen text"
-E.g: $ betterlockscreen -l dim -t \"Don't touch my machine!\""
 
-# Set wallpaper
-betterlockscreen -w | --wall [modifier]
-# Suspend system
-betterlockscreen -s | --suspend [modifier]
-# Update image cache
-betterlockscreen -u | --update (path/to/image.png | path/to/directory)
-                \ [-r | --resolution <resolution>] [-b | --blur <factor>]
+### OS/Distro Packages
 
-Modifiers:
-dim
-blur
-dimblur
 
-Example update image cache:
+#### Arch Linux
+
+###### Installing dependencies(not required if using betterlockscreen aur package)
+`pacman -S imagemagick feh xorg-xrandr xorg-xdpyinfo`
+- i3lock-color
+	- `trizen -S i3lock-color`
+
+#### Aur package
+
+`betterlockscreen` is available in the Arch User repos as `betterlockscreen` and `betterlockscreen-git`.
+- betterlockscreen
+	- `trizen -S betterlockscreen`
+- betterlockscreen-git
+	- `trizen -S betterlockscreen-git`
+
+
+#### Debian and derivatives
+
+UtkarshVerma was so kind to provide an installation script for debian based systems, ![check it out here](https://github.com/UtkarshVerma/installer-scripts).
+
+
+
+## Usage
+
+Run `betterlockscreen` and point it to either a directory (`betterlockscreen -u "path/to/dir"`) or an image (`betterlockscreen -u "/path/to/img.jpg"`) and that's all. `betterlockscreen` will change update its cache with image you provided.
+
+```sh
+usage: betterlockscreen [-u "path/to/img.jpg"] [-l "dim, blur or dimblur"]
+           [-w "dim, blur, or dimblur"] [-t "custom text"] [-s "lockscreen and suspend"]
+					 [-r "resolution"] [-b "factor"]
+
+betterlockscreen - faster and sweet looking lockscreen for linux systems.
+
+required:
+	-u, --update "path/to/img.jpg"	caches all required images
+
+usage:
+	-l, --lock effect-name
+			locks with provided effect
+	-w, --wall effect-name
+			set desktop background with provided effect
+	-s, --suspend effect-name
+			lockscreen and suspend
+
+			Available effects:
+				dim, blur or dimblur
+
+	-t, --text "custom text"
+			set custom lockscreen text
+	-b, blur 0.0 - 1.0
+			set blur range
+	-r, --resolution res
+			uses a custom resolution
+
+
+Usage examples:
+1. Updating image cache(required)
+betterlockscreen -u ~/Pictures/Forests.png # caches given image
+betterlockscreen -u ~/Pictures             # caches random image from ~/Pictures directory
+
+2. Custom resolution and blur range
 betterlockscreen -u path/to/directory -r 1920x1080 -b 0.5
-In this case a random image from the directory is chosen
-and converted to a 1920x1080 resolution with the blur factor set to 0.5
+
+3. Lockscreen
+betterlockscreen -l dim                    # lockscreen with dim effect
+
+4. Lockscreen with custom text
+betterlockscreen -l dim -t "custom lockscreen text"
+
+5. Set desktop background
+betterlockscreen -w blur                   # set desktop background with blur effect
 ```
 
-## Lockscreen when suspended
 
+## Set desktop background on startup
+
+Add this line to `.xinitrc`.
+
+```sh
+# set desktop background with custom effect
+betterlockscreen -w dim
+
+# Alternative (set last used background)
+source ~/.fehbg
 ```
+
+
+#### i3wm
+
+Add this line to `~/.config/i3/config`
+
+```sh
+# set desktop background with custom effect
+exec --no-startup-id betterlockscreen -w dim
+
+# Alternative (set last used background)
+exec --no-startup-id source ~/.fehbg
+```
+
+
+#### i3wm keybinding for lockscreen
+
+Add this line to your `~/.config/i3/config`
+
+```sh
+bindsym $mod+shift+x exec betterlockscreen --l dim
+```
+
+
+## Lockscreen when suspended(systemd service)
+
+```sh
 # move service file to proper dir (the aur package does this for you)
 cp betterlockscreen@.service /etc/systemd/system/
 
@@ -60,122 +191,11 @@ systemctl enable betterlockscreen@$USER
 systemctl disable betterlockscreen@$USER
 
 
-Note: Now you can call systemctl suspend to suspend your system and betterlockscreen service will be activated
-so when your system wakes your screen will be locked.
+# Note: Now you can call systemctl suspend to suspend your system
+# and betterlockscreen service will be activated
+# so when your system wakes your screen will be locked.
 ```
 
-## Installation via AUR package
-
-### [release](https://aur.archlinux.org/packages/betterlockscreen/)  
-recommended if you want to spend less on bandwidth(less than 10kb) 
-```
-pacaur -S aur/betterlockscreen
-```
-```
-yaourt -S betterlockscreen
-```
-
-### [dev](https://aur.archlinux.org/packages/betterlockscreen-git/)  
-latest features but includes git history so 8mb+ of downloading.
-```
-pacaur -S aur/betterlockscreen-git
-```
-```
-yaourt -S betterlockscreen-git
-```
-
-## Manual Installation
-
-Clone this repo, push this script somewhere handy or you can even copy this script to /usr/local/bin so that it can be used from your i3config without defining whole path.
-
-```
-git clone https://github.com/pavanjadhaw/betterlockscreen 
-# optionally copy the script to /usr/local/bin so you can execute it everywhere
-cp betterlockscreen/betterlockscreen /usr/local/bin/betterlockscreen
-```
-
-OR
-
-If you dont want to clone the repo and save some bandwidth and diskspace you can do the following
-
-```
-wget https://raw.githubusercontent.com/pavanjadhaw/betterlockscreen/master/betterlockscreen
-chmod u+x betterlockscreen
-```
-
-### Prerequisites
-
-Make sure you have following packages installed.
-
-* [i3lock-color](https://github.com/PandorasFox/i3lock-color) - i3lock fork with additional features (currently supported versions are 2.11-c and newer)
-* [imagemagick](https://www.imagemagick.org/script/index.php) - to apply effects to images
-* [xdpyinfo](https://www.x.org/archive/X11R7.7/doc/man/man1/xdpyinfo.1.xhtml) - find your screen resolution (to resize images accordingly)
-* [xrandr](https://www.x.org/wiki/Projects/XRandR/) - depends for xdpyinfo
-* [bc](https://www.gnu.org/software/bc/) - used for setting the blur level
-* [feh](https://feh.finalrewind.org/) - used to set custom wallpaper
-
-*Note: systemd is required for the suspend feature.*
-
-### Arch users
-
-To install required packages
-
-Install feh, imagemagick, xrandr and xdpyinfo (currently used to find screenresolution)
-If anyone knows better way so that these dependencies could be minimized, please open issue.
-
-```
-pacman -S imagemagick feh xorg-xrandr xorg-xdpyinfo
-```
-
-Install i3lock-color from AUR
-
-Pacaur Users
-```
-pacaur -S aur/i3lock-color
-```
-
-Yaourt users
-```
-yaourt -S i3lock-color
-```
----
-
-### Debian based users
-
-UtkarshVerma was so kind to provide an installation script for debian based systems, [check it out here.](https://github.com/UtkarshVerma/installer-scripts/blob/master/betterlockscreen.sh)
-
----
-
-To set desktop background on startup, add following lines to your .xintrc after pushing script to your path or you can use absolute path to script too
-
-```
-exec betterlockscreen -w
-```
-
-If you are i3wm user, add following line to your i3config (~/.config/i3/config or ~/.i3/config)
-
-*custom shortcut to lockscreen*
-```
-# custom keybinding to lockscreen, use --lock dim or --lock blur below for different backgrounds
-bindsym $mod+shift+x exec betterlockscreen --lock
-```
-
-*set last cached image as desktop background*
-```
-# Set last used image as desktop background
-exec --no-startup-id betterlockscreen -w
-```
-
-*set the image cache to a random image from a directory of your choice on each startup*
-```
-# where Pictures/Wallpapers is the directory you would want to get random wallpapers from
-exec --no-startup-id betterlockscreen -u ~/Pictures/Wallpapers
-
-# add this only if you want to use same random image as desktop background too
-# it might not work as it takes few seconds for images to be cached,
-# try adding delay of 5 seconds if thats the case
-exec --no-startup-id betterlockscreen -w
-```
 
 ---
 
