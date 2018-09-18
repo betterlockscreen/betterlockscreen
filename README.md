@@ -23,12 +23,18 @@ without the need to apply same effect again and again
 ```
 # Lock screen
 betterlockscreen -l | --lock [modifier]
+
+# Lock screen with custom text
+betterlockscreen -l | --lock [modifier] -t | --text "custom lockscreen text"
+E.g: $ betterlockscreen -l dim -t \"Don't touch my machine!\""
+
 # Set wallpaper
 betterlockscreen -w | --wall [modifier]
 # Suspend system
 betterlockscreen -s | --suspend [modifier]
 # Update image cache
-betterlockscreen -u | --update (path/to/image.png | path/to/directory) [-r | --resolution <resolution>] [-b | --blur <factor>]
+betterlockscreen -u | --update (path/to/image.png | path/to/directory)
+                \ [-r | --resolution <resolution>] [-b | --blur <factor>]
 
 Modifiers:
 dim
@@ -37,7 +43,8 @@ dimblur
 
 Example update image cache:
 betterlockscreen -u path/to/directory -r 1920x1080 -b 0.5
-In this case a random image from the directory is chosen, and converted to a 1920x1080 resolution with the blur factor set to 0.5
+In this case a random image from the directory is chosen
+and converted to a 1920x1080 resolution with the blur factor set to 0.5
 ```
 
 ## Lockscreen when suspended
