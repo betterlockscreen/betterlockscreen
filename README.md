@@ -29,7 +29,9 @@ without the need to apply same effect again and again
         - [Debian and derivatives](#debian-and-derivatives)
 - **[Usage](#usage)**
 - **[Desktop Background](#set-desktop-background-on-startup)**
-- **[i3wm keybinding](#i3wm-keybinding-for-lockscreen)**
+- **[Keybinding](#keybindings)**
+    - [i3wm](#i3wm-1)
+    - [bspwm](#bspwm)
 - **[Lockscreen whenever suspended](#lockscreen-when-suspendedsystemd-service)**
 
 
@@ -169,12 +171,24 @@ exec --no-startup-id source ~/.fehbg
 ```
 
 
-#### i3wm keybinding for lockscreen
+## Keybindings
+
+#### i3wm
 
 Add this line to your `~/.config/i3/config`
 
 ```sh
-bindsym $mod+shift+x exec betterlockscreen --l dim
+bindsym $mod+shift+x exec betterlockscreen -l dim
+```
+
+#### bspwm
+
+Add this line to your `~/.config/sxhkd/sxhkdrc`
+
+```sh
+# lockscreen
+alt + shift + x
+    betterlockscreen -l dim
 ```
 
 
