@@ -1,5 +1,6 @@
 # betterlockscreen
-*A simple lock script for i3lock*
+
+_A simple lock script for i3lock_
 
 Most of i3lock script out there converts your defined image to add blur, glitch or dim effect to image and it feels so slow and btw who needs dynamic lock background,
 its not like I change lockscreen background every 5 minutes.
@@ -10,41 +11,37 @@ without the need to apply same effect again and again
 
 ## Screenshots
 
-![scrot1](https://github.com/pavanjadhaw/betterlockscreen.demo/raw/master/scrots/scrot1.png "scrot1.png")
+![scrot1](https://github.com/pavanjadhaw/betterlockscreen.demo/raw/master/scrots/scrot1.png 'scrot1.png')
 
-![scrot2](https://github.com/pavanjadhaw/betterlockscreen.demo/raw/master/scrots/scrot2.png "scrot2.png")
+![scrot2](https://github.com/pavanjadhaw/betterlockscreen.demo/raw/master/scrots/scrot2.png 'scrot2.png')
 
 ## In action
 
-* [Demonstration](https://www.youtube.com/watch?v=9Ng5FZwnn6M&feature=youtu.be) - youtube.com
+- [Demonstration](https://www.youtube.com/watch?v=9Ng5FZwnn6M&feature=youtu.be) - youtube.com
 
 ## Table of Contents
 
 - **[Requirements](#requirements)**
-    - [Dependencies](#dependencies)
+  - [Dependencies](#dependencies)
 - **[Installation](#installation)**
-    - [Manual/Git install](#manualgit-install)
-    - [OS/Distro Packages](#osdistro-packages)
-        - [Arch Linux](#arch-linux)
-        - [Debian and derivatives](#debian-and-derivatives)
+  - [Manual/Git install](#manualgit-install)
+  - [OS/Distro Packages](#osdistro-packages)
+    - [Arch Linux](#arch-linux)
+    - [Debian and derivatives](#debian-and-derivatives)
 - **[Usage](#usage)**
 - **[Desktop Background](#set-desktop-background-on-startup)**
 - **[Keybinding](#keybindings)**
-    - [i3wm](#i3wm-1)
-    - [bspwm](#bspwm)
+  - [i3wm](#i3wm-1)
+  - [bspwm](#bspwm)
 - **[Lockscreen whenever suspended](#lockscreen-when-suspendedsystemd-service)**
-
 
 ## Requirements
 
 ### Dependencies
 
-- [i3lock-color](https://github.com/PandorasFox/i3lock-color)
-	- i3lock fork with additional features( >= 2.11-c )
-- [imagemagick](https://www.imagemagick.org/script/index.php)
-	- To apply effects to images
-- [xdpyinfo](https://www.x.org/archive/X11R7.7/doc/man/man1/xdpyinfo.1.xhtml), [xrandr](https://www.x.org/wiki/Projects/XRandR/), [bc](https://www.gnu.org/software/bc/) and [feh](https://feh.finalrewind.org/)
-	- To find screen resolution, set custom blur level and wallpaper handling.
+- [i3lock-color](https://github.com/PandorasFox/i3lock-color) - i3lock fork with additional features( >= 2.11-c )
+- [imagemagick](https://www.imagemagick.org/script/index.php) - To apply effects to images
+- [xdpyinfo](https://www.x.org/archive/X11R7.7/doc/man/man1/xdpyinfo.1.xhtml), [xrandr](https://www.x.org/wiki/Projects/XRandR/), [bc](https://www.gnu.org/software/bc/) and [feh](https://feh.finalrewind.org/) - To find screen resolution, set custom blur level and wallpaper handling.
 
 Note: Make sure all dependencies are satisfied beforehand.
 
@@ -53,7 +50,7 @@ Note: Make sure all dependencies are satisfied beforehand.
 ### Manual/Git install
 
 ```sh
-git clone https://github.com/pavanjadhaw/betterlockscreen 
+git clone https://github.com/pavanjadhaw/betterlockscreen
 cd betterlockscreen
 cp betterlockscreen ~/.local/bin
 
@@ -67,31 +64,26 @@ cp betterlockscreen ~/.local/bin
 export PATH="${PATH}:${HOME}/.local/bin/"
 ```
 
-
 ### OS/Distro Packages
-
 
 #### Arch Linux
 
 ###### Installing dependencies(not required if using betterlockscreen aur package)
+
 `pacman -S imagemagick feh xorg-xrandr xorg-xdpyinfo`
-- i3lock-color
-	- `trizen -S i3lock-color`
+
+- i3lock-color - `trizen -S i3lock-color`
 
 #### Aur package
 
 `betterlockscreen` is available in the Arch User repos as `betterlockscreen` and `betterlockscreen-git`.
-- betterlockscreen
-	- `trizen -S betterlockscreen`
-- betterlockscreen-git
-	- `trizen -S betterlockscreen-git`
 
+- betterlockscreen - `trizen -S betterlockscreen`
+- betterlockscreen-git - `trizen -S betterlockscreen-git`
 
 #### Debian and derivatives
 
 UtkarshVerma was so kind to provide an installation script for debian based systems, ![check it out here](https://github.com/UtkarshVerma/installer-scripts).
-
-
 
 ## Usage
 
@@ -144,7 +136,6 @@ betterlockscreen -l dim -t "custom lockscreen text"
 betterlockscreen -w blur                   # set desktop background with blur effect
 ```
 
-
 ## Set desktop background on startup
 
 Add this line to `.xinitrc`.
@@ -157,7 +148,6 @@ betterlockscreen -w dim
 source ~/.fehbg
 ```
 
-
 #### i3wm
 
 Add this line to `~/.config/i3/config`
@@ -169,7 +159,6 @@ exec --no-startup-id betterlockscreen -w dim
 # Alternative (set last used background)
 exec --no-startup-id source ~/.fehbg
 ```
-
 
 ## Keybindings
 
@@ -191,7 +180,6 @@ alt + shift + x
     betterlockscreen -l dim
 ```
 
-
 ## Lockscreen when suspended(systemd service)
 
 ```sh
@@ -210,13 +198,27 @@ systemctl disable betterlockscreen@$USER
 # so when your system wakes your screen will be locked.
 ```
 
-
 ---
+
+## Countributing
+
+Here is the amazing people for all your wonderful PRs, issues and ideas!
+
+[![](https://sourcerer.io/fame/pavanjadhaw/pavanjadhaw/betterlockscreen/images/0)](https://sourcerer.io/fame/pavanjadhaw/pavanjadhaw/betterlockscreen/links/0)[![](https://sourcerer.io/fame/pavanjadhaw/pavanjadhaw/betterlockscreen/images/1)](https://sourcerer.io/fame/pavanjadhaw/pavanjadhaw/betterlockscreen/links/1)[![](https://sourcerer.io/fame/pavanjadhaw/pavanjadhaw/betterlockscreen/images/2)](https://sourcerer.io/fame/pavanjadhaw/pavanjadhaw/betterlockscreen/links/2)[![](https://sourcerer.io/fame/pavanjadhaw/pavanjadhaw/betterlockscreen/images/3)](https://sourcerer.io/fame/pavanjadhaw/pavanjadhaw/betterlockscreen/links/3)[![](https://sourcerer.io/fame/pavanjadhaw/pavanjadhaw/betterlockscreen/images/4)](https://sourcerer.io/fame/pavanjadhaw/pavanjadhaw/betterlockscreen/links/4)[![](https://sourcerer.io/fame/pavanjadhaw/pavanjadhaw/betterlockscreen/images/5)](https://sourcerer.io/fame/pavanjadhaw/pavanjadhaw/betterlockscreen/links/5)[![](https://sourcerer.io/fame/pavanjadhaw/pavanjadhaw/betterlockscreen/images/6)](https://sourcerer.io/fame/pavanjadhaw/pavanjadhaw/betterlockscreen/links/6)[![](https://sourcerer.io/fame/pavanjadhaw/pavanjadhaw/betterlockscreen/images/7)](https://sourcerer.io/fame/pavanjadhaw/pavanjadhaw/betterlockscreen/links/7)
+
+## How can I support developers?
+
+- Star our GitHub repo :star:
+- Create pull requests, submit bugs, suggest new features or documentation updates :wrench:
+
+## License
+
+[MIT](https://github.com/epicmaxco/vuestic-admin/blob/master/LICENSE) license.
 
 ## Feel free to use and distribute
 
 This is my first bash script so if you think this could be improved or if you have any suggestion. Feel free.
 
-* Hat tip to anyone who's code was used
-* Thanks to those who contributed to make it better
-* Inspiration - r/unixporn
+- Hat tip to anyone who's code was used
+- Thanks to those who contributed to make it better
+- Inspiration - r/unixporn
