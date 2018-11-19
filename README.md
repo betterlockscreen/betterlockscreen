@@ -202,7 +202,7 @@ systemctl disable betterlockscreen@$USER
 
 ## Countributing
 
-Here is the amazing people for all your wonderful PRs, issues and ideas!
+Thanks to all the amazing people for all your wonderful PRs, issues and ideas!
 
 [![](https://sourcerer.io/fame/pavanjadhaw/pavanjadhaw/betterlockscreen/images/0)](https://sourcerer.io/fame/pavanjadhaw/pavanjadhaw/betterlockscreen/links/0)[![](https://sourcerer.io/fame/pavanjadhaw/pavanjadhaw/betterlockscreen/images/1)](https://sourcerer.io/fame/pavanjadhaw/pavanjadhaw/betterlockscreen/links/1)[![](https://sourcerer.io/fame/pavanjadhaw/pavanjadhaw/betterlockscreen/images/2)](https://sourcerer.io/fame/pavanjadhaw/pavanjadhaw/betterlockscreen/links/2)[![](https://sourcerer.io/fame/pavanjadhaw/pavanjadhaw/betterlockscreen/images/3)](https://sourcerer.io/fame/pavanjadhaw/pavanjadhaw/betterlockscreen/links/3)[![](https://sourcerer.io/fame/pavanjadhaw/pavanjadhaw/betterlockscreen/images/4)](https://sourcerer.io/fame/pavanjadhaw/pavanjadhaw/betterlockscreen/links/4)[![](https://sourcerer.io/fame/pavanjadhaw/pavanjadhaw/betterlockscreen/images/5)](https://sourcerer.io/fame/pavanjadhaw/pavanjadhaw/betterlockscreen/links/5)[![](https://sourcerer.io/fame/pavanjadhaw/pavanjadhaw/betterlockscreen/images/6)](https://sourcerer.io/fame/pavanjadhaw/pavanjadhaw/betterlockscreen/links/6)[![](https://sourcerer.io/fame/pavanjadhaw/pavanjadhaw/betterlockscreen/images/7)](https://sourcerer.io/fame/pavanjadhaw/pavanjadhaw/betterlockscreen/links/7)
 
