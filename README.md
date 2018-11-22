@@ -1,70 +1,82 @@
-# betterlockscreen
+# [![BLS][logo]][website]
 
-_A simple lock script for i3lock_
+> simple, minimal lockscreen
 
-Most of i3lock script out there converts your defined image to add blur, glitch or dim effect to image and it feels so slow and btw who needs dynamic lock background,
-its not like I change lockscreen background every 5 minutes.
-I wanted something that was fast and still should have all the effects I want for lockscreen background.
+Betterlockscreen allows you to cache images with different filters and locking your screen with blazing speed.
 
-This script generates or already caches the variant for your custom images before hand so they can be later used any number of time as lockscreen background,
-without the need to apply same effect again and again
+---
 
-## Screenshots
+## Example
 
-![scrot1](https://github.com/pavanjadhaw/betterlockscreen.demo/raw/master/scrots/scrot1.png 'scrot1.png')
+> lockscreen with blurred effect
+
+```sh
+betterlockscreen --lock blur
+```
 
 ![scrot2](https://github.com/pavanjadhaw/betterlockscreen.demo/raw/master/scrots/scrot2.png 'scrot2.png')
 
-## In action
-
-- [Demonstration](https://www.youtube.com/watch?v=9Ng5FZwnn6M&feature=youtu.be) - youtube.com
+> [Watch some of the features of bettelockscreen in action](https://www.youtube.com/watch?v=9Ng5FZwnn6M&feature=youtu.be)
 
 ## Table of Contents
 
-- **[Requirements](#requirements)**
-  - [Dependencies](#dependencies)
-- **[Installation](#installation)**
-  - [Manual/Git install](#manualgit-install)
-  - [OS/Distro Packages](#osdistro-packages)
-    - [Arch Linux](#arch-linux)
-    - [Debian and derivatives](#debian-and-derivatives)
-- **[Usage](#usage)**
-- **[Desktop Background](#set-desktop-background-on-startup)**
-- **[Keybinding](#keybindings)**
-  - [i3wm](#i3wm-1)
-  - [bspwm](#bspwm)
-- **[Lockscreen whenever suspended](#lockscreen-when-suspendedsystemd-service)**
+- [about](#about)
+- [how it works](#how-it-works)
+- [requirements](#requirements)
+- [installation](#installation)
+- [usage](#usage)
+- [background](#set-desktop-background-on-startup)
+- [keybinding](#keybindings)
+- [lockscreen on suspend](#lockscreen-when-suspendedsystemd-service)
 
-## Requirements
+### About
 
-### Dependencies
+Most of i3lock wrapper scripts out there takes an image, adds some effect and locks the screen
+adding effects, overall experience doesn't feel natural given delay of 2-3 seconds.
+Who would like a delay of 2-3 seconds while locking screen?
+
+So betterlockscreen was my attempt to solve this problem, as we dont need to change lockscreen background frequently
+this script caches images with effect so overall experience is simple and as fast as native i3lock.
+
+### How it works
+
+The script takes image adds various effects and caches those images in special directory and then uses those
+images as lockscreen background depending on argument provided by user.
+
+### Requirements
+
+> Note: Make sure your system has all dependencies satisfied
 
 - [i3lock-color](https://github.com/PandorasFox/i3lock-color) - i3lock fork with additional features( >= 2.11-c )
 - [imagemagick](https://www.imagemagick.org/script/index.php) - To apply effects to images
 - [xdpyinfo](https://www.x.org/archive/X11R7.7/doc/man/man1/xdpyinfo.1.xhtml), [xrandr](https://www.x.org/wiki/Projects/XRandR/), [bc](https://www.gnu.org/software/bc/) and [feh](https://feh.finalrewind.org/) - To find screen resolution, set custom blur level and wallpaper handling.
 
-Note: Make sure all dependencies are satisfied beforehand.
+### Installation
 
-## Installation
-
-### Manual/Git install
+> manual installation
 
 ```sh
 git clone https://github.com/pavanjadhaw/betterlockscreen
 cd betterlockscreen
 cp betterlockscreen ~/.local/bin
+```
 
+<p style="text-align: center">OR</p>
+
+```sh
 # or wget the script ~12KB
 wget -O betterlockscreen https://git.io/fASUJ
 chmod u+x betterlockscreen
 cp betterlockscreen ~/.local/bin
+```
 
+```sh
 # Add betterlockscreen to PATH:
 # (In your .bashrc, .zshrc etc)
 export PATH="${PATH}:${HOME}/.local/bin/"
 ```
 
-### OS/Distro Packages
+### Package Manager
 
 #### Arch Linux
 
@@ -85,7 +97,7 @@ export PATH="${PATH}:${HOME}/.local/bin/"
 
 UtkarshVerma was so kind to provide an installation script for debian based systems, ![check it out here](https://github.com/UtkarshVerma/installer-scripts).
 
-## Usage
+### Usage
 
 Run `betterlockscreen` and point it to either a directory (`betterlockscreen -u "path/to/dir"`) or an image (`betterlockscreen -u "/path/to/img.jpg"`) and that's all. `betterlockscreen` will change update its cache with image you provided.
 
@@ -136,7 +148,7 @@ betterlockscreen -l dim -t "custom lockscreen text"
 betterlockscreen -w blur                   # set desktop background with blur effect
 ```
 
-## Set desktop background on startup
+### Set desktop background on startup
 
 Add this line to `.xinitrc`.
 
@@ -160,7 +172,7 @@ exec --no-startup-id betterlockscreen -w dim
 exec --no-startup-id source ~/.fehbg
 ```
 
-## Keybindings
+### Keybindings
 
 #### i3wm
 
@@ -180,7 +192,7 @@ alt + shift + x
     betterlockscreen -l dim
 ```
 
-## Lockscreen when suspended(systemd service)
+### Lockscreen when suspended(systemd service)
 
 ```sh
 # move service file to proper dir (the aur package does this for you)
@@ -200,7 +212,7 @@ systemctl disable betterlockscreen@$USER
 
 ---
 
-## Countributing
+### Countributing
 
 Thanks to all the amazing people for all your wonderful PRs, issues and ideas!
 
@@ -213,12 +225,13 @@ Thanks to all the amazing people for all your wonderful PRs, issues and ideas!
 
 ## License
 
-[MIT](https://github.com/epicmaxco/vuestic-admin/blob/master/LICENSE) license.
+Betterlockscreen is under [MIT](https://github.com/pavanjadhaw/betterlockscreen/blob/master/LICENSE) license.
 
 ## Feel free to use and distribute
-
-This is my first bash script so if you think this could be improved or if you have any suggestion. Feel free.
 
 - Hat tip to anyone who's code was used
 - Thanks to those who contributed to make it better
 - Inspiration - r/unixporn
+
+[logo]: .github/hero.png
+[website]: https://mdxjs.com
