@@ -123,13 +123,19 @@ lockselect() {
 logical_px() {
 	# get dpi value from xrdb
 	local DPI=$(xrdb -query | awk '/Xft.dpi/ {print $2}')
-	local SCALE=$(echo "scale=2; $DPI / 96.0" | bc)
-
-	# check if scaling the value is worthy
-	if [ $(echo "$SCALE > 1.25" | bc -l) -eq 0 ]; then
+	
+	# return the default value if no DPI is set
+	if [ -z "$DPI"]; then
 		echo $1
 	else
-		echo "$SCALE * $1 / 1" | bc
+		local SCALE=$(echo "scale=2; $DPI / 96.0" | bc)
+
+		# check if scaling the value is worthy
+		if [ $(echo "$SCALE > 1.25" | bc -l) -eq 0 ]; then
+			echo $1
+		else
+			echo "$SCALE * $1 / 1" | bc
+		fi
 	fi
 }
 
