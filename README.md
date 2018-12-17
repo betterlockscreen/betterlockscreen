@@ -58,7 +58,7 @@ images as lockscreen background depending on argument provided by user.
 ```sh
 git clone https://github.com/pavanjadhaw/betterlockscreen
 cd betterlockscreen
-cp betterlockscreen ~/.local/bin
+cp betterlockscreen ~/.local/bin/
 ```
 
 <p style="text-align: center">OR</p>
@@ -67,7 +67,7 @@ cp betterlockscreen ~/.local/bin
 # or wget the script ~12KB
 wget -O betterlockscreen https://git.io/fASUJ
 chmod u+x betterlockscreen
-cp betterlockscreen ~/.local/bin
+cp betterlockscreen ~/.local/bin/
 ```
 
 ```sh
