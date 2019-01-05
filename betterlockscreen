@@ -120,6 +120,24 @@ lockselect() {
 	postlock
 }
 
+logical_px() {
+	# get dpi value from xrdb
+	local DPI=$(xrdb -query | awk '/Xft.dpi/ {print $2}')
+	
+	# return the default value if no DPI is set
+	if [ -z "$DPI" ]; then
+		echo $1
+	else
+		local SCALE=$(echo "scale=2; $DPI / 96.0" | bc)
+
+		# check if scaling the value is worthy
+		if [ $(echo "$SCALE > 1.25" | bc -l) -eq 0 ]; then
+			echo $1
+		else
+			echo "$SCALE * $1 / 1" | bc
+		fi
+	fi
+}
 
 update() {
 	# use 
@@ -132,9 +150,9 @@ update() {
 	SR=$(xrandr --query | grep ' connected' | grep -o '[0-9][0-9]*x[0-9][0-9]*[^ ]*')
 	for RES in $SR; do
 		SRA=(${RES//[x+]/ })
-		CX=$((${SRA[2]} + 25))
-		CY=$((${SRA[1]} - 30))
-		rectangles+="rectangle $CX,$CY $((CX+300)),$((CY-80)) "
+		CX=$((${SRA[2]} + $(logical_px 25)))
+		CY=$((${SRA[1]} - $(logical_px 30)))
+		rectangles+="rectangle $CX,$CY $((CX+$(logical_px 300))),$((CY-$(logical_px 80))) "
 	done
 
 	# User supplied Image
