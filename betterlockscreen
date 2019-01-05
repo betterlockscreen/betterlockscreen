@@ -125,7 +125,7 @@ logical_px() {
 	local DPI=$(xrdb -query | awk '/Xft.dpi/ {print $2}')
 	
 	# return the default value if no DPI is set
-	if [ -z "$DPI"]; then
+	if [ -z "$DPI" ]; then
 		echo $1
 	else
 		local SCALE=$(echo "scale=2; $DPI / 96.0" | bc)
