@@ -14,6 +14,24 @@ init_filenames() {
 
 	# custom i3lock colors
 	theme_rc="$HOME/.blsrc"
+	if [ -e $theme_rc ]; then
+	    source "$theme_rc"
+	else
+        # copy this block to ~/.blsrc to customize
+	    insidecolor=00000000
+	    ringcolor=ffffffff
+	    keyhlcolor=d23c3dff
+	    bshlcolor=d23c3dff
+	    separatorcolor=00000000
+	    insidevercolor=00000000
+	    insidewrongcolor=d23c3dff
+	    ringvercolor=ffffffff
+	    ringwrongcolor=ffffffff
+	    verifcolor=ffffffff
+	    timecolor=ffffffff
+	    datecolor=ffffffff
+	    loginbox=00000066
+	fi
 
 	# create folder in ~/.cache/i3lock directory
 	res_folder="$HOME/.cache/i3lock/$1"
@@ -57,22 +75,6 @@ prelock() {
 
 lock() {
 	#$1 image path
-	if [ -e $theme_rc ]; then
-	    source "$theme_rc"
-	else
-	    insidecolor=00000000
-	    ringcolor=ffffffff
-	    keyhlcolor=d23c3dff
-	    bshlcolor=d23c3dff
-	    separatorcolor=00000000
-	    insidevercolor=00000000
-	    insidewrongcolor=d23c3dff
-	    ringvercolor=ffffffff
-	    ringwrongcolor=ffffffff
-	    verifcolor=ffffffff
-	    timecolor=ffffffff
-	    datecolor=ffffffff
-	fi
 
 	i3lock \
 		-t -i "$1" \
@@ -230,16 +232,16 @@ update() {
 	echo
 	echo 'Caching images for faster screen locking'
 	# resized
-	convert "$resized" -draw "fill rgba(0, 0, 0, 0.4) $rectangles" "$l_resized"
+	convert "$resized" -draw "fill #$loginbox $rectangles" "$l_resized"
 
 	# dim
-	convert "$dim" -draw "fill rgba(0, 0, 0, 0.4) $rectangles" "$l_dim"
+	convert "$dim" -draw "fill #$loginbox $rectangles" "$l_dim"
 
 	# blur
-	convert "$blur" -draw "fill rgba(0, 0, 0, 0.4) $rectangles" "$l_blur"
+	convert "$blur" -draw "fill #$loginbox $rectangles" "$l_blur"
 
 	# blur
-	convert "$dimblur" -draw "fill rgba(0, 0, 0, 0.4) $rectangles" "$l_dimblur"
+	convert "$dimblur" -draw "fill #$loginbox $rectangles" "$l_dimblur"
 	echo
 	echo 'All required changes have been applied'
 }
