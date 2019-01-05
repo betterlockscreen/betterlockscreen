@@ -12,8 +12,8 @@ locktext='Type password to unlock...'
 init_filenames() {
 	#$1 resolution
 
-    # custom i3lock colors
-    theme_rc="$HOME/.blsrc"
+	# custom i3lock colors
+	theme_rc="$HOME/.blsrc"
 
 	# create folder in ~/.cache/i3lock directory
 	res_folder="$HOME/.cache/i3lock/$1"
@@ -57,22 +57,22 @@ prelock() {
 
 lock() {
 	#$1 image path
-    if [ -e $theme_rc ]; then
-         source "$theme_rc"
-    else
-        insidecolor=00000000
-        ringcolor=ffffffff
-        keyhlcolor=d23c3dff
-        bshlcolor=d23c3dff
-        separatorcolor=00000000
-        insidevercolor=00000000
-        insidewrongcolor=d23c3dff
-        ringvercolor=ffffffff
-        ringwrongcolor=ffffffff
-        verifcolor=ffffffff
-        timecolor=ffffffff
-        datecolor=ffffffff
-    fi
+	if [ -e $theme_rc ]; then
+	    source "$theme_rc"
+	else
+	    insidecolor=00000000
+	    ringcolor=ffffffff
+	    keyhlcolor=d23c3dff
+	    bshlcolor=d23c3dff
+	    separatorcolor=00000000
+	    insidevercolor=00000000
+	    insidewrongcolor=d23c3dff
+	    ringvercolor=ffffffff
+	    ringwrongcolor=ffffffff
+	    verifcolor=ffffffff
+	    timecolor=ffffffff
+	    datecolor=ffffffff
+	fi
 
 	i3lock \
 		-t -i "$1" \
