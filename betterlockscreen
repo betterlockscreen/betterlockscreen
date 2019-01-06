@@ -13,7 +13,7 @@ init_filenames() {
 	#$1 resolution
 
 	# custom i3lock colors
-	theme_rc="$HOME/.blsrc"
+	theme_rc="$HOME/.config/betterlockscreenrc"
 	if [ -e $theme_rc ]; then
 	    source "$theme_rc"
 	else
