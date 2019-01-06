@@ -12,6 +12,27 @@ locktext='Type password to unlock...'
 init_filenames() {
 	#$1 resolution
 
+	# custom i3lock colors
+	theme_rc="$HOME/.config/betterlockscreenrc"
+	if [ -e $theme_rc ]; then
+	    source "$theme_rc"
+	else
+        # copy this block to ~/.config/betterlockscreenrc" to customize
+	    insidecolor=00000000
+	    ringcolor=ffffffff
+	    keyhlcolor=d23c3dff
+	    bshlcolor=d23c3dff
+	    separatorcolor=00000000
+	    insidevercolor=00000000
+	    insidewrongcolor=d23c3dff
+	    ringvercolor=ffffffff
+	    ringwrongcolor=ffffffff
+	    verifcolor=ffffffff
+	    timecolor=ffffffff
+	    datecolor=ffffffff
+	    loginbox=00000066
+	fi
+
 	# create folder in ~/.cache/i3lock directory
 	res_folder="$HOME/.cache/i3lock/$1"
 	folder="$HOME/.cache/i3lock/current"
@@ -54,23 +75,18 @@ prelock() {
 
 lock() {
 	#$1 image path
-	letterEnteredColor=d23c3dff
-	letterRemovedColor=d23c3dff
-	passwordCorrect=00000000
-	passwordIncorrect=d23c3dff
-	background=00000000
-	foreground=ffffffff
+
 	i3lock \
 		-t -i "$1" \
 		--timepos='x+110:h-70' \
 		--datepos='x+43:h-45' \
 		--clock --date-align 1 --datestr "$locktext" \
-		--insidecolor=$background --ringcolor=$foreground --line-uses-inside \
-		--keyhlcolor=$letterEnteredColor --bshlcolor=$letterRemovedColor --separatorcolor=$background \
-		--insidevercolor=$passwordCorrect --insidewrongcolor=$passwordIncorrect \
-		--ringvercolor=$foreground --ringwrongcolor=$foreground --indpos='x+280:h-70' \
+		--insidecolor=$insidecolor --ringcolor=$ringcolor --line-uses-inside \
+		--keyhlcolor=$keyhlcolor --bshlcolor=$bshlcolor --separatorcolor=$separatorcolor \
+		--insidevercolor=$insidevercolor --insidewrongcolor=$insidewrongcolor \
+		--ringvercolor=$ringvercolor --ringwrongcolor=$ringwrongcolor --indpos='x+280:h-70' \
 		--radius=20 --ring-width=4 --veriftext='' --wrongtext='' \
-		--verifcolor="$foreground" --timecolor="$foreground" --datecolor="$foreground" \
+		--verifcolor="$verifcolor" --timecolor="$timecolor" --datecolor="$datecolor" \
 		--noinputtext='' --force-clock $lockargs
 }
 
@@ -216,16 +232,16 @@ update() {
 	echo
 	echo 'Caching images for faster screen locking'
 	# resized
-	convert "$resized" -draw "fill rgba(0, 0, 0, 0.4) $rectangles" "$l_resized"
+	convert "$resized" -draw "fill #$loginbox $rectangles" "$l_resized"
 
 	# dim
-	convert "$dim" -draw "fill rgba(0, 0, 0, 0.4) $rectangles" "$l_dim"
+	convert "$dim" -draw "fill #$loginbox $rectangles" "$l_dim"
 
 	# blur
-	convert "$blur" -draw "fill rgba(0, 0, 0, 0.4) $rectangles" "$l_blur"
+	convert "$blur" -draw "fill #$loginbox $rectangles" "$l_blur"
 
 	# blur
-	convert "$dimblur" -draw "fill rgba(0, 0, 0, 0.4) $rectangles" "$l_dimblur"
+	convert "$dimblur" -draw "fill #$loginbox $rectangles" "$l_dimblur"
 	echo
 	echo 'All required changes have been applied'
 }
