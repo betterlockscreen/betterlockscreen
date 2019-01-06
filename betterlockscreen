@@ -17,7 +17,7 @@ init_filenames() {
 	if [ -e $theme_rc ]; then
 	    source "$theme_rc"
 	else
-        # copy this block to ~/.blsrc to customize
+        # copy this block to ~/.config/betterlockscreenrc" to customize
 	    insidecolor=00000000
 	    ringcolor=ffffffff
 	    keyhlcolor=d23c3dff
