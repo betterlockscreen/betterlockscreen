@@ -16,7 +16,7 @@ betterlockscreen --lock blur
 
 ![scrot2](https://github.com/pavanjadhaw/betterlockscreen.demo/raw/master/scrots/scrot2.png 'scrot2.png')
 
-> [Watch some of the features of bettelockscreen in action](https://www.youtube.com/watch?v=9Ng5FZwnn6M&feature=youtu.be)
+> [Watch some of the features of betterlockscreen in action](https://www.youtube.com/watch?v=9Ng5FZwnn6M&feature=youtu.be)
 
 ## Table of Contents
 
