@@ -22,6 +22,7 @@ betterlockscreen --lock blur
 - [how it works](#how-it-works)
 - [requirements](#requirements)
 - [installation](#installation)
+- [configuration](#configuration)
 - [usage](#usage)
 - [background](#set-desktop-background-on-startup)
 - [keybinding](#keybindings)
@@ -94,6 +95,12 @@ export PATH="${PATH}:${HOME}/.local/bin/"
 #### Debian and derivatives
 
 UtkarshVerma was so kind to provide an installation script for debian based systems, ![check it out here](https://github.com/UtkarshVerma/installer-scripts).
+
+### Configuration
+
+You can customise various colors for betterlockscreen, copy config file from examples directory to `~/.config/betterlockscreenrc` and edit it accordingly.
+
+If configuration file is not found then default configurations will be used.
 
 ### Usage
 
@@ -171,6 +178,8 @@ exec --no-startup-id source ~/.fehbg
 ```
 
 ### Keybindings
+
+To lockscreen using keyboard shortcut
 
 #### i3wm
 
