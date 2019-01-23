@@ -1,10 +1,8 @@
-# [![BLS][logo]][website]
+# betterlockscreen
 
 > simple, minimal lockscreen
 
-Betterlockscreen allows you to cache images with different filters and locking your screen with blazing speed.
-
----
+Betterlockscreen allows you to cache images with different filters and lockscreen with blazing speed.
 
 ## Example
 
