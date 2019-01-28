@@ -102,6 +102,12 @@ You can customise various colors for betterlockscreen, copy config file from exa
 
 If configuration file is not found then default configurations will be used.
 
+If you have installed betterlockscreen from AUR package, then you can copy default config from docs
+
+```sh
+cp /usr/share/doc/betterlockscreen/examples/betterlockscreenrc ~/.config
+```
+
 ### Usage
 
 Run `betterlockscreen` and point it to either a directory (`betterlockscreen -u "path/to/dir"`) or an image (`betterlockscreen -u "/path/to/img.jpg"`) and that's all. `betterlockscreen` will change update its cache with image you provided.
