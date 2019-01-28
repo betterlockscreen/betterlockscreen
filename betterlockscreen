@@ -104,8 +104,8 @@ rec_get_random() {
 		user_input="$dir"
 		return
 	fi
-	dir=($dir/*)
-	dir=${dir[RANDOM % ${#dir[@]}]}
+	dir=("$dir"/*)
+	dir="${dir[RANDOM % ${#dir[@]}]}"
 	rec_get_random "$dir"
 }
 
