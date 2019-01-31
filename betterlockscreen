@@ -17,7 +17,8 @@ init_filenames() {
 	if [ -e $theme_rc ]; then
 	    source "$theme_rc"
 	else
-        # copy this block to ~/.config/betterlockscreenrc" to customize
+      # copy this block to ~/.config/betterlockscreenrc" to customize
+      screennumber=0
 	    insidecolor=00000000
 	    ringcolor=ffffffff
 	    keyhlcolor=d23c3dff
@@ -78,7 +79,7 @@ lock() {
 	#$1 image path
 
 	i3lock \
-		-t -i "$1" \
+		-t -i "$1" --screen=$screennumber \
 		--timepos='x+110:h-70' \
 		--datepos='x+43:h-45' \
 		--clock --date-align 1 --datestr "$locktext" \
@@ -141,7 +142,7 @@ lockselect() {
 logical_px() {
 	# get dpi value from xrdb
 	local DPI=$(xrdb -query | awk '/Xft.dpi/ {print $2}')
-	
+
 	# return the default value if no DPI is set
 	if [ -z "$DPI" ]; then
 		echo $1
@@ -158,7 +159,7 @@ logical_px() {
 }
 
 update() {
-	# use 
+	# use
 	background="$1"
 
 	# default blur level; fallback to 1

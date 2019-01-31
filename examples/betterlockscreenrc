@@ -1,5 +1,6 @@
 # configuration file for betterlockscreen
 
+screennumber=0
 insidecolor=00000000
 ringcolor=ffffffff
 keyhlcolor=d23c3dff
