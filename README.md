@@ -121,6 +121,9 @@ If you have installed betterlockscreen from AUR package, then you can copy defau
 cp /usr/share/doc/betterlockscreen/examples/betterlockscreenrc ~/.config
 ```
 
+For multimonitor setups, now you can choose which monitor the clock is displayed on
+modify screennumber in betterlockscreenrc accordingly. Its zero based i.e 0 = screen 1
+
 ### Usage
 
 Run `betterlockscreen` and point it to either a directory (`betterlockscreen -u "path/to/dir"`) or an image (`betterlockscreen -u "/path/to/img.jpg"`) and that's all. `betterlockscreen` will change update its cache with image you provided.
