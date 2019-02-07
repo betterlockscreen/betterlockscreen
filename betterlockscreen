@@ -6,8 +6,6 @@
 
 # find your resolution so images can be resized to match your screen resolution
 res=$(xdpyinfo | grep dimensions | sed -r 's/^[^0-9]*([0-9]+x[0-9]+).*$/\1/')
-locktext='Type password to unlock...'
-
 
 init_filenames() {
 	#$1 resolution
@@ -32,6 +30,7 @@ init_filenames() {
 	    datecolor=ffffffff
 	    loginbox=00000066
 	    font="sans-serif"
+      locktext='Type password to unlock...'
 	fi
 
 	# create folder in ~/.cache/i3lock directory
@@ -141,7 +140,7 @@ lockselect() {
 logical_px() {
 	# get dpi value from xrdb
 	local DPI=$(xrdb -query | awk '/Xft.dpi/ {print $2}')
-	
+
 	# return the default value if no DPI is set
 	if [ -z "$DPI" ]; then
 		echo $1
@@ -158,7 +157,7 @@ logical_px() {
 }
 
 update() {
-	# use 
+	# use
 	background="$1"
 
 	# default blur level; fallback to 1
