@@ -4,68 +4,52 @@
 # Github Profile : https://github.com/pavanjadhaw
 # Project Repository : https://github.com/pavanjadhaw/betterlockscreen
 
-# find your resolution so images can be resized to match your screen resolution
-res=$(xdpyinfo | grep dimensions | sed -r 's/^[^0-9]*([0-9]+x[0-9]+).*$/\1/')
-locktext='Type password to unlock...'
+init_config () {
 
+		# user configuration file
+    USER_CONF="$HOME/.config/betterlockscreenrc"
+    if [ -e $USER_CONF ]; then
+        source "$USER_CONF"
+		# default configuration options
+    else
+				insidecolor=00000000
+				ringcolor=ffffffff
+				keyhlcolor=d23c3dff
+				bshlcolor=d23c3dff
+				separatorcolor=00000000
+				insidevercolor=00000000
+				insidewrongcolor=d23c3dff
+				ringvercolor=ffffffff
+				ringwrongcolor=ffffffff
+				verifcolor=ffffffff
+				timecolor=ffffffff
+				datecolor=ffffffff
+				loginbox=00000066
+				locktext='Type password to unlock...'
+				font="sans-serif"
+				display_on=0
+				span_image=false
+		fi
 
-init_filenames() {
-	#$1 resolution
+		CACHE_DIR="$HOME/.cache/i3lock"
+		CUR_DIR="$CACHE_DIR/current"
 
-	# custom i3lock colors
-	theme_rc="$HOME/.config/betterlockscreenrc"
-	if [ -e $theme_rc ]; then
-	    source "$theme_rc"
-	else
-      # copy this block to ~/.config/betterlockscreenrc" to customize
-      screennumber=0
-	    insidecolor=00000000
-	    ringcolor=ffffffff
-	    keyhlcolor=d23c3dff
-	    bshlcolor=d23c3dff
-	    separatorcolor=00000000
-	    insidevercolor=00000000
-	    insidewrongcolor=d23c3dff
-	    ringvercolor=ffffffff
-	    ringwrongcolor=ffffffff
-	    verifcolor=ffffffff
-	    timecolor=ffffffff
-	    datecolor=ffffffff
-	    loginbox=00000066
-	    font="sans-serif"
-	fi
+		# wallpaper
+		CUR_W_RESIZE="$CUR_DIR/wall_resize.png"
+		CUR_W_DIM="$CUR_DIR/wall_dim.png"
+		CUR_W_BLUR="$CUR_DIR/wall_blur.png"
+		CUR_W_DIMBLUR="$CUR_DIR/wall_dimblur.png"
 
-	# create folder in ~/.cache/i3lock directory
-	res_folder="$HOME/.cache/i3lock/$1"
-	folder="$HOME/.cache/i3lock/current"
-	echo "Got" $@ $res_folder
-	if [ ! -d $folder -o -n "$2" ]; then
-		rm -f $folder
-		ln -s $res_folder $folder
-	fi
+		# locker
+		CUR_L_RESIZE="$CUR_DIR/lock_resize.png"
+		CUR_L_DIM="$CUR_DIR/lock_dim.png"
+		CUR_L_BLUR="$CUR_DIR/lock_blur.png"
+		CUR_L_DIMBLUR="$CUR_DIR/lock_dimblur.png"
 
-	# ratio for rectangle to be drawn for time background on lockscreen
-	# Original Image
-	orig_wall="$folder/wall.png"
-
-	# Versions (from here)
-	# You can use these images to set different versions as wallpaper
-	# lockscreen background.
-	resized="$folder/resized.png" # resized image for your resolution
-
-	# images to be used as wallpaper
-	dim="$folder/dim.png" # image with subtle overlay of black
-	blur="$folder/blur.png" # blurred version
-	dimblur="$folder/dimblur.png"
-
-	# lockscreen images (images to be used as lockscreen background)
-	l_resized="$folder/l_resized.png"
-	l_dim="$folder/l_dim.png"
-	l_blur="$folder/l_blur.png"
-	l_dimblur="$folder/l_dimblur.png"
+		_RE="([0-9]+)x([0-9]+)\\+([0-9]+)\\+([0-9]+)" # Regex to find display dimensions
 }
+init_config
 
-init_filenames $res
 
 
 prelock() {
@@ -79,7 +63,8 @@ lock() {
 	#$1 image path
 
 	i3lock \
-		-t -i "$1" --screen=$screennumber \
+		-i "$1" \
+    --screen "$display_on" \
 		--timepos='x+110:h-70' \
 		--datepos='x+43:h-45' \
 		--clock --date-align 1 --datestr "$locktext" \
@@ -101,39 +86,27 @@ postlock() {
 }
 
 
-rec_get_random() {
-	dir="$1"
-	if [ ! -d "$dir" ]; then
-		user_input="$dir"
-		return
-	fi
-	dir=("$dir"/*)
-	dir="${dir[RANDOM % ${#dir[@]}]}"
-	rec_get_random "$dir"
-}
-
-
 lockselect() {
 	prelock
 	case "$1" in
 		dim)
 			# lockscreen with dimmed background
-			lock "$l_dim"
+			lock "$CUR_L_DIM"
 			;;
 
 		blur)
 			# set lockscreen with blurred background
-			lock "$l_blur"
+			lock "$CUR_L_BLUR"
 			;;
 
 		dimblur)
 			# set lockscreen with dimmed + blurred background
-			lock "$l_dimblur"
+			lock "$CUR_L_DIMBLUR"
 			;;
 
 		*)
 			# default lockscreen
-			lock "$l_resized"
+			lock "$CUR_L_RESIZE"
 			;;
 	esac
 	postlock
@@ -142,7 +115,7 @@ lockselect() {
 logical_px() {
 	# get dpi value from xrdb
 	local DPI=$(xrdb -query | awk '/Xft.dpi/ {print $2}')
-
+	
 	# return the default value if no DPI is set
 	if [ -z "$DPI" ]; then
 		echo $1
@@ -158,125 +131,287 @@ logical_px() {
 	fi
 }
 
-update() {
-	# use
-	background="$1"
-
-	# default blur level; fallback to 1
-	[[ $blur_level ]] || blur_level=1
-
-	rectangles=" "
-	SR=$(xrandr --query | grep ' connected' | grep -o '[0-9][0-9]*x[0-9][0-9]*[^ ]*')
-	for RES in $SR; do
-		SRA=(${RES//[x+]/ })
-		CX=$((${SRA[2]} + $(logical_px 25)))
-		CY=$((${SRA[1]} - $(logical_px 30)))
-		rectangles+="rectangle $CX,$CY $((CX+$(logical_px 300))),$((CY-$(logical_px 80))) "
-	done
-
-	# User supplied Image
-	user_image="$folder/user_image.png"
-
-	# create folder
-	if [ ! -d $folder ]; then
-		echo "Creating '$folder' directory to cache processed images."
-		mkdir -p "$folder"
-	fi
-
-	# get random file in dir if passed argument is a dir
-	rec_get_random "$background"
-
-	# get user image
-	cp "$user_input" "$user_image"
-	if [ ! -f $user_image ]; then
-		echo 'Please specify the path to the image you would like to use'
-		exit 1
-	fi
-
-	# replace orignal with user image
-	cp "$user_image" "$orig_wall"
-	rm "$user_image"
-
-	echo 'Generating alternate images based on the image you specified,'
-	echo 'please wait this might take few seconds...'
-
-	# wallpapers
-
-	echo
-	echo 'Converting provided image to match your resolution...'
-	# resize image
-	convert "$orig_wall" -resize "$res""^" -gravity center -extent "$res" "$resized"
-
-	echo
-	echo 'Applying dim and blur effect to resized image'
-	# dim
-	convert "$resized" -fill black -colorize 40% "$dim"
-
-	# blur
-	blur_shrink=$(echo "scale=2; 20 / $blur_level" | bc)
-	blur_sigma=$(echo "scale=2; 0.6 * $blur_level" | bc)
-	convert "$resized" \
-		-filter Gaussian \
-		-resize "$blur_shrink%" \
-		-define "filter:sigma=$blur_sigma" \
-		-resize "$res^" -gravity center -extent "$res" \
-		"$blur"
-
-	# dimblur
-	convert "$dim" \
-		-filter Gaussian \
-		-resize "$blur_shrink%" \
-		-define "filter:sigma=$blur_sigma" \
-		-resize "$res^" -gravity center -extent "$res" \
-		"$dimblur"
-
-	# lockscreen backgrounds
-
-	echo
-	echo 'Caching images for faster screen locking'
-	# resized
-	convert "$resized" -draw "fill #$loginbox $rectangles" "$l_resized"
-
-	# dim
-	convert "$dim" -draw "fill #$loginbox $rectangles" "$l_dim"
-
-	# blur
-	convert "$blur" -draw "fill #$loginbox $rectangles" "$l_blur"
-
-	# blur
-	convert "$dimblur" -draw "fill #$loginbox $rectangles" "$l_dimblur"
-	echo
-	echo 'All required changes have been applied'
+# get total resolution
+# 1600x900
+get_total_size () {
+    TOTAL_SIZE=$(xdpyinfo | grep -w "dimensions" | sed -r 's/^[^0-9]*([0-9]+x[0-9]+).*$/\1/')
 }
 
 
+get_display_list () {
+    local DNUM=0
+    mapfile -t DARR < <( xrandr --listactivemonitors )
+    for DISP in "${DARR[@]:1}"; do
+        (( DNUM++ ))
+        DISP=$(echo $DISP | sed -r 's/\/[0-9]*//g')
+        IFS=' ' read -r -a LINE <<< "$DISP"
+        DLIST+=("$DNUM ${LINE[3]} ${LINE[2]}")
+    done
+}
+
+
+get_user_wall() {
+	local path="$1"
+	if [ ! -d "$path" ]; then
+		USER_WALL="$path"
+		return
+	fi
+	dir=("$path"/*)
+	dir="${dir[RANDOM % ${#dir[@]}]}"
+    get_user_wall "$dir"
+}
+
+resize_and_render () {
+
+    # arguments
+    local base=$1
+    local path=$2
+    local resolution=$3
+
+    # wallpaper
+    RES_RESIZE="$2/resize.png"
+		RES_DIM="$2/dim.png"
+		RES_BLUR="$2/blur.png"
+		RES_DIMBLUR="$2/dimblur.png"
+
+    # defaults
+		[[ $blur_level ]] || blur_level=1
+
+    echo "Resizing original and applying effects..."
+
+    # apply resize
+    eval convert "$base" -resize "$resolution""^" -gravity center -extent "$resolution" "$RES_RESIZE"
+
+		# apply dim
+		eval convert "$RES_RESIZE" -fill black -colorize 40% "$RES_DIM"
+
+		# apply blur
+		blur_shrink=$(echo "scale=2; 20 / $blur_level" | bc)
+		blur_sigma=$(echo "scale=2; 0.6 * $blur_level" | bc)
+		eval convert "$RES_RESIZE" \
+				-filter Gaussian \
+				-resize "$blur_shrink%" \
+				-define "filter:sigma=$blur_sigma" \
+				-resize "$resolution^" -gravity center -extent "$resolution" \
+				"$RES_BLUR"
+
+	# apply dimblur
+	eval convert "$RES_DIM" \
+		-filter Gaussian \
+		-resize "$blur_shrink%" \
+		-define "filter:sigma=$blur_sigma" \
+		-resize "$resolution^" -gravity center -extent "$resolution" \
+		"$RES_DIMBLUR"
+
+}
+
+# delete and recreate directory
+purge_cache () {
+    if [[ -d "$1" ]]; then
+        rm -r "$1"
+    fi
+    mkdir -p "$1" 
+}
+
+# update locker and wallpaper images
+update () {
+
+    wallpaper=$1
+	rectangles=" "
+
+    get_user_wall "$wallpaper" # Returns USER_WALL
+    echo "Original: $USER_WALL"
+
+    get_display_list # Returns DLIST
+    get_total_size # Return TOTAL_SIZE
+
+    # create base images per display
+    for DISP in "${DLIST[@]}"; do
+        DNUM="$(cut -d" " -f1 <<<"${DISP}")"
+        DDEV="$(cut -d" " -f2 <<<"${DISP}")"
+        DGEO=($(cut -d" " -f3 <<<"${DISP}"))
+        DRES=(${DGEO[0]//[+]/ })
+        DPOS="+${DRES[1]}+${DRES[2]}"
+        DPATH="$CACHE_DIR/$DNUM-$DDEV"
+
+        #get_geometry $DGEO # Returns SCREEN_*
+        if [[ $DNUM -eq "$display_on" ]] || [[ "$display_on" -eq 0 ]]; then
+            SRA=(${DGEO//[x+]/ })
+            CX=$((${SRA[2]} + $(logical_px 25)))
+            CY=$((${SRA[1]} - $(logical_px 30)))
+            rectangles+="rectangle $CX,$CY $((CX+$(logical_px 300))),$((CY-$(logical_px 80))) "
+        fi
+
+        echo "Found: $DDEV ($DNUM)"
+        echo "Resolution: ${DRES[0]}"
+
+        purge_cache $DPATH
+
+        # we only need one set of images when spanning
+        if [ "$span_image" = true ] && [ $DNUM -gt 1 ]; then
+            continue
+        fi
+
+        if [ "$span_image" = true ]; then
+            # render wallpaper at total display size (3840x1080)
+            resize_and_render $USER_WALL $DPATH $TOTAL_SIZE
+        else
+            # render wallpaper at each display size
+            resize_and_render $USER_WALL $DPATH ${DRES[0]}
+            # add to parameters for position on canvas
+            PARAM_RESIZE="$PARAM_RESIZE $RES_RESIZE -geometry $DPOS -composite "
+            PARAM_DIM="$PARAM_DIM $RES_DIM -geometry $DPOS -composite "
+            PARAM_BLUR="$PARAM_BLUR $RES_BLUR -geometry $DPOS -composite "
+            PARAM_DIMBLUR="$PARAM_DIMBLUR $RES_DIMBLUR -geometry $DPOS -composite "
+        fi
+
+    done
+
+    purge_cache $CUR_DIR
+
+    if [ "$span_image" = true ] || [ ${#DLIST[@]} -lt 2 ]; then
+        echo "Copying final wallpaper images..."
+        cp $RES_RESIZE $CUR_W_RESIZE
+        cp $RES_DIM $CUR_W_DIM
+        cp $RES_BLUR $CUR_W_BLUR
+        cp $RES_DIMBLUR $CUR_W_DIMBLUR
+    else
+        echo "Creating canvas: $TOTAL_SIZE"
+        convert -size $TOTAL_SIZE 'xc:black' $CUR_W_RESIZE 
+        convert -size $TOTAL_SIZE 'xc:black' $CUR_W_DIM 
+        convert -size $TOTAL_SIZE 'xc:black' $CUR_W_BLUR 
+        convert -size $TOTAL_SIZE 'xc:black' $CUR_W_DIMBLUR 
+
+        echo "Rendering final wallpaper images..."
+        convert $CUR_W_RESIZE $PARAM_RESIZE $CUR_W_RESIZE
+        convert $CUR_W_DIM $PARAM_DIM $CUR_W_DIM
+        convert $CUR_W_BLUR $PARAM_BLUR $CUR_W_BLUR
+        convert $CUR_W_DIMBLUR $PARAM_DIMBLUR $CUR_W_DIMBLUR
+    fi
+
+    echo "Rendering final locker images..."
+	convert "$CUR_W_RESIZE" -draw "fill #$loginbox $rectangles" "$CUR_L_RESIZE"
+	convert "$CUR_W_DIM" -draw "fill #$loginbox $rectangles" "$CUR_L_DIM"
+	convert "$CUR_W_BLUR" -draw "fill #$loginbox $rectangles" "$CUR_L_BLUR"
+	convert "$CUR_W_DIMBLUR" -draw "fill #$loginbox $rectangles" "$CUR_L_DIMBLUR"
+}
+#update () {
+#
+#    wallpaper=$1
+#		rectangles=" "
+#
+#    get_user_wall "$wallpaper" # Returns USER_WALL
+#    echo "Original: $USER_WALL"
+#
+#    get_display_list # Returns DLIST
+#    get_total_size # Return TOTAL_SIZE
+#
+#		[[ $display_on ]] || display_on=0
+#
+#    # create base images per display
+#    for DISP in "${DLIST[@]}"; do
+#        DNUM="$(cut -d" " -f1 <<<"${DISP}")"
+#        DDEV="$(cut -d" " -f2 <<<"${DISP}")"
+#        DGEO="$(cut -d" " -f3 <<<"${DISP}")"
+#        DPATH="$CACHE_DIR/$DNUM-$DDEV"
+#
+#        if [[ $DNUM -eq $display_on ]] || [[ $display_on -eq 0 ]]; then
+#            SRA=(${DGEO//[x+]/ })
+#            CX=$((${SRA[2]} + $(logical_px 25)))
+#            CY=$((${SRA[1]} - $(logical_px 30)))
+#            echo "cx $CX"
+#            echo "cy $CY"
+#            rectangles+="rectangle $CX,$CY $((CX+$(logical_px 300))),$((CY-$(logical_px 80))) "
+#            echo "rect $rectangles"
+#        fi
+#
+#        echo "Found: $DDEV ($DNUM)"
+#        echo "Resolution: $DRES"
+#
+#        purge_cache $DPATH
+#
+#        # we only need one set of images when spanning
+#        if [ "$span_image" = true ] && [ $DNUM -gt 1 ]; then
+#            continue
+#        fi
+#
+#        if [ "$span_image" = true ]; then
+#            # create one image to span across multiple displays
+#            resize_and_render $USER_WALL $DPATH $TOTAL_SIZE
+#        else
+#            # create images for each display to combine later
+#            resize_and_render $USER_WALL $DPATH $DRES
+#            PARAM_RESIZE="$PARAM_RESIZE $RES_RESIZE -geometry +${DGEO[0]}+${DGEO[2]} -composite "
+#            PARAM_DIM="$PARAM_DIM $RES_DIM -geometry +${DGEO[0]}+${DGEO[2]} -composite "
+#            PARAM_BLUR="$PARAM_BLUR $RES_BLUR -geometry +${DGEO[0]}+${DGEO[2]} -composite "
+#            PARAM_DIMBLUR="$PARAM_DIMBLUR $RES_DIMBLUR -geometry +${DGEO[0]}+${DGEO[2]} -composite "
+#        fi
+#
+#    done
+#
+#    purge_cache $CUR_DIR
+#
+#    if [ "$span_image" = true ] && [ ${#DLIST[@]} -lt 2 ]; then
+#        echo "Copying final wallpaper images...xx"
+#        cp $RES_RESIZE $CUR_W_RESIZE
+#        cp $RES_DIM $CUR_W_DIM
+#        cp $RES_BLUR $CUR_W_BLUR
+#        cp $RES_DIMBLUR $CUR_W_DIMBLUR
+#    else
+#        echo "Creating canvas: $TOTAL_SIZE"
+#        convert -size $TOTAL_SIZE 'xc:black' $CUR_W_RESIZE 
+#        convert -size $TOTAL_SIZE 'xc:black' $CUR_W_DIM 
+#        convert -size $TOTAL_SIZE 'xc:black' $CUR_W_BLUR 
+#        convert -size $TOTAL_SIZE 'xc:black' $CUR_W_DIMBLUR 
+#
+#        echo "Rendering final wallpaper images..."
+#        convert $CUR_W_RESIZE $PARAM_RESIZE $CUR_W_RESIZE
+#        convert $CUR_W_DIM $PARAM_DIM $CUR_W_DIM
+#        convert $CUR_W_BLUR $PARAM_BLUR $CUR_W_BLUR
+#        convert $CUR_W_DIMBLUR $PARAM_DIMBLUR $CUR_W_DIMBLUR
+#    fi
+#
+#    echo "Rendering final locker images..."
+#		echo "$rectangles"
+#		convert $CUR_W_RESIZE -draw "fill #$loginbox $rectangles" $CUR_L_RESIZE
+#		convert $CUR_W_DIM -draw "fill #$loginbox $rectangles" $CUR_L_DIM
+#		convert $CUR_W_BLUR -draw "fill #$loginbox $rectangles" $CUR_L_BLUR
+#		convert $CUR_W_DIMBLUR -draw "fill #$loginbox $rectangles" $CUR_L_DIMBLUR
+#
+#    echo "... Complete!"
+#}
+
 wallpaper() {
+    local fopt
+    if [ "$span_image" = true ]; then
+        fopt="--no-xinerama"
+    fi
 	case "$1" in
 		'')
 			# set resized image as wallpaper if no argument is supplied by user
-			feh --bg-fill $resized
+			feh --bg-fill "$fopt" "$CUR_W_RESIZE"
 			;;
 
 		dim)
 			# set dimmed image as wallpaper
-			feh --bg-fill $dim
+			feh --bg-fill "$fopt" "$CUR_W_DIM"
 			;;
 
 		blur)
 			# set blurred image as wallpaper
-			feh --bg-fill $blur
+			feh --bg-fill "$fopt" "$CUR_W_BLUR"
 			;;
 
 		dimblur)
 			# set dimmed + blurred image as wallpaper
-			feh --bg-fill $dimblur
+			feh --bg-fill "$fopt" "$CUR_W_DIMBLUR"
 			;;
 	esac
 }
 
 
 empty() {
-	if [ -f $l_dim ]; then
+	if [ -f $CUR_L_RESIZE ]; then
 		echo -e "\nSeems you haven't provided any arguments. See below for usage details."
 	else
 		echo 'Important: Update the image cache (e.g. betterlockscreen -u path/to/image.jpg).'
@@ -338,11 +473,17 @@ usage() {
 	echo '		E.g: betterlockscreen -w dimblur (for dimmed + blurred wallpaper)'
 	echo
 	echo
-	echo '	-r --resolution'
+	echo '	-d --display'
 	echo '		to be used after -u'
-	echo '		used to set a custom resolution for the image cache.'
-	echo '		E.g: betterlockscreen -u path/to/image.png -r 1920x1080'
-	echo '		E.g: betterlockscreen -u path/to/image.png --resolution 3840x1080'
+	echo '		used to set which screen to display login box.'
+	echo '		E.g: betterlockscreen -u path/to/image.png -d 1'
+	echo '		E.g: betterlockscreen -u path/to/image.png --display 2'
+	echo
+	echo
+	echo '	--span'
+	echo '		to be used after -u'
+	echo '		used to create wall and locker images that span multiple displays.'
+	echo '		E.g: betterlockscreen -u path/to/image.png --span'
 	echo
 	echo
 	echo '	-b --blur'
@@ -397,10 +538,14 @@ for arg in "$@"; do
 			shift 2
 			;;
 
-		-r | --resolution)
-			res="$2"
-			init_filenames $res force
+		-d | --display)
+			display_on="$2"
 			shift 2
+			;;
+
+		--span)
+			span_image=true
+            shift 1
 			;;
 
 		-b | --blur)
@@ -419,6 +564,10 @@ for arg in "$@"; do
 			;;
 	esac
 done
+
+# some defaults
+[[ $display_on ]] || display_on=0
+[[ $span_image ]] || span_image=false
 
 # Run image generation
 [[ $runupdate ]] && update "$imagepath"
