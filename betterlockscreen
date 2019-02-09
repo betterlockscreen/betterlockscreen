@@ -6,47 +6,46 @@
 
 init_config () {
 
-		# user configuration file
+    # user configuration file
     USER_CONF="$HOME/.config/betterlockscreenrc"
     if [ -e $USER_CONF ]; then
         source "$USER_CONF"
-		# default configuration options
+    # default configuration options
     else
-				insidecolor=00000000
-				ringcolor=ffffffff
-				keyhlcolor=d23c3dff
-				bshlcolor=d23c3dff
-				separatorcolor=00000000
-				insidevercolor=00000000
-				insidewrongcolor=d23c3dff
-				ringvercolor=ffffffff
-				ringwrongcolor=ffffffff
-				verifcolor=ffffffff
-				timecolor=ffffffff
-				datecolor=ffffffff
-				loginbox=00000066
-				locktext='Type password to unlock...'
-				font="sans-serif"
-				display_on=0
-				span_image=false
-		fi
+		insidecolor=00000000
+		ringcolor=ffffffff
+		keyhlcolor=d23c3dff
+		bshlcolor=d23c3dff
+		separatorcolor=00000000
+		insidevercolor=00000000
+		insidewrongcolor=d23c3dff
+		ringvercolor=ffffffff
+		ringwrongcolor=ffffffff
+		verifcolor=ffffffff
+		timecolor=ffffffff
+		datecolor=ffffffff
+		loginbox=00000066
+		locktext='Type password to unlock...'
+		font="sans-serif"
+		display_on=0
+		span_image=false
+	fi
 
-		CACHE_DIR="$HOME/.cache/i3lock"
-		CUR_DIR="$CACHE_DIR/current"
+	CACHE_DIR="$HOME/.cache/i3lock"
+	CUR_DIR="$CACHE_DIR/current"
 
-		# wallpaper
-		CUR_W_RESIZE="$CUR_DIR/wall_resize.png"
-		CUR_W_DIM="$CUR_DIR/wall_dim.png"
-		CUR_W_BLUR="$CUR_DIR/wall_blur.png"
-		CUR_W_DIMBLUR="$CUR_DIR/wall_dimblur.png"
+	# wallpaper
+	CUR_W_RESIZE="$CUR_DIR/wall_resize.png"
+	CUR_W_DIM="$CUR_DIR/wall_dim.png"
+	CUR_W_BLUR="$CUR_DIR/wall_blur.png"
+	CUR_W_DIMBLUR="$CUR_DIR/wall_dimblur.png"
 
-		# locker
-		CUR_L_RESIZE="$CUR_DIR/lock_resize.png"
-		CUR_L_DIM="$CUR_DIR/lock_dim.png"
-		CUR_L_BLUR="$CUR_DIR/lock_blur.png"
-		CUR_L_DIMBLUR="$CUR_DIR/lock_dimblur.png"
+	# locker
+	CUR_L_RESIZE="$CUR_DIR/lock_resize.png"
+	CUR_L_DIM="$CUR_DIR/lock_dim.png"
+	CUR_L_BLUR="$CUR_DIR/lock_blur.png"
+	CUR_L_DIMBLUR="$CUR_DIR/lock_dimblur.png"
 
-		_RE="([0-9]+)x([0-9]+)\\+([0-9]+)\\+([0-9]+)" # Regex to find display dimensions
 }
 init_config
 
@@ -64,7 +63,7 @@ lock() {
 
 	i3lock \
 		-i "$1" \
-    --screen "$display_on" \
+        --screen "$display_on" \
 		--timepos='x+110:h-70' \
 		--datepos='x+43:h-45' \
 		--clock --date-align 1 --datestr "$locktext" \
@@ -182,18 +181,18 @@ resize_and_render () {
     # apply resize
     eval convert "$base" -resize "$resolution""^" -gravity center -extent "$resolution" "$RES_RESIZE"
 
-		# apply dim
-		eval convert "$RES_RESIZE" -fill black -colorize 40% "$RES_DIM"
+	# apply dim
+	eval convert "$RES_RESIZE" -fill black -colorize 40% "$RES_DIM"
 
-		# apply blur
-		blur_shrink=$(echo "scale=2; 20 / $blur_level" | bc)
-		blur_sigma=$(echo "scale=2; 0.6 * $blur_level" | bc)
-		eval convert "$RES_RESIZE" \
-				-filter Gaussian \
-				-resize "$blur_shrink%" \
-				-define "filter:sigma=$blur_sigma" \
-				-resize "$resolution^" -gravity center -extent "$resolution" \
-				"$RES_BLUR"
+	# apply blur
+	blur_shrink=$(echo "scale=2; 20 / $blur_level" | bc)
+	blur_sigma=$(echo "scale=2; 0.6 * $blur_level" | bc)
+	eval convert "$RES_RESIZE" \
+		-filter Gaussian \
+		-resize "$blur_shrink%" \
+		-define "filter:sigma=$blur_sigma" \
+		-resize "$resolution^" -gravity center -extent "$resolution" \
+		"$RES_BLUR"
 
 	# apply dimblur
 	eval convert "$RES_DIM" \
@@ -295,91 +294,7 @@ update () {
 	convert "$CUR_W_BLUR" -draw "fill #$loginbox $rectangles" "$CUR_L_BLUR"
 	convert "$CUR_W_DIMBLUR" -draw "fill #$loginbox $rectangles" "$CUR_L_DIMBLUR"
 }
-#update () {
-#
-#    wallpaper=$1
-#		rectangles=" "
-#
-#    get_user_wall "$wallpaper" # Returns USER_WALL
-#    echo "Original: $USER_WALL"
-#
-#    get_display_list # Returns DLIST
-#    get_total_size # Return TOTAL_SIZE
-#
-#		[[ $display_on ]] || display_on=0
-#
-#    # create base images per display
-#    for DISP in "${DLIST[@]}"; do
-#        DNUM="$(cut -d" " -f1 <<<"${DISP}")"
-#        DDEV="$(cut -d" " -f2 <<<"${DISP}")"
-#        DGEO="$(cut -d" " -f3 <<<"${DISP}")"
-#        DPATH="$CACHE_DIR/$DNUM-$DDEV"
-#
-#        if [[ $DNUM -eq $display_on ]] || [[ $display_on -eq 0 ]]; then
-#            SRA=(${DGEO//[x+]/ })
-#            CX=$((${SRA[2]} + $(logical_px 25)))
-#            CY=$((${SRA[1]} - $(logical_px 30)))
-#            echo "cx $CX"
-#            echo "cy $CY"
-#            rectangles+="rectangle $CX,$CY $((CX+$(logical_px 300))),$((CY-$(logical_px 80))) "
-#            echo "rect $rectangles"
-#        fi
-#
-#        echo "Found: $DDEV ($DNUM)"
-#        echo "Resolution: $DRES"
-#
-#        purge_cache $DPATH
-#
-#        # we only need one set of images when spanning
-#        if [ "$span_image" = true ] && [ $DNUM -gt 1 ]; then
-#            continue
-#        fi
-#
-#        if [ "$span_image" = true ]; then
-#            # create one image to span across multiple displays
-#            resize_and_render $USER_WALL $DPATH $TOTAL_SIZE
-#        else
-#            # create images for each display to combine later
-#            resize_and_render $USER_WALL $DPATH $DRES
-#            PARAM_RESIZE="$PARAM_RESIZE $RES_RESIZE -geometry +${DGEO[0]}+${DGEO[2]} -composite "
-#            PARAM_DIM="$PARAM_DIM $RES_DIM -geometry +${DGEO[0]}+${DGEO[2]} -composite "
-#            PARAM_BLUR="$PARAM_BLUR $RES_BLUR -geometry +${DGEO[0]}+${DGEO[2]} -composite "
-#            PARAM_DIMBLUR="$PARAM_DIMBLUR $RES_DIMBLUR -geometry +${DGEO[0]}+${DGEO[2]} -composite "
-#        fi
-#
-#    done
-#
-#    purge_cache $CUR_DIR
-#
-#    if [ "$span_image" = true ] && [ ${#DLIST[@]} -lt 2 ]; then
-#        echo "Copying final wallpaper images...xx"
-#        cp $RES_RESIZE $CUR_W_RESIZE
-#        cp $RES_DIM $CUR_W_DIM
-#        cp $RES_BLUR $CUR_W_BLUR
-#        cp $RES_DIMBLUR $CUR_W_DIMBLUR
-#    else
-#        echo "Creating canvas: $TOTAL_SIZE"
-#        convert -size $TOTAL_SIZE 'xc:black' $CUR_W_RESIZE 
-#        convert -size $TOTAL_SIZE 'xc:black' $CUR_W_DIM 
-#        convert -size $TOTAL_SIZE 'xc:black' $CUR_W_BLUR 
-#        convert -size $TOTAL_SIZE 'xc:black' $CUR_W_DIMBLUR 
-#
-#        echo "Rendering final wallpaper images..."
-#        convert $CUR_W_RESIZE $PARAM_RESIZE $CUR_W_RESIZE
-#        convert $CUR_W_DIM $PARAM_DIM $CUR_W_DIM
-#        convert $CUR_W_BLUR $PARAM_BLUR $CUR_W_BLUR
-#        convert $CUR_W_DIMBLUR $PARAM_DIMBLUR $CUR_W_DIMBLUR
-#    fi
-#
-#    echo "Rendering final locker images..."
-#		echo "$rectangles"
-#		convert $CUR_W_RESIZE -draw "fill #$loginbox $rectangles" $CUR_L_RESIZE
-#		convert $CUR_W_DIM -draw "fill #$loginbox $rectangles" $CUR_L_DIM
-#		convert $CUR_W_BLUR -draw "fill #$loginbox $rectangles" $CUR_L_BLUR
-#		convert $CUR_W_DIMBLUR -draw "fill #$loginbox $rectangles" $CUR_L_DIMBLUR
-#
-#    echo "... Complete!"
-#}
+
 
 wallpaper() {
     local fopt
