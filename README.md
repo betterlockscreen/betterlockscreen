@@ -140,8 +140,10 @@ usage:
 			set custom lockscreen text
 	-b, blur 0.0 - 1.0
 			set blur range
-	-r, --resolution res
-			uses a custom resolution
+	-d, --display 0-9
+			screen to display loginbox
+    --span
+            span multiple screens
 
 
 Usage examples:
