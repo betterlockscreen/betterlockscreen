@@ -1,6 +1,5 @@
 # configuration file for betterlockscreen
 
-screennumber=0
 insidecolor=00000000
 ringcolor=ffffffff
 keyhlcolor=d23c3dff
@@ -15,6 +14,5 @@ timecolor=ffffffff
 datecolor=ffffffff
 loginbox=00000066
 font="sans-serif"
-locktext='Type password to unlock...'
-lock_timeout=5
-time_format='%H:%M:%S'
+display_on=0
+span_image=false

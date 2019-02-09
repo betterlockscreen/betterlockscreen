@@ -1,25 +1,20 @@
-# Betterlockscreen
-> fast and sweet looking lockscreen for linux systems with effects!
+# betterlockscreen
 
-<div align="center">
-  <a href="https://github.com/pavanjadhaw/betterlockscreen/releases"><img alt="GitHub release (latest by date including pre-releases)" src="https://img.shields.io/github/v/release/pavanjadhaw/betterlockscreen?include_prereleases&label=latest&style=for-the-badge"></a>
-  <a href="https://github.com/pavanjadhaw/betterlockscreen/releases"><img alt="GitHub release (latest by date)" src="https://img.shields.io/github/v/release/pavanjadhaw/betterlockscreen?label=Stable&style=for-the-badge"></a>
-  <a href="https://github.com/pavanjadhaw/betterlockscreen/actions/workflows/main.yml?query=branch%3Amaster"><img alt="GitHub Workflow Status (master)" src="https://img.shields.io/github/workflow/status/pavanjadhaw/betterlockscreen/Main/master?label=master&style=for-the-badge"></a>
-  <a href="https://github.com/pavanjadhaw/betterlockscreen/actions/workflows/main.yml?query=branch%3Anext"><img alt="GitHub Workflow Status (next)" src="https://img.shields.io/github/workflow/status/pavanjadhaw/betterlockscreen/Main/next?label=next&style=for-the-badge"></a>
-  <a href="https://github.com/pavanjadhaw/betterlockscreen/blob/master/LICENSE"><img src="https://img.shields.io/github/license/pavanjadhaw/betterlockscreen.svg?style=for-the-badge"></a>
-</div>
+> simple, minimal lockscreen
 
-<div align="center">
-  <h2>You want to support us?</h2>
+Betterlockscreen allows you to cache images with different filters and lockscreen with blazing speed.
 
-  <a href="https://github.com/pavanjadhaw/betterlockscreen/stargazers"><img alt="GitHub Repo stars" src="https://img.shields.io/github/stars/pavanjadhaw/betterlockscreen?style=social"></a>
-  <a href="https://github.com/pavanjadhaw/betterlockscreen/fork"><img alt="GitHub forks" src="https://img.shields.io/github/forks/pavanjadhaw/betterlockscreen?style=social"></a>
-  <a href="https://www.codetriage.com/pavanjadhaw/betterlockscreen"><img src="https://www.codetriage.com/pavanjadhaw/betterlockscreen/badges/users.svg"></a>
-</div>
-<br />
+## Example
+
+> lockscreen with blurred effect
+
+```sh
+betterlockscreen --lock blur
+```
 
 ![scrot2](https://github.com/pavanjadhaw/betterlockscreen.demo/raw/master/scrots/scrot2.png 'scrot2.png')
-<br />
+
+> [Watch some of the features of betterlockscreen in action](https://www.youtube.com/watch?v=9Ng5FZwnn6M&feature=youtu.be)
 
 ## Table of Contents
 
@@ -51,7 +46,7 @@ images as lockscreen background depending on argument provided by user.
 
 > Note: Make sure your system has all dependencies satisfied
 
-- [i3lock-color](https://github.com/Raymo111/i3lock-color) - i3lock fork with additional features(`>= 2.13.c.3`)
+- [i3lock-color](https://github.com/PandorasFox/i3lock-color) - i3lock fork with additional features( >= 2.11-c )
 - [imagemagick](https://www.imagemagick.org/script/index.php) - To apply effects to images
 - [xdpyinfo](https://www.x.org/archive/X11R7.7/doc/man/man1/xdpyinfo.1.xhtml), [xrandr](https://www.x.org/wiki/Projects/XRandR/), [bc](https://www.gnu.org/software/bc/) and [feh](https://feh.finalrewind.org/) - To find screen resolution, set custom blur level and wallpaper handling.
 
@@ -101,14 +96,6 @@ export PATH="${PATH}:${HOME}/.local/bin/"
 
 UtkarshVerma was so kind to provide an installation script for debian based systems, ![check it out here](https://github.com/UtkarshVerma/installer-scripts).
 
-#### Void Linux
-
-##### xbps repository
-
-`betterlockscreen` is available in official Void's repository as `betterlockscreen`.
-
-Installing using `xbps` (will automatically install all required dependencies): `xbps-install -S betterlockscreen`
-
 ### Configuration
 
 You can customise various colors for betterlockscreen, copy config file from examples directory to `~/.config/betterlockscreenrc` and edit it accordingly.
@@ -130,33 +117,33 @@ Run `betterlockscreen` and point it to either a directory (`betterlockscreen -u 
 
 ```sh
 usage: betterlockscreen [-u "path/to/img.jpg"] [-l "dim, blur or dimblur"]
-           [-w "dim, blur, pixel or dimblur"] [-t "custom text"] [-s "lockscreen and suspend"]
-					 [-r "resolution"] [-b "factor"] [--off <timeout>]
+           [-w "dim, blur, or dimblur"] [-t "custom text"] [-s "lockscreen and suspend"]
+           [-r "resolution"] [-b "factor"]
 
 betterlockscreen - faster and sweet looking lockscreen for linux systems.
 
 required:
-	-u, --update "path/to/img.jpg"	caches all required images
+  -u, --update "path/to/img.jpg"  caches all required images
 
 usage:
-	-l, --lock effect-name
-			locks with provided effect
-	-w, --wall effect-name
-			set desktop background with provided effect
-	-s, --suspend effect-name
-			lockscreen and suspend
+  -l, --lock effect-name
+      locks with provided effect
+  -w, --wall effect-name
+      set desktop background with provided effect
+  -s, --suspend effect-name
+      lockscreen and suspend
 
-			Available effects:
-				dim, blur, pixel or dimblur
+      Available effects:
+        dim, blur or dimblur
 
-	-t, --text "custom text"
-			set custom lockscreen text
-	-b, blur 0.0 - 1.0
-			set blur range
-	-r, --resolution res
-			uses a custom resolution
-	--off, --off <timeout>
-			sets custom monitor timeout (<timeout> in seconds)
+  -t, --text "custom text"
+      set custom lockscreen text
+  -b, blur 0.0 - 1.0
+      set blur range
+  -d, --display 0-9
+      screen to display loginbox
+    --span
+            span multiple screens
 
 
 Usage examples:
@@ -171,13 +158,10 @@ betterlockscreen -u path/to/directory -r 1920x1080 -b 0.5
 betterlockscreen -l dim                    # lockscreen with dim effect
 
 4. Lockscreen with custom text
-betterlockscreen -l pixel -t "custom lockscreen text"
+betterlockscreen -l dim -t "custom lockscreen text"
 
 5. Set desktop background
 betterlockscreen -w blur                   # set desktop background with blur effect
-
-6. Lockscreeen with custom monitor off timeout
-betterlockscreen --off 5 -l blur           # set monitor off lockscreen timeout (5 seconds)
 ```
 
 ### Set desktop background on startup
@@ -227,9 +211,10 @@ alt + shift + x
 ```
 
 ### Lockscreen when suspended(systemd service)
+
 ```sh
 # move service file to proper dir (the aur package does this for you)
-cp betterlockscreen@.service /usr/lib/systemd/system/
+cp betterlockscreen@.service /etc/systemd/system/
 
 # enable systemd service
 systemctl enable betterlockscreen@$USER
@@ -237,16 +222,11 @@ systemctl enable betterlockscreen@$USER
 # disable systemd service
 systemctl disable betterlockscreen@$USER
 
+
 # Note: Now you can call systemctl suspend to suspend your system
 # and betterlockscreen service will be activated
 # so when your system wakes your screen will be locked.
 ```
-
-**Hint:** The systemd-unit expects betterlockscreen to be installed in "/usr/local/bin", so maybe you want to check or change this!
-
-Resources and more informations:
- * https://gist.github.com/Raymo111/91ffd256b7aca6a85e8a99d6331d3b7b
- * https://github.com/Raymo111/i3lock-color/issues/174#issuecomment-687149213
 
 ---
 
@@ -269,7 +249,7 @@ Betterlockscreen is under [MIT](https://github.com/pavanjadhaw/betterlockscreen/
 
 - Hat tip to anyone who's code was used
 - Thanks to those who contributed to make it better
-- Inspiration - [r/unixporn](https://www.reddit.com/r/unixporn)
+- Inspiration - r/unixporn
 
 [logo]: .github/hero.png
 [website]: https://mdxjs.com
