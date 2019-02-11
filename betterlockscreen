@@ -372,6 +372,14 @@ usage() {
 	echo '		to set custom lockscreen text (max 31 chars)'
 	echo "		E.g: betterlockscreen -l dim -t \"Don't touch my machine!\""
 	echo '		E.g: betterlockscreen --text "Hi, user!" -s blur'
+	echo
+	echo
+	echo '	-S --screen'
+	echo '		specifies what screen the lock will appear on.'
+	echo '		the lock screen will appear on all monitors by default.'
+	echo '		this number is 0 indexed and depends on libxinenrama.'
+	echo '		E.g: betterlockscreen -l dim -S 1'
+	echo '		E.g: betterlockscreen -l blur --screen 0'
 }
 
 
