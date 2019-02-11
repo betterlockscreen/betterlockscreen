@@ -7,21 +7,6 @@
 # find your resolution so images can be resized to match your screen resolution
 res=$(xdpyinfo | grep dimensions | sed -r 's/^[^0-9]*([0-9]+x[0-9]+).*$/\1/')
 
-# parses and displays battery info using /sys/class/power_supply/BAT0/uevent
-bat_info() {
-	bat_info=$(cat /sys/class/power_supply/BAT0/uevent)
-
-	# iterates through each line of /sys/class/power_supply/BAT0/uevent and sets bat_status and bat_level
-	for x in $bat_info; do
-		if [[ grep "POWER_SUPPLY_STATUS" <<< x ]]; then
-			bat_status=$(awk -F = '{print $2}')
-		fi
-		if [[ grep "POWER_SUPPLY_CAPACITY" <<< x ]]; then
-			bat_level=$(awk -F = '{print $2}')
-		fi
-	done
-}
-
 init_filenames() {
 	#$1 resolution
 
@@ -184,9 +169,6 @@ update() {
 
 	# default blur level; fallback to 1
 	[[ $blur_level ]] || blur_level=1
-
-	# show battery info is false by default
-	[[ $show_bat_info ]] || show_bat_info=false
 
 	rectangles=" "
 	SR=$(xrandr --query | grep ' connected' | grep -o '[0-9][0-9]*x[0-9][0-9]*[^ ]*')
@@ -386,13 +368,6 @@ usage() {
 	echo '		E.g: betterlockscreen -u path/to/image.png --blur 0.5'
 	echo
 	echo
-	echo '	-B --battery-info'
-	echo '		to be used after -u'
-	echo '		toggles battery information. Default to false.'
-	echo '		E.g: betterlockscreen -u path/to/image.png -B true'
-	echo '		E.g: betterlockscreen -u path/to/image.png --battery-info true'
-	echo
-	echo
 	echo '	-t --text'
 	echo '		to set custom lockscreen text (max 31 chars)'
 	echo "		E.g: betterlockscreen -l dim -t \"Don't touch my machine!\""
@@ -441,16 +416,6 @@ for arg in "$@"; do
 		-r | --resolution)
 			res="$2"
 			init_filenames $res force
-			shift 2
-			;;
-
-		-b | --blur)
-			blur_level="$2"
-			shift 2
-			;;
-
-		-B | --battery-info)
-			show_bat_info="$2"
 			shift 2
 			;;
 
