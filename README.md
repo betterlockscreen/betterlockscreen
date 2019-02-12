@@ -116,8 +116,8 @@ modify screennumber in betterlockscreenrc accordingly. Its zero based i.e 0 = sc
 Run `betterlockscreen` and point it to either a directory (`betterlockscreen -u "path/to/dir"`) or an image (`betterlockscreen -u "/path/to/img.jpg"`) and that's all. `betterlockscreen` will change update its cache with image you provided.
 
 ```sh
-usage: betterlockscreen [-u "path/to/img.jpg"] [-l "dim, blur, dimblur or pixel"]
-           [-w "dim, blur, dimblur or pixel"] [-t "custom text"] [-s "lockscreen and suspend"]
+usage: betterlockscreen [-u "path/to/img.jpg"] [-l "dim, blur or dimblur"]
+           [-w "dim, blur, or dimblur"] [-t "custom text"] [-s "lockscreen and suspend"]
 					 [-r "resolution"] [-b "factor"]
 
 betterlockscreen - faster and sweet looking lockscreen for linux systems.
@@ -134,7 +134,7 @@ usage:
 			lockscreen and suspend
 
 			Available effects:
-				dim, blur, dimblur, or pixel
+				dim, blur or dimblur
 
 	-t, --text "custom text"
 			set custom lockscreen text
