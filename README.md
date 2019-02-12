@@ -114,7 +114,7 @@ Run `betterlockscreen` and point it to either a directory (`betterlockscreen -u 
 
 ```sh
 usage: betterlockscreen [-u "path/to/img.jpg"] [-l "dim, blur or dimblur"]
-           [-w "dim, blur, or dimblur"] [-t "custom text"] [-s "lockscreen and suspend"]
+           [-w "dim, blur, pixel or dimblur"] [-t "custom text"] [-s "lockscreen and suspend"]
 					 [-r "resolution"] [-b "factor"]
 
 betterlockscreen - faster and sweet looking lockscreen for linux systems.
@@ -131,7 +131,7 @@ usage:
 			lockscreen and suspend
 
 			Available effects:
-				dim, blur or dimblur
+				dim, blur, pixel or dimblur
 
 	-t, --text "custom text"
 			set custom lockscreen text
@@ -153,7 +153,7 @@ betterlockscreen -u path/to/directory -r 1920x1080 -b 0.5
 betterlockscreen -l dim                    # lockscreen with dim effect
 
 4. Lockscreen with custom text
-betterlockscreen -l dim -t "custom lockscreen text"
+betterlockscreen -l pixel -t "custom lockscreen text"
 
 5. Set desktop background
 betterlockscreen -w blur                   # set desktop background with blur effect

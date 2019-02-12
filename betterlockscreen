@@ -29,8 +29,8 @@ init_filenames() {
 	    timecolor=ffffffff
 	    datecolor=ffffffff
 	    loginbox=00000066
-	    font="sans-serif"
-      locktext='Type password to unlock...'
+		font="sans-serif"
+      	locktext='Type password to unlock...'
 	fi
 
 	# create folder in ~/.cache/i3lock directory
@@ -55,12 +55,14 @@ init_filenames() {
 	dim="$folder/dim.png" # image with subtle overlay of black
 	blur="$folder/blur.png" # blurred version
 	dimblur="$folder/dimblur.png"
+	pixel="$folder/pixel.png" # pixelated image
 
 	# lockscreen images (images to be used as lockscreen background)
 	l_resized="$folder/l_resized.png"
 	l_dim="$folder/l_dim.png"
 	l_blur="$folder/l_blur.png"
 	l_dimblur="$folder/l_dimblur.png"
+	l_pixel="$folder/l_pixel.png"
 }
 
 init_filenames $res
@@ -129,6 +131,11 @@ lockselect() {
 			lock "$l_dimblur"
 			;;
 
+		pixel)
+			# set lockscreen with pixelated background
+			lock "$l_pixel"
+			;;
+
 		*)
 			# default lockscreen
 			lock "$l_resized"
@@ -140,7 +147,7 @@ lockselect() {
 logical_px() {
 	# get dpi value from xrdb
 	local DPI=$(xrdb -query | awk '/Xft.dpi/ {print $2}')
-
+	
 	# return the default value if no DPI is set
 	if [ -z "$DPI" ]; then
 		echo $1
@@ -157,7 +164,7 @@ logical_px() {
 }
 
 update() {
-	# use
+	# use 
 	background="$1"
 
 	# default blur level; fallback to 1
@@ -206,9 +213,12 @@ update() {
 	convert "$orig_wall" -resize "$res""^" -gravity center -extent "$res" "$resized"
 
 	echo
-	echo 'Applying dim and blur effect to resized image'
+	echo 'Applying dim, blur, and pixelation effect to resized image'
 	# dim
 	convert "$resized" -fill black -colorize 40% "$dim"
+
+	# pixel
+	convert -scale 10% -scale 1000% "$resized" "$pixel"
 
 	# blur
 	blur_shrink=$(echo "scale=2; 20 / $blur_level" | bc)
@@ -241,8 +251,11 @@ update() {
 	# blur
 	convert "$blur" -draw "fill #$loginbox $rectangles" "$l_blur"
 
-	# blur
+	# dimblur
 	convert "$dimblur" -draw "fill #$loginbox $rectangles" "$l_dimblur"
+
+	# pixel
+	convert "$pixel" -draw "fill #$loginbox $rectangles" "$l_pixel"
 	echo
 	echo 'All required changes have been applied'
 }
@@ -268,6 +281,11 @@ wallpaper() {
 		dimblur)
 			# set dimmed + blurred image as wallpaper
 			feh --bg-fill $dimblur
+			;;
+
+		pixel)
+			# set pixelated image as wallpaper
+			feh --bg-fill $pixel
 			;;
 	esac
 }
