@@ -58,6 +58,7 @@ images as lockscreen background depending on argument provided by user.
 git clone https://github.com/pavanjadhaw/betterlockscreen
 cd betterlockscreen
 cp betterlockscreen ~/.local/bin/
+sudo cp betterlockscreen /usr/bin #(To permits it to work when laptop is closed)
 ```
 
 <p style="text-align: center">OR</p>
@@ -67,6 +68,7 @@ cp betterlockscreen ~/.local/bin/
 wget -O betterlockscreen https://git.io/fASUJ
 chmod u+x betterlockscreen
 cp betterlockscreen ~/.local/bin/
+sudo cp betterlockscreen /usr/bin #(To permits it to work when laptop is closed)
 ```
 
 ```sh
@@ -210,6 +212,9 @@ alt + shift + x
 ```sh
 # move service file to proper dir (the aur package does this for you)
 cp betterlockscreen@.service /etc/systemd/system/
+
+#To permits it to work when laptop is closed
+sudo cp betterlockscreen /usr/bin 
 
 # enable systemd service
 systemctl enable betterlockscreen@$USER
