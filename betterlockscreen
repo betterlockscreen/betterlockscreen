@@ -57,6 +57,12 @@ init_filenames() {
 	dimblur="$folder/dimblur.png"
 	pixel="$folder/pixel.png" # pixelated image
 
+	# composite overlay for live desktop effects
+	compoverlay="$folder/compoverlay.png"
+
+	# temporary image for for live desktop effects
+	tmpimg="/tmp/betterlockscreentmp.png"
+
 	# lockscreen images (images to be used as lockscreen background)
 	l_resized="$folder/l_resized.png"
 	l_dim="$folder/l_dim.png"
@@ -256,6 +262,10 @@ update() {
 
 	# pixel
 	convert "$pixel" -draw "fill #$loginbox $rectangles" "$l_pixel"
+
+	# composite overlay
+	convert -size "$res" xc:none -draw "fill #$loginbox $rectangles" "$compoverlay" 
+
 	echo
 	echo 'All required changes have been applied'
 }
