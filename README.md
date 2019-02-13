@@ -34,7 +34,7 @@ Most of i3lock wrapper scripts out there takes an image, adds some effect and lo
 adding effects, overall experience doesn't feel natural given delay of 2-3 seconds.
 Who would like a delay of 2-3 seconds while locking screen?
 
-So betterlockscreen was my attempt to solve this problem, as we dont need to change lockscreen background frequently
+So betterlockscreen was my attempt to solve this problem, as we don't need to change lockscreen background frequently
 this script caches images with effect so overall experience is simple and as fast as native i3lock.
 
 ### How it works
@@ -48,7 +48,8 @@ images as lockscreen background depending on argument provided by user.
 
 - [i3lock-color](https://github.com/PandorasFox/i3lock-color) - i3lock fork with additional features( >= 2.11-c )
 - [imagemagick](https://www.imagemagick.org/script/index.php) - To apply effects to images
-- [xdpyinfo](https://www.x.org/archive/X11R7.7/doc/man/man1/xdpyinfo.1.xhtml), [xrandr](https://www.x.org/wiki/Projects/XRandR/), [bc](https://www.gnu.org/software/bc/) and [feh](https://feh.finalrewind.org/) - To find screen resolution, set custom blur level and wallpaper handling.
+- [scrot](https://tracker.debian.org/pkg/scrot) - For live (transparent lockscreen) mode
+- [xdpyinfo](https://www.x.org/archive/X11R7.7/doc/man/man1/xdpyinfo.1.xhtml), [xrandr](https://www.x.org/wiki/Projects/XRandR/), [bc](https://www.gnu.org/software/bc/), and [feh](https://feh.finalrewind.org/) - To find screen resolution, set custom blur level and wallpaper handling.
 
 ### Installation
 
@@ -81,7 +82,7 @@ export PATH="${PATH}:${HOME}/.local/bin/"
 
 ###### Installing dependencies(not required if using betterlockscreen aur package)
 
-`pacman -S imagemagick feh xorg-xrandr xorg-xdpyinfo`
+`pacman -S imagemagick feh xorg-xrandr xorg-xdpyinfo scrot`
 
 - i3lock-color - `trizen -S i3lock-color`
 
@@ -113,7 +114,7 @@ cp /usr/share/doc/betterlockscreen/examples/betterlockscreenrc ~/.config
 Run `betterlockscreen` and point it to either a directory (`betterlockscreen -u "path/to/dir"`) or an image (`betterlockscreen -u "/path/to/img.jpg"`) and that's all. `betterlockscreen` will change update its cache with image you provided.
 
 ```sh
-usage: betterlockscreen [-u "path/to/img.jpg"] [-l "dim, blur or dimblur"]
+usage: betterlockscreen [-u "path/to/img.jpg"] [-l "dim, blur or dimblur"] -L
            [-w "dim, blur, pixel or dimblur"] [-t "custom text"] [-s "lockscreen and suspend"]
 					 [-r "resolution"] [-b "factor"]
 
@@ -125,6 +126,9 @@ required:
 usage:
 	-l, --lock effect-name
 			locks with provided effect
+	-L, --live
+			enables live (transparent lockscreen) mode
+			NOTE: This significantly decreases performance
 	-w, --wall effect-name
 			set desktop background with provided effect
 	-s, --suspend effect-name
@@ -143,20 +147,23 @@ usage:
 
 Usage examples:
 1. Updating image cache(required)
-betterlockscreen -u ~/Pictures/Forests.png # caches given image
-betterlockscreen -u ~/Pictures             # caches random image from ~/Pictures directory
+betterlockscreen -u ~/Pictures/Forests.png	# caches given image
+betterlockscreen -u ~/Pictures				# caches random image from ~/Pictures directory
 
 2. Custom resolution and blur range
 betterlockscreen -u path/to/directory -r 1920x1080 -b 0.5
 
 3. Lockscreen
-betterlockscreen -l dim                    # lockscreen with dim effect
+betterlockscreen -l dim						# lockscreen with dim effect
 
 4. Lockscreen with custom text
 betterlockscreen -l pixel -t "custom lockscreen text"
 
 5. Set desktop background
-betterlockscreen -w blur                   # set desktop background with blur effect
+betterlockscreen -w blur					# set desktop background with blur effect
+
+6. Enable live mode
+betterlockscreen -l dimblur -L				# transparent lockscreen
 ```
 
 ### Set desktop background on startup
