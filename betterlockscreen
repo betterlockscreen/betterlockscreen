@@ -39,13 +39,14 @@ init_config () {
 	CUR_W_DIM="$CUR_DIR/wall_dim.png"
 	CUR_W_BLUR="$CUR_DIR/wall_blur.png"
 	CUR_W_DIMBLUR="$CUR_DIR/wall_dimblur.png"
+	CUR_W_PIXEL="$CUR_DIR/wall_pixel.png"
 
 	# locker
 	CUR_L_RESIZE="$CUR_DIR/lock_resize.png"
 	CUR_L_DIM="$CUR_DIR/lock_dim.png"
 	CUR_L_BLUR="$CUR_DIR/lock_blur.png"
 	CUR_L_DIMBLUR="$CUR_DIR/lock_dimblur.png"
-
+	CUR_L_PIXEL="$CUR_DIR/lock_pixel.png"
 }
 init_config
 
@@ -101,6 +102,11 @@ lockselect() {
 		dimblur)
 			# set lockscreen with dimmed + blurred background
 			lock "$CUR_L_DIMBLUR"
+			;;
+
+		pixel)
+			# set lockscreen with pixelated background
+			lock "$CUR_L_PIXEL"
 			;;
 
 		*)
@@ -169,6 +175,13 @@ resize_and_render () {
 
     # wallpaper
     RES_RESIZE="$2/resize.png"
+	RES_DIM="$2/dim.png"
+	RES_BLUR="$2/blur.png"
+	RES_DIMBLUR="$2/dimblur.png"
+	RES_PIXEL="$2/pixel.png"
+
+    # defaults
+	[[ $blur_level ]] || blur_level=1
 		RES_DIM="$2/dim.png"
 		RES_BLUR="$2/blur.png"
 		RES_DIMBLUR="$2/dimblur.png"
@@ -202,6 +215,11 @@ resize_and_render () {
 		-resize "$resolution^" -gravity center -extent "$resolution" \
 		"$RES_DIMBLUR"
 
+    # pixelate
+    eval convert "$RES_RESIZE" \
+        -scale 10% \
+        -scale 1000% \
+        "$RES_PIXEL"
 }
 
 # delete and recreate directory
@@ -262,6 +280,7 @@ update () {
             PARAM_DIM="$PARAM_DIM $RES_DIM -geometry $DPOS -composite "
             PARAM_BLUR="$PARAM_BLUR $RES_BLUR -geometry $DPOS -composite "
             PARAM_DIMBLUR="$PARAM_DIMBLUR $RES_DIMBLUR -geometry $DPOS -composite "
+            PARAM_PIXEL="$PARAM_PIXEL $RES_PIXEL -geometry $DPOS -composite "
         fi
 
     done
@@ -274,18 +293,21 @@ update () {
         cp $RES_DIM $CUR_W_DIM
         cp $RES_BLUR $CUR_W_BLUR
         cp $RES_DIMBLUR $CUR_W_DIMBLUR
+        cp $RES_PIXEL $CUR_W_PIXEL
     else
         echo "Creating canvas: $TOTAL_SIZE"
         convert -size $TOTAL_SIZE 'xc:black' $CUR_W_RESIZE 
         convert -size $TOTAL_SIZE 'xc:black' $CUR_W_DIM 
         convert -size $TOTAL_SIZE 'xc:black' $CUR_W_BLUR 
         convert -size $TOTAL_SIZE 'xc:black' $CUR_W_DIMBLUR 
+        convert -size $TOTAL_SIZE 'xc:black' $CUR_W_PIXEL 
 
         echo "Rendering final wallpaper images..."
         convert $CUR_W_RESIZE $PARAM_RESIZE $CUR_W_RESIZE
         convert $CUR_W_DIM $PARAM_DIM $CUR_W_DIM
         convert $CUR_W_BLUR $PARAM_BLUR $CUR_W_BLUR
         convert $CUR_W_DIMBLUR $PARAM_DIMBLUR $CUR_W_DIMBLUR
+        convert $CUR_W_PIXEL $PARAM_PIXEL $CUR_W_PIXEL
     fi
 
     echo "Rendering final locker images..."
@@ -293,6 +315,7 @@ update () {
 	convert "$CUR_W_DIM" -draw "fill #$loginbox $rectangles" "$CUR_L_DIM"
 	convert "$CUR_W_BLUR" -draw "fill #$loginbox $rectangles" "$CUR_L_BLUR"
 	convert "$CUR_W_DIMBLUR" -draw "fill #$loginbox $rectangles" "$CUR_L_DIMBLUR"
+	convert "$CUR_W_PIXEL" -draw "fill #$loginbox $rectangles" "$CUR_L_PIXEL"
 }
 
 
@@ -321,6 +344,11 @@ wallpaper() {
 		dimblur)
 			# set dimmed + blurred image as wallpaper
 			feh --bg-fill "$fopt" "$CUR_W_DIMBLUR"
+			;;
+
+		pixel)
+			# set pixelated image as wallpaper
+			feh --bg-fill "$fopt" "$CUR_W_PIXEL"
 			;;
 	esac
 }
