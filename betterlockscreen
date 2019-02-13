@@ -82,7 +82,32 @@ prelock() {
 
 
 lock() {
-	#$1 image path
+	# $1 is the image path
+	# $2 is the lock effect
+
+	if [[ $livebgimg ]]; then
+		case "$2" in
+			blur)
+				livebg "blur"
+				;;
+
+			dim)
+				livebg "dim"
+				;;
+
+			dimblur)
+				livebg "dimblur"
+				;;
+
+			pixel)
+				livebg "pixel"
+				;;
+		esac
+
+		lockbg=$tmpimg
+	else
+		lockbg=$1
+	fi
 
 	i3lock \
 		-t -i "$1" \
@@ -101,7 +126,7 @@ lock() {
 
 
 postlock() {
-	if [ ! -z "$(pidof dunst)" ] ; then
+	if [ ! -z "$(pidof dunst)" ]; then
 		pkill -u "$USER" -USR2 dunst
 	fi
 }
@@ -124,27 +149,27 @@ lockselect() {
 	case "$1" in
 		dim)
 			# lockscreen with dimmed background
-			lock "$l_dim"
+			lock "$l_dim" $1
 			;;
 
 		blur)
 			# set lockscreen with blurred background
-			lock "$l_blur"
+			lock "$l_blur" $1
 			;;
 
 		dimblur)
 			# set lockscreen with dimmed + blurred background
-			lock "$l_dimblur"
+			lock "$l_dimblur" $1
 			;;
 
 		pixel)
 			# set lockscreen with pixelated background
-			lock "$l_pixel"
+			lock "$l_pixel" $1
 			;;
 
 		*)
 			# default lockscreen
-			lock "$l_resized"
+			lock "$l_resized" $1
 			;;
 	esac
 	postlock
@@ -167,6 +192,50 @@ logical_px() {
 			echo "$SCALE * $1 / 1" | bc
 		fi
 	fi
+}
+
+# blur
+blur() {
+	# $1 is image to be blurred
+	# $2 is output
+
+	blur_shrink=$(echo "scale=2; 20 / $blur_level" | bc)
+	blur_sigma=$(echo "scale=2; 0.6 * $blur_level" | bc)
+	convert "$1" \
+		-filter Gaussian \
+		-resize "$blur_shrink%" \
+		-define "filter:sigma=$blur_sigma" \
+		-resize "$res^" -gravity center -extent "$res" \
+		"$2"
+}
+
+# pixelate
+pixel() {
+	# $1 is image to be pixelated
+	# $2 is ouput
+
+	convert -scale 10% -scale 1000% "$1" "$pixel"
+}
+
+# dim
+dim() {
+	# $1 is image to be dimmed
+	# $2 is ouput
+
+	convert "$1" -fill black -colorize 40% "$2"
+}
+
+# dimblur
+dimblur() {
+	# $1 is image to be dimblurred
+	# $2 is ouput
+
+	convert "$1" \
+		-filter Gaussian \
+		-resize "$blur_shrink%" \
+		-define "filter:sigma=$blur_sigma" \
+		-resize "$res^" -gravity center -extent "$res" \
+		"$2"
 }
 
 update() {
@@ -221,28 +290,17 @@ update() {
 	echo
 	echo 'Applying dim, blur, and pixelation effect to resized image'
 	# dim
-	convert "$resized" -fill black -colorize 40% "$dim"
+	dim $resized $dim
 
 	# pixel
-	convert -scale 10% -scale 1000% "$resized" "$pixel"
+	pixel $resized $pixel
 
 	# blur
-	blur_shrink=$(echo "scale=2; 20 / $blur_level" | bc)
-	blur_sigma=$(echo "scale=2; 0.6 * $blur_level" | bc)
-	convert "$resized" \
-		-filter Gaussian \
-		-resize "$blur_shrink%" \
-		-define "filter:sigma=$blur_sigma" \
-		-resize "$res^" -gravity center -extent "$res" \
-		"$blur"
+	blur $resized $blur
 
 	# dimblur
-	convert "$dim" \
-		-filter Gaussian \
-		-resize "$blur_shrink%" \
-		-define "filter:sigma=$blur_sigma" \
-		-resize "$res^" -gravity center -extent "$res" \
-		"$dimblur"
+	dim $resized $dim
+	blur $dim $dimblur
 
 	# lockscreen backgrounds
 
@@ -441,7 +499,7 @@ for arg in "$@"; do
 			;;
 
 		-L | --live)
-			livebg=true
+			livebgimg=true
 			shift 2
 			;;
 
