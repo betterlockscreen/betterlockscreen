@@ -270,7 +270,6 @@ update() {
 	echo 'All required changes have been applied'
 }
 
-
 wallpaper() {
 	case "$1" in
 		'')
@@ -378,6 +377,13 @@ usage() {
 	echo '		E.g: betterlockscreen -u path/to/image.png --blur 0.5'
 	echo
 	echo
+	echo '	-L --live'
+	echo '		to be used after -l'
+	echo '		used to make lock background the current screen.'
+	echo '		E.g: betterlockscreen -l blur -L'
+	echo '		E.g: betterlockscreen -l pixel --live'
+	echo
+	echo
 	echo '	-t --text'
 	echo '		to set custom lockscreen text (max 31 chars)'
 	echo "		E.g: betterlockscreen -l dim -t \"Don't touch my machine!\""
@@ -431,6 +437,11 @@ for arg in "$@"; do
 
 		-b | --blur)
 			blur_level="$2"
+			shift 2
+			;;
+
+		-L | --live)
+			livebg=true
 			shift 2
 			;;
 
