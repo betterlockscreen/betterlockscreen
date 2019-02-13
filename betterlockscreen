@@ -82,30 +82,44 @@ prelock() {
 
 
 livebg() {
+	# $1 is blur effect
+
 	# takes screenshot
-	scroto=/tmp/betterlockscreenscrot.png
+	scroto="/tmp/betterlockscreenscrot.png"
 	scrot $scroto
 
+	liveimgeffect="/tmp/betterlockscreeneffect.png"
+
 	# applies effect to screenshot
-	case "$2" in
+	case "$1" in
+		# combines the overlay with the lock effect
 		blur)
 			blur $scroto $liveimgeffect
+			composite "$compoverlay" "$liveimgeffect" "$tmpimg"
 			;;
 
 		dim)
 			dim $scroto $liveimgeffect
+			composite "$compoverlay" "$liveimgeffect" "$tmpimg"
 			;;
 
 		dimblur)
 			dimblur $scroto $liveimgeffect
+			composite "$compoverlay" "$liveimgeffect" "$tmpimg"
 			;;
 
 		pixel)
 			pixel $scroto $liveimgeffect
+			composite "$compoverlay" "$liveimgeffect" "$tmpimg"
 			;;
+
+		*)
+			composite "$compoverlay" "$scroto" "$tmpimg"
+			;;
+
 	esac
 
-	composite $compoverlay $liveimgeffect $tmpimg
+	rm "$scroto" $(ls "$liveimgeffect" 2> /dev/null)
 }
 
 lock() {
@@ -128,6 +142,10 @@ lock() {
 
 			pixel)
 				livebg "pixel"
+				;;
+
+			*)
+				livebg
 				;;
 		esac
 
@@ -156,6 +174,9 @@ postlock() {
 	if [ ! -z "$(pidof dunst)" ]; then
 		pkill -u "$USER" -USR2 dunst
 	fi
+
+	# Remove tmp images
+	[[ $livebgimg ]] && $(rm "$tmpimg")
 }
 
 
@@ -239,15 +260,15 @@ blur() {
 # pixelate
 pixel() {
 	# $1 is image to be pixelated
-	# $2 is ouput
+	# $2 is output
 
-	convert -scale 10% -scale 1000% "$1" "$pixel"
+	convert "$1" -scale 10% -scale 1000% "$2"
 }
 
 # dim
 dim() {
 	# $1 is image to be dimmed
-	# $2 is ouput
+	# $2 is output
 
 	convert "$1" -fill black -colorize 40% "$2"
 }
@@ -255,22 +276,19 @@ dim() {
 # dimblur
 dimblur() {
 	# $1 is image to be dimblurred
-	# $2 is ouput
+	# $2 is output
 
-	convert "$1" \
-		-filter Gaussian \
-		-resize "$blur_shrink%" \
-		-define "filter:sigma=$blur_sigma" \
-		-resize "$res^" -gravity center -extent "$res" \
-		"$2"
+	dim $1 $dim
+	blur $dim $2
 }
+
 
 update() {
 	# use 
 	background="$1"
 
 	# default blur level; fallback to 1
-	[[ $blur_level ]] || blur_level=1
+	# [[ $blur_level ]] || blur_level=1
 
 	rectangles=" "
 	SR=$(xrandr --query | grep ' connected' | grep -o '[0-9][0-9]*x[0-9][0-9]*[^ ]*')
@@ -326,8 +344,7 @@ update() {
 	blur $resized $blur
 
 	# dimblur
-	dim $resized $dim
-	blur $dim $dimblur
+	dimblur $resized $dimblur
 
 	# lockscreen backgrounds
 
@@ -349,7 +366,8 @@ update() {
 	convert "$pixel" -draw "fill #$loginbox $rectangles" "$l_pixel"
 
 	# composite overlay
-	convert -size "$res" xc:none -draw "fill #$loginbox $rectangles" "$compoverlay" 
+	convert -size "$res" xc:none "$compoverlay"
+	convert "$compoverlay" -draw "fill #$loginbox $rectangles" "$compoverlay"
 
 	echo
 	echo 'All required changes have been applied'
@@ -542,6 +560,9 @@ for arg in "$@"; do
 			;;
 	esac
 done
+
+# if blur_level isn't specified fallback to 1
+[[ $blur_level ]] || blur_level=1
 
 # Run image generation
 [[ $runupdate ]] && update "$imagepath"
