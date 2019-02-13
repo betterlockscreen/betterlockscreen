@@ -137,7 +137,7 @@ lock() {
 	fi
 
 	i3lock \
-		-t -i "$1" \
+		-t -i "$lockbg" \
 		--timepos='x+110:h-70' \
 		--datepos='x+43:h-45' \
 		--clock --date-align 1 --datestr "$locktext" \
@@ -465,6 +465,7 @@ usage() {
 	echo '	-L --live'
 	echo '		to be used after -l'
 	echo '		used to make lock background the current screen.'
+	echo '		Note: slower due to not using cached image.'
 	echo '		E.g: betterlockscreen -l blur -L'
 	echo '		E.g: betterlockscreen -l pixel --live'
 	echo
