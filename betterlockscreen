@@ -81,6 +81,33 @@ prelock() {
 }
 
 
+livebg() {
+	# takes screenshot
+	scroto=/tmp/betterlockscreenscrot.png
+	scrot $scroto
+
+	# applies effect to screenshot
+	case "$2" in
+		blur)
+			blur $scroto $liveimgeffect
+			;;
+
+		dim)
+			dim $scroto $liveimgeffect
+			;;
+
+		dimblur)
+			dimblur $scroto $liveimgeffect
+			;;
+
+		pixel)
+			pixel $scroto $liveimgeffect
+			;;
+	esac
+
+	composite $compoverlay $liveimgeffect $tmpimg
+}
+
 lock() {
 	# $1 is the image path
 	# $2 is the lock effect
