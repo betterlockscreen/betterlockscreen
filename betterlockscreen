@@ -47,7 +47,6 @@ init_config () {
 	CUR_L_BLUR="$CUR_DIR/lock_blur.png"
 	CUR_L_DIMBLUR="$CUR_DIR/lock_dimblur.png"
 	CUR_L_PIXEL="$CUR_DIR/lock_pixel.png"
-
 }
 init_config
 
@@ -183,6 +182,12 @@ resize_and_render () {
 
     # defaults
 	[[ $blur_level ]] || blur_level=1
+		RES_DIM="$2/dim.png"
+		RES_BLUR="$2/blur.png"
+		RES_DIMBLUR="$2/dimblur.png"
+
+    # defaults
+		[[ $blur_level ]] || blur_level=1
 
     echo "Resizing original and applying effects..."
 
