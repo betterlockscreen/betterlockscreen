@@ -12,24 +12,25 @@ init_config () {
         source "$USER_CONF"
     # default configuration options
     else
-		insidecolor=00000000
-		ringcolor=ffffffff
-		keyhlcolor=d23c3dff
-		bshlcolor=d23c3dff
-		separatorcolor=00000000
-		insidevercolor=00000000
-		insidewrongcolor=d23c3dff
-		ringvercolor=ffffffff
-		ringwrongcolor=ffffffff
-		verifcolor=ffffffff
-		timecolor=ffffffff
-		datecolor=ffffffff
-		loginbox=00000066
-		locktext='Type password to unlock...'
-		font="sans-serif"
-		display_on=0
-		span_image=false
-	fi
+        insidecolor=00000000
+        ringcolor=ffffffff
+        keyhlcolor=d23c3dff
+        bshlcolor=d23c3dff
+        separatorcolor=00000000
+        insidevercolor=00000000
+        insidewrongcolor=d23c3dff
+        ringvercolor=ffffffff
+        ringwrongcolor=ffffffff
+        verifcolor=ffffffff
+        timecolor=ffffffff
+        datecolor=ffffffff
+        loginbox=000000cc
+        loginshadow=00000080
+        locktext='Type password to unlock...'
+        font="sans-serif"
+        display_on=0
+        span_image=false
+    fi
 
 	CACHE_DIR="$HOME/.cache/i3lock"
 	CUR_DIR="$CACHE_DIR/current"
@@ -175,51 +176,75 @@ resize_and_render () {
 
     # wallpaper
     RES_RESIZE="$2/resize.png"
-	RES_DIM="$2/dim.png"
-	RES_BLUR="$2/blur.png"
-	RES_DIMBLUR="$2/dimblur.png"
-	RES_PIXEL="$2/pixel.png"
+    RES_DIM="$2/dim.png"
+    RES_BLUR="$2/blur.png"
+    RES_DIMBLUR="$2/dimblur.png"
+    RES_PIXEL="$2/pixel.png"
 
     # defaults
-	[[ $blur_level ]] || blur_level=1
-		RES_DIM="$2/dim.png"
-		RES_BLUR="$2/blur.png"
-		RES_DIMBLUR="$2/dimblur.png"
+    [[ $blur_level ]] || blur_level=1
+    RES_DIM="$2/dim.png"
+    RES_BLUR="$2/blur.png"
+    RES_DIMBLUR="$2/dimblur.png"
 
     # defaults
-		[[ $blur_level ]] || blur_level=1
+    [[ $blur_level ]] || blur_level=1
 
     echo "Resizing original and applying effects..."
 
     # apply resize
-    eval convert "$base" -resize "$resolution""^" -gravity center -extent "$resolution" "$RES_RESIZE"
+    eval convert "$base" \
+        -resize "$resolution""^" \
+        -gravity center \
+        -extent "$resolution" \
+        "$RES_RESIZE"
 
-	# apply dim
-	eval convert "$RES_RESIZE" -fill black -colorize 40% "$RES_DIM"
+    # apply dim
+    eval convert "$RES_RESIZE" \
+        -fill black \
+        -colorize 40% \
+        "$RES_DIM"
 
-	# apply blur
-	blur_shrink=$(echo "scale=2; 20 / $blur_level" | bc)
-	blur_sigma=$(echo "scale=2; 0.6 * $blur_level" | bc)
-	eval convert "$RES_RESIZE" \
-		-filter Gaussian \
-		-resize "$blur_shrink%" \
-		-define "filter:sigma=$blur_sigma" \
-		-resize "$resolution^" -gravity center -extent "$resolution" \
-		"$RES_BLUR"
+    # apply blur
+    blur_shrink=$(echo "scale=2; 20 / $blur_level" | bc)
+    blur_sigma=$(echo "scale=2; 0.6 * $blur_level" | bc)
+    eval convert "$RES_RESIZE" \
+        -filter Gaussian \
+        -resize "$blur_shrink%" \
+        -define "filter:sigma=$blur_sigma" \
+        -resize "$resolution^" \
+        -gravity center \
+        -extent "$resolution" \
+        "$RES_BLUR"
 
-	# apply dimblur
-	eval convert "$RES_DIM" \
-		-filter Gaussian \
-		-resize "$blur_shrink%" \
-		-define "filter:sigma=$blur_sigma" \
-		-resize "$resolution^" -gravity center -extent "$resolution" \
-		"$RES_DIMBLUR"
+    # apply dimblur
+    eval convert "$RES_DIM" \
+        -filter Gaussian \
+        -resize "$blur_shrink%" \
+        -define "filter:sigma=$blur_sigma" \
+        -resize "$resolution^" \
+        -gravity center \
+        -extent "$resolution" \
+        "$RES_DIMBLUR"
 
-    # pixelate
+    # apply pixelate
     eval convert "$RES_RESIZE" \
         -scale 10% \
         -scale 1000% \
         "$RES_PIXEL"
+}
+
+create_loginbox () {
+    RECTANGLE=$CUR_DIR/rectangle.png
+    local shadow=$CUR_DIR/shadow.png
+    convert -size 300x80 xc:\#"$loginbox" -fill none $RECTANGLE
+    convert $RECTANGLE \
+        \( -clone 0 -background \#"$loginshadow" -shadow 100x5+0+0 \) +swap \
+        -background none -layers merge +repage $shadow
+    composite -compose Dst_Out -gravity center \
+        $RECTANGLE $shadow -alpha Set $shadow
+    convert $shadow $RECTANGLE -geometry +10+10 -composite $RECTANGLE
+    [[ $shadow ]] && rm $shadow
 }
 
 # delete and recreate directory
@@ -232,12 +257,11 @@ purge_cache () {
 
 # update locker and wallpaper images
 update () {
+    echo "Updating lock screen images..."
 
-    wallpaper=$1
-	rectangles=" "
-
+    local wallpaper=$1
     get_user_wall "$wallpaper" # Returns USER_WALL
-    echo "Original: $USER_WALL"
+    echo "Original: ${USER_WALL##*/}"
 
     get_display_list # Returns DLIST
     get_total_size # Return TOTAL_SIZE
@@ -251,16 +275,15 @@ update () {
         DPOS="+${DRES[1]}+${DRES[2]}"
         DPATH="$CACHE_DIR/$DNUM-$DDEV"
 
-        #get_geometry $DGEO # Returns SCREEN_*
+        # create list of postions for placing loginbox
         if [[ $DNUM -eq "$display_on" ]] || [[ "$display_on" -eq 0 ]]; then
             SRA=(${DGEO//[x+]/ })
-            CX=$((${SRA[2]} + $(logical_px 25)))
-            CY=$((${SRA[1]} - $(logical_px 30)))
-            rectangles+="rectangle $CX,$CY $((CX+$(logical_px 300))),$((CY-$(logical_px 80))) "
+            CX=$((${SRA[2]} + $(logical_px 15)))
+            CY=$((${SRA[1]} - $(logical_px 120)))
+            RECTPOS+="+$((CX))+$((CY)) "
         fi
 
-        echo "Found: $DDEV ($DNUM)"
-        echo "Resolution: ${DRES[0]}"
+        echo "Found: $DDEV ($DNUM) ${DRES[0]}"
 
         purge_cache $DPATH
 
@@ -310,12 +333,25 @@ update () {
         convert $CUR_W_PIXEL $PARAM_PIXEL $CUR_W_PIXEL
     fi
 
+    # copy walls to lock images
+    cp $CUR_W_RESIZE $CUR_L_RESIZE
+    cp $CUR_W_DIM $CUR_L_DIM
+    cp $CUR_W_BLUR $CUR_L_BLUR
+    cp $CUR_W_DIMBLUR $CUR_L_DIMBLUR
+    cp $CUR_W_PIXEL $CUR_L_PIXEL
+
+    create_loginbox
+
     echo "Rendering final locker images..."
-	convert "$CUR_W_RESIZE" -draw "fill #$loginbox $rectangles" "$CUR_L_RESIZE"
-	convert "$CUR_W_DIM" -draw "fill #$loginbox $rectangles" "$CUR_L_DIM"
-	convert "$CUR_W_BLUR" -draw "fill #$loginbox $rectangles" "$CUR_L_BLUR"
-	convert "$CUR_W_DIMBLUR" -draw "fill #$loginbox $rectangles" "$CUR_L_DIMBLUR"
-	convert "$CUR_W_PIXEL" -draw "fill #$loginbox $rectangles" "$CUR_L_PIXEL"
+    for POS in ${RECTPOS[@]}; do
+        convert "$CUR_L_RESIZE" "$RECTANGLE" -geometry "$POS" -composite "$CUR_L_RESIZE"
+        convert "$CUR_L_DIM" "$RECTANGLE" -geometry "$POS" -composite "$CUR_L_DIM"
+        convert "$CUR_L_BLUR" "$RECTANGLE" -geometry "$POS" -composite "$CUR_L_BLUR"
+        convert "$CUR_L_DIMBLUR" "$RECTANGLE" -geometry "$POS" -composite "$CUR_L_DIMBLUR"
+        convert "$CUR_L_PIXEL" "$RECTANGLE" -geometry "$POS" -composite "$CUR_L_PIXEL"
+    done
+    [[ $RECTANGLE ]] && rm $RECTANGLE
+
 }
 
 
