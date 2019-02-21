@@ -143,7 +143,7 @@ get_total_size () {
     TOTAL_SIZE=$(xdpyinfo | grep -w "dimensions" | sed -r 's/^[^0-9]*([0-9]+x[0-9]+).*$/\1/')
 }
 
-
+# set DLIST (1, HDMI-0, 1920x1080)
 get_display_list () {
     local DNUM=0
     mapfile -t DARR < <( xrandr --listactivemonitors )
@@ -156,6 +156,7 @@ get_display_list () {
 }
 
 
+# return path to image
 get_user_wall() {
 	local path="$1"
 	if [ ! -d "$path" ]; then
@@ -164,15 +165,18 @@ get_user_wall() {
 	fi
 	dir=("$path"/*)
 	dir="${dir[RANDOM % ${#dir[@]}]}"
-    get_user_wall "$dir"
+	get_user_wall "$dir"
 }
 
+# resize to resolution and apply dim, blur, etc.
 resize_and_render () {
 
-    # arguments
     local base=$1
     local path=$2
     local resolution=$3
+
+    # defaults
+    [[ $blur_level ]] || blur_level=1
 
     # wallpaper
     RES_RESIZE="$2/resize.png"
@@ -180,15 +184,6 @@ resize_and_render () {
     RES_BLUR="$2/blur.png"
     RES_DIMBLUR="$2/dimblur.png"
     RES_PIXEL="$2/pixel.png"
-
-    # defaults
-    [[ $blur_level ]] || blur_level=1
-    RES_DIM="$2/dim.png"
-    RES_BLUR="$2/blur.png"
-    RES_DIMBLUR="$2/dimblur.png"
-
-    # defaults
-    [[ $blur_level ]] || blur_level=1
 
     echo "Resizing original and applying effects..."
 
@@ -234,6 +229,7 @@ resize_and_render () {
         "$RES_PIXEL"
 }
 
+# create loginbox rectangle, set RECTANGLE
 create_loginbox () {
     RECTANGLE=$CUR_DIR/rectangle.png
     local shadow=$CUR_DIR/shadow.png
@@ -257,7 +253,7 @@ purge_cache () {
 
 # update locker and wallpaper images
 update () {
-    echo "Updating lock screen images..."
+    echo "Updating betterlockscreen cache..."
 
     local wallpaper=$1
     get_user_wall "$wallpaper" # Returns USER_WALL
@@ -283,7 +279,7 @@ update () {
             RECTPOS+="+$((CX))+$((CY)) "
         fi
 
-        echo "Found: $DDEV ($DNUM) ${DRES[0]}"
+        echo "Found display: ($DNUM) $DDEV ${DRES[0]}"
 
         purge_cache $DPATH
 
@@ -293,10 +289,10 @@ update () {
         fi
 
         if [ "$span_image" = true ]; then
-            # render wallpaper at total display size
+            # render wallpaper at total combined resolution
             resize_and_render $USER_WALL $DPATH $TOTAL_SIZE
         else
-            # render wallpaper at each display size
+            # render wallpaper per display
             resize_and_render $USER_WALL $DPATH ${DRES[0]}
             # add to parameters for position on canvas
             PARAM_RESIZE="$PARAM_RESIZE $RES_RESIZE -geometry $DPOS -composite "
@@ -311,7 +307,7 @@ update () {
     purge_cache $CUR_DIR
 
     if [ "$span_image" = true ] || [ ${#DLIST[@]} -lt 2 ]; then
-        echo "Copying wallpaper..."
+        echo "Copying wallpaper images..."
         cp $RES_RESIZE $CUR_W_RESIZE
         cp $RES_DIM $CUR_W_DIM
         cp $RES_BLUR $CUR_W_BLUR
@@ -319,13 +315,13 @@ update () {
         cp $RES_PIXEL $CUR_W_PIXEL
     else
         echo "Creating canvas: $TOTAL_SIZE"
-        convert -size $TOTAL_SIZE 'xc:black' $CUR_W_RESIZE 
-        convert -size $TOTAL_SIZE 'xc:black' $CUR_W_DIM 
-        convert -size $TOTAL_SIZE 'xc:black' $CUR_W_BLUR 
-        convert -size $TOTAL_SIZE 'xc:black' $CUR_W_DIMBLUR 
-        convert -size $TOTAL_SIZE 'xc:black' $CUR_W_PIXEL 
+        convert -size $TOTAL_SIZE 'xc:black' $CUR_W_RESIZE
+        cp $CUR_W_RESIZE $CUR_W_DIM
+        cp $CUR_W_RESIZE $CUR_W_BLUR
+        cp $CUR_W_RESIZE $CUR_W_DIMBLUR
+        cp $CUR_W_RESIZE $CUR_W_PIXEL
 
-        echo "Rendering wallpaper..."
+        echo "Rendering wallpaper images..."
         convert $CUR_W_RESIZE $PARAM_RESIZE $CUR_W_RESIZE
         convert $CUR_W_DIM $PARAM_DIM $CUR_W_DIM
         convert $CUR_W_BLUR $PARAM_BLUR $CUR_W_BLUR
@@ -340,17 +336,17 @@ update () {
     cp $CUR_W_DIMBLUR $CUR_L_DIMBLUR
     cp $CUR_W_PIXEL $CUR_L_PIXEL
 
-    echo "Rendering lock screen..."
-    create_loginbox # Returns RECTANGLE
+    echo "Rendering lock screen images..."
+    create_loginbox
 
     for POS in ${RECTPOS[@]}; do
-        DRAWRECT=+"$RECTANGLE -geometry $POS -composite "
+        PARAM_RECT="$PARAM_RECT $RECTANGLE -geometry $POS -composite "
     done
-    convert "$CUR_L_RESIZE" "$DRAWRECT" "$CUR_L_RESIZE"
-    convert "$CUR_L_DIM" "$DRAWRECT" "$CUR_L_DIM"
-    convert "$CUR_L_BLUR" "$DRAWRECT" "$CUR_L_BLUR"
-    convert "$CUR_L_DIMBLUR" "$DRAWRECT" "$CUR_L_DIMBLUR"
-    convert "$CUR_L_PIXEL" "$DRAWRECT" "$CUR_L_PIXEL"
+    convert $CUR_L_RESIZE $PARAM_RECT $CUR_L_RESIZE
+    convert $CUR_L_DIM $PARAM_RECT $CUR_L_DIM
+    convert $CUR_L_BLUR $PARAM_RECT $CUR_L_BLUR
+    convert $CUR_L_DIMBLUR $PARAM_RECT $CUR_L_DIMBLUR
+    convert $CUR_L_PIXEL $PARAM_RECT $CUR_L_PIXEL
 
     [[ $RECTANGLE ]] && rm $RECTANGLE
 
