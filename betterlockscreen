@@ -293,7 +293,7 @@ update () {
         fi
 
         if [ "$span_image" = true ]; then
-            # render wallpaper at total display size (3840x1080)
+            # render wallpaper at total display size
             resize_and_render $USER_WALL $DPATH $TOTAL_SIZE
         else
             # render wallpaper at each display size
@@ -311,7 +311,7 @@ update () {
     purge_cache $CUR_DIR
 
     if [ "$span_image" = true ] || [ ${#DLIST[@]} -lt 2 ]; then
-        echo "Copying final wallpaper images..."
+        echo "Copying wallpaper..."
         cp $RES_RESIZE $CUR_W_RESIZE
         cp $RES_DIM $CUR_W_DIM
         cp $RES_BLUR $CUR_W_BLUR
@@ -325,7 +325,7 @@ update () {
         convert -size $TOTAL_SIZE 'xc:black' $CUR_W_DIMBLUR 
         convert -size $TOTAL_SIZE 'xc:black' $CUR_W_PIXEL 
 
-        echo "Rendering final wallpaper images..."
+        echo "Rendering wallpaper..."
         convert $CUR_W_RESIZE $PARAM_RESIZE $CUR_W_RESIZE
         convert $CUR_W_DIM $PARAM_DIM $CUR_W_DIM
         convert $CUR_W_BLUR $PARAM_BLUR $CUR_W_BLUR
@@ -340,16 +340,18 @@ update () {
     cp $CUR_W_DIMBLUR $CUR_L_DIMBLUR
     cp $CUR_W_PIXEL $CUR_L_PIXEL
 
-    create_loginbox
+    echo "Rendering lock screen..."
+    create_loginbox # Returns RECTANGLE
 
-    echo "Rendering final locker images..."
     for POS in ${RECTPOS[@]}; do
-        convert "$CUR_L_RESIZE" "$RECTANGLE" -geometry "$POS" -composite "$CUR_L_RESIZE"
-        convert "$CUR_L_DIM" "$RECTANGLE" -geometry "$POS" -composite "$CUR_L_DIM"
-        convert "$CUR_L_BLUR" "$RECTANGLE" -geometry "$POS" -composite "$CUR_L_BLUR"
-        convert "$CUR_L_DIMBLUR" "$RECTANGLE" -geometry "$POS" -composite "$CUR_L_DIMBLUR"
-        convert "$CUR_L_PIXEL" "$RECTANGLE" -geometry "$POS" -composite "$CUR_L_PIXEL"
+        DRAWRECT=+"$RECTANGLE -geometry $POS -composite "
     done
+    convert "$CUR_L_RESIZE" "$DRAWRECT" "$CUR_L_RESIZE"
+    convert "$CUR_L_DIM" "$DRAWRECT" "$CUR_L_DIM"
+    convert "$CUR_L_BLUR" "$DRAWRECT" "$CUR_L_BLUR"
+    convert "$CUR_L_DIMBLUR" "$DRAWRECT" "$CUR_L_DIMBLUR"
+    convert "$CUR_L_PIXEL" "$DRAWRECT" "$CUR_L_PIXEL"
+
     [[ $RECTANGLE ]] && rm $RECTANGLE
 
 }
