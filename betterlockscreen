@@ -38,7 +38,8 @@ init_filenames() {
 	folder="$HOME/.cache/i3lock/current"
 	echo "Got" $@ $res_folder
 	if [ ! -d $folder -o -n "$2" ]; then
-		rm -f $folder
+		rm -rf $folder
+		mkdir -p $res_folder
 		ln -s $res_folder $folder
 	fi
 
