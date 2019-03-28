@@ -39,6 +39,7 @@ init_filenames() {
 	echo "Got" $@ $res_folder
 	if [ ! -d $folder -o -n "$2" ]; then
 		rm -rf $folder
+		mkdir -p $res_folder
 		ln -s $res_folder $folder
 	fi
 
