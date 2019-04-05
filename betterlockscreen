@@ -149,8 +149,11 @@ lockselect() {
 # $2: 1 for width. 2 for height
 logical_px() {
 	# get dpi value from xrdb
-	local DPI=$(xdpyinfo | sed -En "s/\s*resolution:\s*([0-9]*)x([0-9]*)\s.*/\\$2/p" | head -n1)
-	
+	local DPI=$(cat ~/.Xresource | grep -oP 'Xft.dpi:\s*\K\d+' | bc)
+	if [ -z "$DPI" ]; then
+		DPI=$(xdpyinfo | sed -En "s/\s*resolution:\s*([0-9]*)x([0-9]*)\s.*/\\$2/p" | head -n1)
+	fi
+
 	# return the default value if no DPI is set
 	if [ -z "$DPI" ]; then
 		echo $1
