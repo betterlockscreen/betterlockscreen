@@ -102,9 +102,7 @@ UtkarshVerma was so kind to provide an installation script for debian based syst
 
 `betterlockscreen` is available in official Void's repository as `betterlockscreen`.
 
-Installing `betterlockscreen` using `xbps` will automatically install all required dependencies.
-
-To get `betterlockscreen` for Void Linux, simply execute `sudo xbps-install -S betterlockscreen`.
+Installing using `xbps` (will automatically install all required dependencies): `xbps-install -S betterlockscreen`
 
 ### Configuration
 
