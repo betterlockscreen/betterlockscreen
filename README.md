@@ -96,6 +96,14 @@ export PATH="${PATH}:${HOME}/.local/bin/"
 
 UtkarshVerma was so kind to provide an installation script for debian based systems, ![check it out here](https://github.com/UtkarshVerma/installer-scripts).
 
+#### Void Linux
+
+##### xbps repository
+
+`betterlockscreen` is available in official Void's repository as `betterlockscreen`.
+
+Installing using `xbps` (will automatically install all required dependencies): `xbps-install -S betterlockscreen`
+
 ### Configuration
 
 You can customise various colors for betterlockscreen, copy config file from examples directory to `~/.config/betterlockscreenrc` and edit it accordingly.
