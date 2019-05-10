@@ -6,6 +6,7 @@
 
 # find your resolution so images can be resized to match your screen resolution
 res=$(xdpyinfo | grep dimensions | sed -r 's/^[^0-9]*([0-9]+x[0-9]+).*$/\1/')
+default_timeout=`cut -d ' ' -f4 <<< $(xset q | sed -n '25p')`
 
 init_filenames() {
 	#$1 resolution
@@ -70,6 +71,9 @@ init_filenames $res
 
 
 prelock() {
+	if [ -n lock_timeout ]; then
+	  xset dpms $lock_timeout
+	fi
 	if [ ! -z "$(pidof dunst)" ]; then
 		pkill -u "$USER" -USR1 dunst
 	fi
@@ -96,6 +100,9 @@ lock() {
 
 
 postlock() {
+	if [ -n lock_timeout ]; then
+	  xset dpms $default_timeout
+	fi
 	if [ ! -z "$(pidof dunst)" ] ; then
 		pkill -u "$USER" -USR2 dunst
 	fi
@@ -375,6 +382,12 @@ usage() {
 	echo '		to set custom lockscreen text (max 31 chars)'
 	echo "		E.g: betterlockscreen -l dim -t \"Don't touch my machine!\""
 	echo '		E.g: betterlockscreen --text "Hi, user!" -s blur'
+	echo
+	echo
+	echo '	--off <timeout>'
+	echo '            to set custom monitor turn off timeout for lockscreen'
+	echo '            timeout is in seconds'
+	echo '            E.g: betterlockscreen -l dim --off 5'
 }
 
 
@@ -413,6 +426,11 @@ for arg in "$@"; do
 
 		-t | --text)
 			locktext="$2"
+			shift 2
+			;;
+
+		--off)
+			lock_timeout="$2"
 			shift 2
 			;;
 
