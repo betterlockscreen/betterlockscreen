@@ -3,7 +3,7 @@ Description = Lock screen when going to sleep/suspend
 
 [Service]
 User=%I
-Type=simple
+Type=forking
 Environment=DISPLAY=:0
 ExecStart=/usr/bin/betterlockscreen --lock
 TimeoutSec=infinity
