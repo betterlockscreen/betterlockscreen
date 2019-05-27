@@ -64,14 +64,14 @@ lock() {
 
 	i3lock \
 		-i "$1" \
-        --screen "$display_on" \
-		--timepos='x+110:h-70' \
-		--datepos='x+43:h-45' \
+		--screen "$display_on" \
+		--timepos='ix-170:iy-0' \
+		--datepos='ix-240:iy+25' \
 		--clock --date-align 1 --datestr "$locktext" \
 		--insidecolor=$insidecolor --ringcolor=$ringcolor --line-uses-inside \
 		--keyhlcolor=$keyhlcolor --bshlcolor=$bshlcolor --separatorcolor=$separatorcolor \
 		--insidevercolor=$insidevercolor --insidewrongcolor=$insidewrongcolor \
-		--ringvercolor=$ringvercolor --ringwrongcolor=$ringwrongcolor --indpos='x+280:h-70' \
+		--ringvercolor=$ringvercolor --ringwrongcolor=$ringwrongcolor --indpos='x+280:y+h-70' \
 		--radius=20 --ring-width=4 --veriftext='' --wrongtext='' \
 		--verifcolor="$verifcolor" --timecolor="$timecolor" --datecolor="$datecolor" \
 		--time-font="$font" --date-font="$font" --layout-font="$font" --verif-font="$font" --wrong-font="$font" \
@@ -255,7 +255,7 @@ update () {
         if [[ $DNUM -eq "$display_on" ]] || [[ "$display_on" -eq 0 ]]; then
             SRA=(${DGEO//[x+]/ })
             CX=$((${SRA[2]} + $(logical_px 25)))
-            CY=$((${SRA[1]} - $(logical_px 30)))
+            CY=$((${SRA[3]} + ${SRA[1]} - $(logical_px 30)))
             rectangles+="rectangle $CX,$CY $((CX+$(logical_px 300))),$((CY-$(logical_px 80))) "
         fi
 
