@@ -117,9 +117,11 @@ lockselect() {
 	postlock
 }
 
+# $1: number of pixels to convert
+# $2: 1 for width. 2 for height
 logical_px() {
-	# get dpi value from xrdb
-	local DPI=$(xrdb -query | awk '/Xft.dpi/ {print $2}')
+	# get dpi value from xdpyinfo
+	local DPI=$(xdpyinfo | sed -En "s/\s*resolution:\s*([0-9]*)x([0-9]*)\s.*/\\$2/p" | head -n1)
 	
 	# return the default value if no DPI is set
 	if [ -z "$DPI" ]; then
@@ -248,9 +250,9 @@ update () {
 		#get_geometry $DGEO # Returns SCREEN_*
 		if [[ $DNUM -eq "$display_on" ]] || [[ "$display_on" -eq 0 ]]; then
 			SRA=(${DGEO//[x+]/ })
-			CX=$((${SRA[2]} + $(logical_px 25)))
-			CY=$((${SRA[3]} + ${SRA[1]} - $(logical_px 30)))
-			rectangles+="rectangle $CX,$CY $((CX+$(logical_px 300))),$((CY-$(logical_px 80))) "
+			CX=$((${SRA[2]} + $(logical_px 25 1)))
+			CY=$((${SRA[3]} + ${SRA[1]} - $(logical_px 30 2)))
+			rectangles+="rectangle $CX,$CY $((CX+$(logical_px 300 1))),$((CY-$(logical_px 80 2))) "
 		fi
 
 		echo "Found: $DDEV ($DNUM)"
