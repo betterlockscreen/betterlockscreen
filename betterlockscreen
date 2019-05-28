@@ -6,12 +6,12 @@
 
 init_config () {
 
-    # user configuration file
-    USER_CONF="$HOME/.config/betterlockscreenrc"
-    if [ -e $USER_CONF ]; then
-        source "$USER_CONF"
-    # default configuration options
-    else
+	# user configuration file
+	USER_CONF="$HOME/.config/betterlockscreenrc"
+	if [ -e $USER_CONF ]; then
+		source "$USER_CONF"
+	# default configuration options
+	else
 		insidecolor=00000000
 		ringcolor=ffffffff
 		keyhlcolor=d23c3dff
@@ -139,19 +139,19 @@ logical_px() {
 # get total resolution
 # 1600x900
 get_total_size () {
-    TOTAL_SIZE=$(xdpyinfo | grep -w "dimensions" | sed -r 's/^[^0-9]*([0-9]+x[0-9]+).*$/\1/')
+	TOTAL_SIZE=$(xdpyinfo | grep -w "dimensions" | sed -r 's/^[^0-9]*([0-9]+x[0-9]+).*$/\1/')
 }
 
 
 get_display_list () {
-    local DNUM=0
-    mapfile -t DARR < <( xrandr --listactivemonitors )
-    for DISP in "${DARR[@]:1}"; do
-        (( DNUM++ ))
-        DISP=$(echo $DISP | sed -r 's/\/[0-9]*//g')
-        IFS=' ' read -r -a LINE <<< "$DISP"
-        DLIST+=("$DNUM ${LINE[3]} ${LINE[2]}")
-    done
+	local DNUM=0
+	mapfile -t DARR < <( xrandr --listactivemonitors )
+	for DISP in "${DARR[@]:1}"; do
+		(( DNUM++ ))
+		DISP=$(echo $DISP | sed -r 's/\/[0-9]*//g')
+		IFS=' ' read -r -a LINE <<< "$DISP"
+		DLIST+=("$DNUM ${LINE[3]} ${LINE[2]}")
+	done
 }
 
 
@@ -163,36 +163,30 @@ get_user_wall() {
 	fi
 	dir=("$path"/*)
 	dir="${dir[RANDOM % ${#dir[@]}]}"
-    get_user_wall "$dir"
+	get_user_wall "$dir"
 }
 
 resize_and_render () {
 
-    # arguments
-    local base=$1
-    local path=$2
-    local resolution=$3
+	# arguments
+	local base=$1
+	local path=$2
+	local resolution=$3
 
-    # wallpaper
-    RES_RESIZE="$2/resize.png"
+	# wallpaper
+	RES_RESIZE="$2/resize.png"
 	RES_DIM="$2/dim.png"
 	RES_BLUR="$2/blur.png"
 	RES_DIMBLUR="$2/dimblur.png"
 	RES_PIXEL="$2/pixel.png"
 
-    # defaults
+	# defaults
 	[[ $blur_level ]] || blur_level=1
-		RES_DIM="$2/dim.png"
-		RES_BLUR="$2/blur.png"
-		RES_DIMBLUR="$2/dimblur.png"
 
-    # defaults
-		[[ $blur_level ]] || blur_level=1
+	echo "Resizing original and applying effects..."
 
-    echo "Resizing original and applying effects..."
-
-    # apply resize
-    eval convert "$base" -resize "$resolution""^" -gravity center -extent "$resolution" "$RES_RESIZE"
+	# apply resize
+	eval convert "$base" -resize "$resolution""^" -gravity center -extent "$resolution" "$RES_RESIZE"
 
 	# apply dim
 	eval convert "$RES_RESIZE" -fill black -colorize 40% "$RES_DIM"
@@ -215,102 +209,102 @@ resize_and_render () {
 		-resize "$resolution^" -gravity center -extent "$resolution" \
 		"$RES_DIMBLUR"
 
-    # pixelate
-    eval convert "$RES_RESIZE" \
-        -scale 10% \
-        -scale 1000% \
-        "$RES_PIXEL"
+	# pixelate
+	eval convert "$RES_RESIZE" \
+		-scale 10% \
+		-scale 1000% \
+		"$RES_PIXEL"
 }
 
 # delete and recreate directory
 purge_cache () {
-    if [[ -d "$1" ]]; then
-        rm -r "$1"
-    fi
-    mkdir -p "$1" 
+	if [[ -d "$1" ]]; then
+		rm -r "$1"
+	fi
+	mkdir -p "$1" 
 }
 
 # update locker and wallpaper images
 update () {
 
-    wallpaper=$1
+	wallpaper=$1
 	rectangles=" "
 
-    get_user_wall "$wallpaper" # Returns USER_WALL
-    echo "Original: $USER_WALL"
+	get_user_wall "$wallpaper" # Returns USER_WALL
+	echo "Original: $USER_WALL"
 
-    get_display_list # Returns DLIST
-    get_total_size # Return TOTAL_SIZE
+	get_display_list # Returns DLIST
+	get_total_size # Return TOTAL_SIZE
 
-    # create base images per display
-    for DISP in "${DLIST[@]}"; do
-        DNUM="$(cut -d" " -f1 <<<"${DISP}")"
-        DDEV="$(cut -d" " -f2 <<<"${DISP}")"
-        DGEO=($(cut -d" " -f3 <<<"${DISP}"))
-        DRES=(${DGEO[0]//[+]/ })
-        DPOS="+${DRES[1]}+${DRES[2]}"
-        DPATH="$CACHE_DIR/$DNUM-$DDEV"
+	# create base images per display
+	for DISP in "${DLIST[@]}"; do
+		DNUM="$(cut -d" " -f1 <<<"${DISP}")"
+		DDEV="$(cut -d" " -f2 <<<"${DISP}")"
+		DGEO=($(cut -d" " -f3 <<<"${DISP}"))
+		DRES=(${DGEO[0]//[+]/ })
+		DPOS="+${DRES[1]}+${DRES[2]}"
+		DPATH="$CACHE_DIR/$DNUM-$DDEV"
 
-        #get_geometry $DGEO # Returns SCREEN_*
-        if [[ $DNUM -eq "$display_on" ]] || [[ "$display_on" -eq 0 ]]; then
-            SRA=(${DGEO//[x+]/ })
-            CX=$((${SRA[2]} + $(logical_px 25)))
-            CY=$((${SRA[3]} + ${SRA[1]} - $(logical_px 30)))
-            rectangles+="rectangle $CX,$CY $((CX+$(logical_px 300))),$((CY-$(logical_px 80))) "
-        fi
+		#get_geometry $DGEO # Returns SCREEN_*
+		if [[ $DNUM -eq "$display_on" ]] || [[ "$display_on" -eq 0 ]]; then
+			SRA=(${DGEO//[x+]/ })
+			CX=$((${SRA[2]} + $(logical_px 25)))
+			CY=$((${SRA[3]} + ${SRA[1]} - $(logical_px 30)))
+			rectangles+="rectangle $CX,$CY $((CX+$(logical_px 300))),$((CY-$(logical_px 80))) "
+		fi
 
-        echo "Found: $DDEV ($DNUM)"
-        echo "Resolution: ${DRES[0]}"
+		echo "Found: $DDEV ($DNUM)"
+		echo "Resolution: ${DRES[0]}"
 
-        purge_cache $DPATH
+		purge_cache $DPATH
 
-        # we only need one set of images when spanning
-        if [ "$span_image" = true ] && [ $DNUM -gt 1 ]; then
-            continue
-        fi
+		# we only need one set of images when spanning
+		if [ "$span_image" = true ] && [ $DNUM -gt 1 ]; then
+			continue
+		fi
 
-        if [ "$span_image" = true ]; then
-            # render wallpaper at total display size (3840x1080)
-            resize_and_render $USER_WALL $DPATH $TOTAL_SIZE
-        else
-            # render wallpaper at each display size
-            resize_and_render $USER_WALL $DPATH ${DRES[0]}
-            # add to parameters for position on canvas
-            PARAM_RESIZE="$PARAM_RESIZE $RES_RESIZE -geometry $DPOS -composite "
-            PARAM_DIM="$PARAM_DIM $RES_DIM -geometry $DPOS -composite "
-            PARAM_BLUR="$PARAM_BLUR $RES_BLUR -geometry $DPOS -composite "
-            PARAM_DIMBLUR="$PARAM_DIMBLUR $RES_DIMBLUR -geometry $DPOS -composite "
-            PARAM_PIXEL="$PARAM_PIXEL $RES_PIXEL -geometry $DPOS -composite "
-        fi
+		if [ "$span_image" = true ]; then
+			# render wallpaper at total display size (3840x1080)
+			resize_and_render $USER_WALL $DPATH $TOTAL_SIZE
+		else
+			# render wallpaper at each display size
+			resize_and_render $USER_WALL $DPATH ${DRES[0]}
+			# add to parameters for position on canvas
+			PARAM_RESIZE="$PARAM_RESIZE $RES_RESIZE -geometry $DPOS -composite "
+			PARAM_DIM="$PARAM_DIM $RES_DIM -geometry $DPOS -composite "
+			PARAM_BLUR="$PARAM_BLUR $RES_BLUR -geometry $DPOS -composite "
+			PARAM_DIMBLUR="$PARAM_DIMBLUR $RES_DIMBLUR -geometry $DPOS -composite "
+			PARAM_PIXEL="$PARAM_PIXEL $RES_PIXEL -geometry $DPOS -composite "
+		fi
 
-    done
+	done
 
-    purge_cache $CUR_DIR
+	purge_cache $CUR_DIR
 
-    if [ "$span_image" = true ] || [ ${#DLIST[@]} -lt 2 ]; then
-        echo "Copying final wallpaper images..."
-        cp $RES_RESIZE $CUR_W_RESIZE
-        cp $RES_DIM $CUR_W_DIM
-        cp $RES_BLUR $CUR_W_BLUR
-        cp $RES_DIMBLUR $CUR_W_DIMBLUR
-        cp $RES_PIXEL $CUR_W_PIXEL
-    else
-        echo "Creating canvas: $TOTAL_SIZE"
-        convert -size $TOTAL_SIZE 'xc:black' $CUR_W_RESIZE 
-        convert -size $TOTAL_SIZE 'xc:black' $CUR_W_DIM 
-        convert -size $TOTAL_SIZE 'xc:black' $CUR_W_BLUR 
-        convert -size $TOTAL_SIZE 'xc:black' $CUR_W_DIMBLUR 
-        convert -size $TOTAL_SIZE 'xc:black' $CUR_W_PIXEL 
+	if [ "$span_image" = true ] || [ ${#DLIST[@]} -lt 2 ]; then
+		echo "Copying final wallpaper images..."
+		cp $RES_RESIZE $CUR_W_RESIZE
+		cp $RES_DIM $CUR_W_DIM
+		cp $RES_BLUR $CUR_W_BLUR
+		cp $RES_DIMBLUR $CUR_W_DIMBLUR
+		cp $RES_PIXEL $CUR_W_PIXEL
+	else
+		echo "Creating canvas: $TOTAL_SIZE"
+		convert -size $TOTAL_SIZE 'xc:black' $CUR_W_RESIZE 
+		convert -size $TOTAL_SIZE 'xc:black' $CUR_W_DIM 
+		convert -size $TOTAL_SIZE 'xc:black' $CUR_W_BLUR 
+		convert -size $TOTAL_SIZE 'xc:black' $CUR_W_DIMBLUR 
+		convert -size $TOTAL_SIZE 'xc:black' $CUR_W_PIXEL 
 
-        echo "Rendering final wallpaper images..."
-        convert $CUR_W_RESIZE $PARAM_RESIZE $CUR_W_RESIZE
-        convert $CUR_W_DIM $PARAM_DIM $CUR_W_DIM
-        convert $CUR_W_BLUR $PARAM_BLUR $CUR_W_BLUR
-        convert $CUR_W_DIMBLUR $PARAM_DIMBLUR $CUR_W_DIMBLUR
-        convert $CUR_W_PIXEL $PARAM_PIXEL $CUR_W_PIXEL
-    fi
+		echo "Rendering final wallpaper images..."
+		convert $CUR_W_RESIZE $PARAM_RESIZE $CUR_W_RESIZE
+		convert $CUR_W_DIM $PARAM_DIM $CUR_W_DIM
+		convert $CUR_W_BLUR $PARAM_BLUR $CUR_W_BLUR
+		convert $CUR_W_DIMBLUR $PARAM_DIMBLUR $CUR_W_DIMBLUR
+		convert $CUR_W_PIXEL $PARAM_PIXEL $CUR_W_PIXEL
+	fi
 
-    echo "Rendering final locker images..."
+	echo "Rendering final locker images..."
 	convert "$CUR_W_RESIZE" -draw "fill #$loginbox $rectangles" "$CUR_L_RESIZE"
 	convert "$CUR_W_DIM" -draw "fill #$loginbox $rectangles" "$CUR_L_DIM"
 	convert "$CUR_W_BLUR" -draw "fill #$loginbox $rectangles" "$CUR_L_BLUR"
@@ -320,11 +314,11 @@ update () {
 
 
 wallpaper() {
-    local fopt
-    get_display_list
-    if [ "$span_image" = true ] || [[ "${#DLIST[@]}" -gt 1 ]]; then
-        fopt="--no-xinerama"
-    fi
+	local fopt
+	get_display_list
+	if [ "$span_image" = true ] || [[ "${#DLIST[@]}" -gt 1 ]]; then
+		fopt="--no-xinerama"
+	fi
 	case "$1" in
 		'')
 			# set resized image as wallpaper if no argument is supplied by user
@@ -489,7 +483,7 @@ for arg in "$@"; do
 
 		--span)
 			span_image=true
-            shift 1
+			shift 1
 			;;
 
 		-b | --blur)
