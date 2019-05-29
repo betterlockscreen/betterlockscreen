@@ -125,8 +125,8 @@ Run `betterlockscreen` and point it to either a directory (`betterlockscreen -u 
 
 ```sh
 usage: betterlockscreen [-u "path/to/img.jpg"] [-l "dim, blur or dimblur"]
-           [-w "dim, blur, or dimblur"] [-t "custom text"] [-s "lockscreen and suspend"]
-					 [-r "resolution"] [-b "factor"]
+			[-w "dim, blur, or dimblur"] [-t "custom text"] [-s "lockscreen and suspend"]
+									[-b "factor"] [--off <timeout>]
 
 betterlockscreen - faster and sweet looking lockscreen for linux systems.
 
@@ -142,16 +142,18 @@ usage:
 			lockscreen and suspend
 
 			Available effects:
-				dim, blur or dimblur
+				dim, blur, dimblur or pixel
 
 	-t, --text "custom text"
 			set custom lockscreen text
 	-b, blur 0.0 - 1.0
 			set blur range
+	--off, --off <timeout>
+			sets custom monitor timeout (<timeout> in seconds)
 	-d, --display 0-9
-			screen to display loginbox
-    --span
-            span multiple screens
+			screen to display loginbox (0 for all)
+	--span
+			span multiple screens
 
 
 Usage examples:
@@ -170,6 +172,9 @@ betterlockscreen -l dim -t "custom lockscreen text"
 
 5. Set desktop background
 betterlockscreen -w blur                   # set desktop background with blur effect
+
+6. Lockscreeen with custom monitor off timeout
+betterlockscreen --off 5 -l blur           # set monitor off lockscreen timeout (5 seconds)
 ```
 
 ### Set desktop background on startup
