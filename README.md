@@ -116,17 +116,19 @@ If you have installed betterlockscreen from AUR package, then you can copy defau
 cp /usr/share/doc/betterlockscreen/examples/betterlockscreenrc ~/.config
 ```
 
-For multimonitor setups, now you can choose which monitor the clock is displayed on
-modify screennumber in betterlockscreenrc accordingly. Its zero based i.e 0 = screen 1
+There are two new options for multi-monitor support:
+  `display_on` controls which screen the indicator is displayed on (0 for all)
+  `span_image` whether image should span multiple displays (true or false)
 
 ### Usage
 
 Run `betterlockscreen` and point it to either a directory (`betterlockscreen -u "path/to/dir"`) or an image (`betterlockscreen -u "/path/to/img.jpg"`) and that's all. `betterlockscreen` will change update its cache with image you provided.
 
 ```sh
-usage: betterlockscreen [-u "path/to/img.jpg"] [-l "dim, blur or dimblur"]
-			[-w "dim, blur, or dimblur"] [-t "custom text"] [-s "lockscreen and suspend"]
-									[-b "factor"] [--off <timeout>]
+usage: betterlockscreen [-u "path/to/img.jpg"] [-l "dim, blur, dimblur or pixel"]
+						[-w "dim, blur, dimblur or pixel"] [-s "lockscreen and suspend"]
+						[-t "custom text"] [-b "factor"] [--off <timeout>]
+						[--display <0-9>] [--span]
 
 betterlockscreen - faster and sweet looking lockscreen for linux systems.
 
@@ -161,8 +163,8 @@ Usage examples:
 betterlockscreen -u ~/Pictures/Forests.png # caches given image
 betterlockscreen -u ~/Pictures             # caches random image from ~/Pictures directory
 
-2. Custom resolution and blur range
-betterlockscreen -u path/to/directory -r 1920x1080 -b 0.5
+2. Custom blur range
+betterlockscreen -u path/to/directory -b 0.5
 
 3. Lockscreen
 betterlockscreen -l dim                    # lockscreen with dim effect
@@ -173,8 +175,15 @@ betterlockscreen -l dim -t "custom lockscreen text"
 5. Set desktop background
 betterlockscreen -w blur                   # set desktop background with blur effect
 
-6. Lockscreeen with custom monitor off timeout
+6. Lockscreen with custom monitor off timeout
 betterlockscreen --off 5 -l blur           # set monitor off lockscreen timeout (5 seconds)
+
+7. Update image cache with login box on display 1
+betterlockscreen -u image.png -d 1         # cache images with loginbox on display 1
+betterlockscreen -u image.png -d 1 --span  # cache images that spans all displays
+
+8. Lockscreen with login box on display 1
+betterlockscreen -l blur -d 1 --span       # lock screen with loginbox on display 1
 ```
 
 ### Set desktop background on startup
