@@ -386,6 +386,8 @@ usage() {
 	echo "		E.g: betterlockscreen -l dim -t \"Don't touch my machine!\""
 	echo '		E.g: betterlockscreen --text "Hi, user!" -s blur'
 	echo
+	echo '  -m --pass-media-keys'
+	echo '          to keep media keys like volume up/down enabled while locked
 	echo
 	echo '	--off <timeout>'
 	echo '            to set custom monitor turn off timeout for lockscreen'
