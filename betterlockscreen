@@ -350,7 +350,7 @@ usage() {
 	echo
 	echo
 	echo '	-s --suspend'
-	echo '		to suspend system and lock screen (e.g. betterlockscreen -s)'
+	echo '		to suspend (hybrid-sleep) system and lock screen (e.g. betterlockscreen -s)'
 	echo '		you can also use dimmed or blurred background for lockscreen.'
 	echo '		E.g: betterlockscreen -s dim (for dimmed background)'
 	echo '		E.g: betterlockscreen -s blur (for blurred background)'
@@ -468,6 +468,6 @@ done
 
 # Activate lockscreen
 [[ $runlock ]] && lockselect "$lockstyle" && \
-	{ [[ $runsuspend ]] && systemctl suspend; }
+	{ [[ $runsuspend ]] && systemctl hybrid-sleep; }
 
 exit 0
