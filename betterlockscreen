@@ -32,6 +32,7 @@ init_filenames() {
 	    loginbox=00000066
 		font="sans-serif"
       	locktext='Type password to unlock...'
+		wallpaper_cmd="feh --bg-fill {}"
 	fi
 
 	# create folder in ~/.cache/i3lock directory
@@ -277,29 +278,37 @@ wallpaper() {
 	case "$1" in
 		'')
 			# set resized image as wallpaper if no argument is supplied by user
-			feh --bg-fill "$resized"
+			wallpaper="$resized"
 			;;
 
 		dim)
 			# set dimmed image as wallpaper
-			feh --bg-fill "$dim"
+			wallpaper="$dim"
 			;;
 
 		blur)
 			# set blurred image as wallpaper
-			feh --bg-fill "$blur"
+			wallpaper="$blur"
 			;;
 
 		dimblur)
 			# set dimmed + blurred image as wallpaper
-			feh --bg-fill "$dimblur"
+			wallpaper="$dimblur"
 			;;
 
 		pixel)
 			# set pixelated image as wallpaper
-			feh --bg-fill "$pixel"
+			wallpaper="$pixel"
 			;;
 	esac
+	if [ -n "$wallpaper_cmd" ]; then
+		# Replace {} with the actual image path
+		wallpaper_cmd="${wallpaper_cmd/'{}'/$wallpaper}"
+	else
+		# Needed for existing config files (in case wallpaper_cmd isn't set)
+		wallpaper_cmd="feh --bg-fill $wallpaper"
+	fi
+	$wallpaper_cmd
 }
 
 
