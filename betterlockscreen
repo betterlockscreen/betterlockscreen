@@ -71,7 +71,7 @@ init_filenames "$res"
 
 
 prelock() {
-	if [ -n lock_timeout ]; then
+	if [ ! -z "$lock_timeout" ]; then
 	  xset dpms "$lock_timeout"
 	fi
 	if [ ! -z "$(pidof dunst)" ]; then
@@ -100,7 +100,7 @@ lock() {
 
 
 postlock() {
-	if [ -n lock_timeout ]; then
+	if [ ! -z "$lock_timeout" ]; then
 	  xset dpms "$default_timeout"
 	fi
 	if [ ! -z "$(pidof dunst)" ] ; then
