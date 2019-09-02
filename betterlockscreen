@@ -6,13 +6,14 @@
 
 # find your resolution so images can be resized to match your screen resolution
 res=$(xdpyinfo | grep dimensions | sed -r 's/^[^0-9]*([0-9]+x[0-9]+).*$/\1/')
+default_timeout="$(cut -d ' ' -f4 <<< $(xset q | sed -n '25p'))"
 
 init_filenames() {
 	#$1 resolution
 
 	# custom i3lock colors
 	theme_rc="$HOME/.config/betterlockscreenrc"
-	if [ -e $theme_rc ]; then
+	if [ -e "$theme_rc" ]; then
 	    source "$theme_rc"
 	else
         # copy this block to ~/.config/betterlockscreenrc" to customize
@@ -36,11 +37,11 @@ init_filenames() {
 	# create folder in ~/.cache/i3lock directory
 	res_folder="$HOME/.cache/i3lock/$1"
 	folder="$HOME/.cache/i3lock/current"
-	echo "Got" $@ $res_folder
-	if [ ! -d $folder -o -n "$2" ]; then
-		rm -rf $folder
-		mkdir -p $res_folder
-		ln -s $res_folder $folder
+	echo "Got" "$@" "$res_folder"
+	if [ ! -d "$folder" -o -n "$2" ]; then
+		rm -rf "$folder"
+		mkdir -p "$res_folder"
+		ln -s "$res_folder" "$folder"
 	fi
 
 	# ratio for rectangle to be drawn for time background on lockscreen
@@ -66,10 +67,13 @@ init_filenames() {
 	l_pixel="$folder/l_pixel.png"
 }
 
-init_filenames $res
+init_filenames "$res"
 
 
 prelock() {
+	if [ ! -z "$lock_timeout" ]; then
+	  xset dpms "$lock_timeout"
+	fi
 	if [ ! -z "$(pidof dunst)" ]; then
 		pkill -u "$USER" -USR1 dunst
 	fi
@@ -91,11 +95,15 @@ lock() {
 		--radius=20 --ring-width=4 --veriftext='' --wrongtext='' \
 		--verifcolor="$verifcolor" --timecolor="$timecolor" --datecolor="$datecolor" \
 		--time-font="$font" --date-font="$font" --layout-font="$font" --verif-font="$font" --wrong-font="$font" \
-		--noinputtext='' --force-clock $lockargs
+		--noinputtext='' --force-clock --pass-media-keys $lockargs 
+
 }
 
 
 postlock() {
+	if [ ! -z "$lock_timeout" ]; then
+	  xset dpms "$default_timeout"
+	fi
 	if [ ! -z "$(pidof dunst)" ] ; then
 		pkill -u "$USER" -USR2 dunst
 	fi
@@ -149,20 +157,22 @@ lockselect() {
 # $2: 1 for width. 2 for height
 logical_px() {
 	# get dpi value from xrdb
-	local DPI=$(cat ~/.Xresource | grep -oP 'Xft.dpi:\s*\K\d+' | bc)
+	local DPI
+	DPI=$(cat ~/.Xresource | grep -oP 'Xft.dpi:\s*\K\d+' | bc)
 	if [ -z "$DPI" ]; then
 		DPI=$(xdpyinfo | sed -En "s/\s*resolution:\s*([0-9]*)x([0-9]*)\s.*/\\$2/p" | head -n1)
 	fi
 
 	# return the default value if no DPI is set
 	if [ -z "$DPI" ]; then
-		echo $1
+		echo "$1"
 	else
-		local SCALE=$(echo "scale=2; $DPI / 96.0" | bc)
+		local SCALE
+		SCALE=$(echo "scale=2; $DPI / 96.0" | bc)
 
 		# check if scaling the value is worthy
-		if [ $(echo "$SCALE > 1.25" | bc -l) -eq 0 ]; then
-			echo $1
+		if [ "$(echo "$SCALE > 1.25" | bc -l)" -eq 0 ]; then
+			echo "$1"
 		else
 			echo "$SCALE * $1 / 1" | bc
 		fi
@@ -170,7 +180,7 @@ logical_px() {
 }
 
 update() {
-	# use 
+	# use
 	background="$1"
 
 	# default blur level; fallback to 1
@@ -180,8 +190,8 @@ update() {
 	SR=$(xrandr --query | grep ' connected' | grep -o '[0-9][0-9]*x[0-9][0-9]*[^ ]*')
 	for RES in $SR; do
 		SRA=(${RES//[x+]/ })
-		CX=$((${SRA[2]} + $(logical_px 25 1)))
-		CY=$((${SRA[1]} - $(logical_px 30 2)))
+		CX=$((SRA[2] + $(logical_px 25 1)))
+		CY=$((SRA[1] - $(logical_px 30 2)))
 		rectangles+="rectangle $CX,$CY $((CX+$(logical_px 300 1))),$((CY-$(logical_px 80 2))) "
 	done
 
@@ -189,7 +199,7 @@ update() {
 	user_image="$folder/user_image.png"
 
 	# create folder
-	if [ ! -d $folder ]; then
+	if [ ! -d "$folder" ]; then
 		echo "Creating '$folder' directory to cache processed images."
 		mkdir -p "$folder"
 	fi
@@ -199,7 +209,7 @@ update() {
 
 	# get user image
 	cp "$user_input" "$user_image"
-	if [ ! -f $user_image ]; then
+	if [ ! -f "$user_image" ]; then
 		echo 'Please specify the path to the image you would like to use'
 		exit 1
 	fi
@@ -271,34 +281,34 @@ wallpaper() {
 	case "$1" in
 		'')
 			# set resized image as wallpaper if no argument is supplied by user
-			feh --bg-fill $resized
+			feh --bg-fill "$resized"
 			;;
 
 		dim)
 			# set dimmed image as wallpaper
-			feh --bg-fill $dim
+			feh --bg-fill "$dim"
 			;;
 
 		blur)
 			# set blurred image as wallpaper
-			feh --bg-fill $blur
+			feh --bg-fill "$blur"
 			;;
 
 		dimblur)
 			# set dimmed + blurred image as wallpaper
-			feh --bg-fill $dimblur
+			feh --bg-fill "$dimblur"
 			;;
 
 		pixel)
 			# set pixelated image as wallpaper
-			feh --bg-fill $pixel
+			feh --bg-fill "$pixel"
 			;;
 	esac
 }
 
 
 empty() {
-	if [ -f $l_dim ]; then
+	if [ -f "$l_dim" ]; then
 		echo -e "\nSeems you haven't provided any arguments. See below for usage details."
 	else
 		echo 'Important: Update the image cache (e.g. betterlockscreen -u path/to/image.jpg).'
@@ -378,6 +388,12 @@ usage() {
 	echo '		to set custom lockscreen text (max 31 chars)'
 	echo "		E.g: betterlockscreen -l dim -t \"Don't touch my machine!\""
 	echo '		E.g: betterlockscreen --text "Hi, user!" -s blur'
+	echo
+	echo
+	echo '	--off <timeout>'
+	echo '            to set custom monitor turn off timeout for lockscreen'
+	echo '            timeout is in seconds'
+	echo '            E.g: betterlockscreen -l dim --off 5'
 }
 
 
@@ -400,7 +416,11 @@ for arg in "$@"; do
 		-l | --lock)
 			runlock=true
 			[[ $runsuspend ]] || lockargs="$lockargs -n"
-			[[ ${2:0:1} = '-' ]] && shift 1 || { lockstyle="$2"; shift 2; }
+			if [[ ${2:0:1} = '-' ]]; then
+				shift 1
+			else
+		       		lockstyle="$2"; shift 2
+			fi
 			;;
 
 		-w | --wall | --wallpaper)
@@ -419,9 +439,14 @@ for arg in "$@"; do
 			shift 2
 			;;
 
+		--off)
+			lock_timeout="$2"
+			shift 2
+			;;
+
 		-r | --resolution)
 			res="$2"
-			init_filenames $res force
+			init_filenames "$res" force
 			shift 2
 			;;
 
@@ -431,7 +456,7 @@ for arg in "$@"; do
 			;;
 
 		--)
-			lockargs="$lockargs ${@:2}"
+			lockargs="$lockargs ${*:2}"
 			break
 			;;
 

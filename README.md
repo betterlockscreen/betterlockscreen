@@ -96,6 +96,14 @@ export PATH="${PATH}:${HOME}/.local/bin/"
 
 UtkarshVerma was so kind to provide an installation script for debian based systems, ![check it out here](https://github.com/UtkarshVerma/installer-scripts).
 
+#### Void Linux
+
+##### xbps repository
+
+`betterlockscreen` is available in official Void's repository as `betterlockscreen`.
+
+Installing using `xbps` (will automatically install all required dependencies): `xbps-install -S betterlockscreen`
+
 ### Configuration
 
 You can customise various colors for betterlockscreen, copy config file from examples directory to `~/.config/betterlockscreenrc` and edit it accordingly.
@@ -115,7 +123,7 @@ Run `betterlockscreen` and point it to either a directory (`betterlockscreen -u 
 ```sh
 usage: betterlockscreen [-u "path/to/img.jpg"] [-l "dim, blur or dimblur"]
            [-w "dim, blur, pixel or dimblur"] [-t "custom text"] [-s "lockscreen and suspend"]
-					 [-r "resolution"] [-b "factor"]
+					 [-r "resolution"] [-b "factor"] [--off <timeout>]
 
 betterlockscreen - faster and sweet looking lockscreen for linux systems.
 
@@ -139,6 +147,8 @@ usage:
 			set blur range
 	-r, --resolution res
 			uses a custom resolution
+	--off, --off <timeout>
+			sets custom monitor timeout (<timeout> in seconds)
 
 
 Usage examples:
@@ -157,6 +167,9 @@ betterlockscreen -l pixel -t "custom lockscreen text"
 
 5. Set desktop background
 betterlockscreen -w blur                   # set desktop background with blur effect
+
+6. Lockscreeen with custom monitor off timeout
+betterlockscreen --off 5 -l blur           # set monitor off lockscreen timeout (5 seconds)
 ```
 
 ### Set desktop background on startup
