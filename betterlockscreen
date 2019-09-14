@@ -158,7 +158,7 @@ lockselect() {
 logical_px() {
 	# get dpi value from xrdb
 	local DPI
-	DPI=$(cat ~/.Xresource | grep -oP 'Xft.dpi:\s*\K\d+' | bc)
+	DPI=$(cat ~/.Xresources | grep -oP 'Xft.dpi:\s*\K\d+' | bc)
 	if [ -z "$DPI" ]; then
 		DPI=$(xdpyinfo | sed -En "s/\s*resolution:\s*([0-9]*)x([0-9]*)\s.*/\\$2/p" | head -n1)
 	fi
