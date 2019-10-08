@@ -29,6 +29,7 @@ init_filenames() {
 	    verifcolor=ffffffff
 	    timecolor=ffffffff
 	    datecolor=ffffffff
+	    layoutcolor=ffffffff
 	    loginbox=00000066
 		font="sans-serif"
       	locktext='Type password to unlock...'
@@ -87,7 +88,9 @@ lock() {
 		-t -i "$1" \
 		--timepos='x+110:h-70' \
 		--datepos='x+43:h-45' \
+		--layoutpos='x+200:h-75' \
 		--clock --date-align 1 --datestr "$locktext" \
+		--layout-align 1 --layoutcolor=$layoutcolor $keylayout \
 		--insidecolor=$insidecolor --ringcolor=$ringcolor --line-uses-inside \
 		--keyhlcolor=$keyhlcolor --bshlcolor=$bshlcolor --separatorcolor=$separatorcolor \
 		--insidevercolor=$insidevercolor --insidewrongcolor=$insidewrongcolor \
@@ -394,6 +397,11 @@ usage() {
 	echo '            to set custom monitor turn off timeout for lockscreen'
 	echo '            timeout is in seconds'
 	echo '            E.g: betterlockscreen -l dim --off 5'
+	echo
+	echo
+	echo '	--show-layout'
+	echo '            to show current keyboard layout on lockscreen'
+	echo '            E.g: betterlockscreen -l dim --show-layout'
 }
 
 
@@ -412,6 +420,11 @@ for arg in "$@"; do
 		-s | --suspend)
 			runsuspend=true
 			;&
+
+		--show-layout)
+			keylayout="--keylayout 2";
+			shift 1
+			;;
 
 		-l | --lock)
 			runlock=true
