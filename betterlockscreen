@@ -58,6 +58,7 @@ init_filenames() {
 	blur="$folder/blur.png" # blurred version
 	dimblur="$folder/dimblur.png"
 	pixel="$folder/pixel.png" # pixelated image
+	color="$folder/color.png" # colored image
 
 	# lockscreen images (images to be used as lockscreen background)
 	l_resized="$folder/l_resized.png"
@@ -65,6 +66,7 @@ init_filenames() {
 	l_blur="$folder/l_blur.png"
 	l_dimblur="$folder/l_dimblur.png"
 	l_pixel="$folder/l_pixel.png"
+	l_color="$folder/l_color.png"
 }
 
 init_filenames "$res"
@@ -145,6 +147,11 @@ lockselect() {
 			lock "$l_pixel"
 			;;
 
+		color)
+			# set a color as background
+			lock "$l_color"
+			;;
+
 		*)
 			# default lockscreen
 			lock "$l_resized"
@@ -214,6 +221,9 @@ update() {
 		exit 1
 	fi
 
+    # generate default image for color
+    [ ! -f "$l_color" ] && update_color "#8abeb7"
+
 	# replace orignal with user image
 	cp "$user_image" "$orig_wall"
 	rm "$user_image"
@@ -276,6 +286,31 @@ update() {
 	echo 'All required changes have been applied'
 }
 
+update_color() {
+    background_color=$1
+	rectangles=" "
+
+	# create folder
+	if [ ! -d "$folder" ]; then
+		echo "Creating '$folder' directory to cache processed images."
+		mkdir -p "$folder"
+	fi
+    
+    [[ -z $background_color ]] && echo 'Provide a color as argument' && exit
+
+	SR=$(xrandr --query | grep ' connected' | grep -o '[0-9][0-9]*x[0-9][0-9]*[^ ]*')
+	for RES in $SR; do
+		SRA=(${RES//[x+]/ })
+		CX=$((SRA[2] + $(logical_px 25 1)))
+		CY=$((SRA[1] - $(logical_px 30 2)))
+		rectangles+="rectangle $CX,$CY $((CX+$(logical_px 300 1))),$((CY-$(logical_px 80 2))) "
+	done
+    echo 'Generating images based on the color specified'
+    echo
+    convert -size "$res" canvas:"$background_color" "$color"
+	convert "$color" -draw "fill #$loginbox $rectangles" "$l_color" && \
+        echo 'Cached image for colored locking' && echo
+}
 
 wallpaper() {
 	case "$1" in
@@ -302,6 +337,10 @@ wallpaper() {
 		pixel)
 			# set pixelated image as wallpaper
 			feh --bg-fill "$pixel"
+			;;
+		color)
+			# set a color as wallpaper
+			feh --bg-fill "$color"
 			;;
 	esac
 }
@@ -351,6 +390,7 @@ usage() {
 	echo '		E.g: betterlockscreen -l dim (for dimmed background)'
 	echo '		E.g: betterlockscreen -l blur (for blurred background)'
 	echo '		E.g: betterlockscreen -l dimblur (for dimmed + blurred background)'
+	echo '		E.g: betterlockscreen -l color (for colored background)'
 	echo
 	echo
 	echo '	-s --suspend'
@@ -368,6 +408,11 @@ usage() {
 	echo '		E.g: betterlockscreen -w dim (for dimmed wallpaper)'
 	echo '		E.g: betterlockscreen -w blur (for blurred wallpaper)'
 	echo '		E.g: betterlockscreen -w dimblur (for dimmed + blurred wallpaper)'
+	echo
+	echo
+	echo '	-c --color'
+	echo '		you can also set a color as background'
+	echo '		E.g: betterlockscreen -c "#81a2be"'
 	echo
 	echo
 	echo '	-r --resolution'
@@ -427,6 +472,11 @@ for arg in "$@"; do
 			wallpaper "$2"
 			shift 2
 			;;
+
+        -c | --color)
+            update_color "$2"
+			shift 2
+            ;;
 
 		-u | --update)
 			runupdate=true
