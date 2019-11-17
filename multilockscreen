@@ -6,29 +6,31 @@
 
 init_config () {
 
+	# default configuration options
+	insidecolor=00000000
+	ringcolor=ffffffff
+	keyhlcolor=d23c3dff
+	bshlcolor=d23c3dff
+	separatorcolor=00000000
+	insidevercolor=00000000
+	insidewrongcolor=d23c3dff
+	ringvercolor=ffffffff
+	ringwrongcolor=ffffffff
+	verifcolor=ffffffff
+	timecolor=ffffffff
+	datecolor=ffffffff
+	loginbox=00000066
+	locktext='Type password to unlock...'
+	font="sans-serif"
+	blur_level=1
+	display_on=0
+	span_image=false
+
 	# user configuration file
 	USER_CONF="$HOME/.config/multilockscreenrc"
-	if [ -e $USER_CONF ]; then
+	if [ -e "$USER_CONF" ]; then
+		# shellcheck source=/dev/null
 		source "$USER_CONF"
-	# default configuration options
-	else
-		insidecolor=00000000
-		ringcolor=ffffffff
-		keyhlcolor=d23c3dff
-		bshlcolor=d23c3dff
-		separatorcolor=00000000
-		insidevercolor=00000000
-		insidewrongcolor=d23c3dff
-		ringvercolor=ffffffff
-		ringwrongcolor=ffffffff
-		verifcolor=ffffffff
-		timecolor=ffffffff
-		datecolor=ffffffff
-		loginbox=00000066
-		locktext='Type password to unlock...'
-		font="sans-serif"
-		display_on=0
-		span_image=false
 	fi
 
 	CACHE_DIR="$HOME/.cache/i3lock"
@@ -189,9 +191,6 @@ resize_and_render () {
 	RES_BLUR="$2/blur.png"
 	RES_DIMBLUR="$2/dimblur.png"
 	RES_PIXEL="$2/pixel.png"
-
-	# defaults
-	[[ $blur_level ]] || blur_level=1
 
 	echo "Resizing original and applying effects..."
 
@@ -523,10 +522,6 @@ for arg in "$@"; do
 			;;
 	esac
 done
-
-# some defaults
-[[ $display_on ]] || display_on=0
-[[ $span_image ]] || span_image=false
 
 # Run image generation
 [[ $runupdate ]] && update "$imagepath"
