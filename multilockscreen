@@ -7,7 +7,7 @@
 init_config () {
 
 	# user configuration file
-	USER_CONF="$HOME/.config/betterlockscreenrc"
+	USER_CONF="$HOME/.config/multilockscreenrc"
 	if [ -e $USER_CONF ]; then
 		source "$USER_CONF"
 	# default configuration options
@@ -362,14 +362,14 @@ empty() {
 	if [ -f $CUR_L_RESIZE ]; then
 		echo -e "\nSeems you haven't provided any arguments. See below for usage details."
 	else
-		echo 'Important: Update the image cache (e.g. betterlockscreen -u path/to/image.jpg).'
+		echo 'Important: Update the image cache (e.g. multilockscreen -u path/to/image.jpg).'
 		echo
 		echo '		Image cache must be updated to initially configure or update the wallpaper used.'
 	fi
 
 	echo
 	echo 'For other sets of options and help, use the help command.'
-	echo 'e.g. betterlockscreen -h or betterlockscreen --help'
+	echo 'e.g. multilockscreen -h or multilockscreen --help'
 	echo
 	echo 'See: https://github.com/pavanjadhaw/betterlockscreen for additional info...'
 	exit 1
@@ -377,7 +377,7 @@ empty() {
 
 
 usage() {
-	echo 'Important: Update the image cache (e.g. betterlockscreen -u path/to/image.jpg).'
+	echo 'Important: Update the image cache (e.g. multilockscreen -u path/to/image.jpg).'
 	echo '	Image cache must be updated to initially configure or update wallpaper used'
 	echo
 	echo
@@ -387,70 +387,70 @@ usage() {
 	echo 'Options:'
 	echo
 	echo '	-h --help'
-	echo '		For help (e.g. betterlockscreen -h or betterlockscreen --help).'
+	echo '		For help (e.g. multilockscreen -h or multilockscreen --help).'
 	echo
 	echo
 	echo '	-u --update'
 	echo '		to update image cache, you should do this before using any other options'
-	echo '		E.g: betterlockscreen -u path/to/image.png when image.png is custom background'
-	echo '		Or you can use betterlockscreen -u path/to/imagedir and a random file will be selected.'
+	echo '		E.g: multilockscreen -u path/to/image.png when image.png is custom background'
+	echo '		Or you can use multilockscreen -u path/to/imagedir and a random file will be selected.'
 	echo
 	echo
 	echo '	-l --lock'
-	echo '		to lock screen (e.g. betterlockscreen -l)'
+	echo '		to lock screen (e.g. multilockscreen -l)'
 	echo '		you can also use dimmed or blurred background for lockscreen.'
-	echo '		E.g: betterlockscreen -l dim (for dimmed background)'
-	echo '		E.g: betterlockscreen -l blur (for blurred background)'
-	echo '		E.g: betterlockscreen -l dimblur (for dimmed + blurred background)'
+	echo '		E.g: multilockscreen -l dim (for dimmed background)'
+	echo '		E.g: multilockscreen -l blur (for blurred background)'
+	echo '		E.g: multilockscreen -l dimblur (for dimmed + blurred background)'
 	echo
 	echo
 	echo '	-s --suspend'
-	echo '		to suspend system and lock screen (e.g. betterlockscreen -s)'
+	echo '		to suspend system and lock screen (e.g. multilockscreen -s)'
 	echo '		you can also use dimmed or blurred background for lockscreen.'
-	echo '		E.g: betterlockscreen -s dim (for dimmed background)'
-	echo '		E.g: betterlockscreen -s blur (for blurred background)'
-	echo '		E.g: betterlockscreen -s dimblur (for dimmed + blurred background)'
+	echo '		E.g: multilockscreen -s dim (for dimmed background)'
+	echo '		E.g: multilockscreen -s blur (for blurred background)'
+	echo '		E.g: multilockscreen -s dimblur (for dimmed + blurred background)'
 	echo
 	echo
 	echo '	-w --wall'
 	echo '		you can also set lockscreen background as wallpaper'
-	echo '		to set wallpaper (e.g. betterlockscreen -w or betterlockscreen --wall)'
+	echo '		to set wallpaper (e.g. multilockscreen -w or multilockscreen --wall)'
 	echo '		you can also use dimmed or blurred variants.'
-	echo '		E.g: betterlockscreen -w dim (for dimmed wallpaper)'
-	echo '		E.g: betterlockscreen -w blur (for blurred wallpaper)'
-	echo '		E.g: betterlockscreen -w dimblur (for dimmed + blurred wallpaper)'
+	echo '		E.g: multilockscreen -w dim (for dimmed wallpaper)'
+	echo '		E.g: multilockscreen -w blur (for blurred wallpaper)'
+	echo '		E.g: multilockscreen -w dimblur (for dimmed + blurred wallpaper)'
 	echo
 	echo
 	echo '	-d --display'
 	echo '		to be used after -u'
 	echo '		used to set which screen to display login box.'
-	echo '		E.g: betterlockscreen -u path/to/image.png -d 1'
-	echo '		E.g: betterlockscreen -u path/to/image.png --display 2'
+	echo '		E.g: multilockscreen -u path/to/image.png -d 1'
+	echo '		E.g: multilockscreen -u path/to/image.png --display 2'
 	echo
 	echo
 	echo '	--span'
 	echo '		to be used after -u'
 	echo '		used to create wall and locker images that span multiple displays.'
-	echo '		E.g: betterlockscreen -u path/to/image.png --span'
+	echo '		E.g: multilockscreen -u path/to/image.png --span'
 	echo
 	echo
 	echo '	-b --blur'
 	echo '		to be used after -u'
 	echo '		used to set blur intensity. Default to 1.'
-	echo '		E.g: betterlockscreen -u path/to/image.png -b 3'
-	echo '		E.g: betterlockscreen -u path/to/image.png --blur 0.5'
+	echo '		E.g: multilockscreen -u path/to/image.png -b 3'
+	echo '		E.g: multilockscreen -u path/to/image.png --blur 0.5'
 	echo
 	echo
 	echo '	-t --text'
 	echo '		to set custom lockscreen text (max 31 chars)'
-	echo "		E.g: betterlockscreen -l dim -t \"Don't touch my machine!\""
-	echo '		E.g: betterlockscreen --text "Hi, user!" -s blur'
+	echo "		E.g: multilockscreen -l dim -t \"Don't touch my machine!\""
+	echo '		E.g: multilockscreen --text "Hi, user!" -s blur'
 	echo
 	echo
 	echo '	--off <timeout>'
 	echo '		to set custom monitor turn off timeout for lockscreen'
 	echo '		timeout is in seconds'
-	echo '		E.g: betterlockscreen -l dim --off 5'
+	echo '		E.g: multilockscreen -l dim --off 5'
 }
 
 
