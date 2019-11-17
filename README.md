@@ -1,15 +1,17 @@
-# betterlockscreen
+# multilockscreen
+
+This is a fork of [betterlockscreen](https://github.com/pavanjadhaw/betterlockscreen) with support for multiple monitors.
 
 > simple, minimal lockscreen
 
-Betterlockscreen allows you to cache images with different filters and lockscreen with blazing speed.
+Multilockscreen allows you to cache images with different filters and lockscreen with blazing speed.
 
 ## Example
 
 > lockscreen with blurred effect
 
 ```sh
-betterlockscreen --lock blur
+multilockscreen --lock blur
 ```
 
 ![scrot2](https://github.com/pavanjadhaw/betterlockscreen.demo/raw/master/scrots/scrot2.png 'scrot2.png')
@@ -34,7 +36,7 @@ Most of i3lock wrapper scripts out there takes an image, adds some effect and lo
 adding effects, overall experience doesn't feel natural given delay of 2-3 seconds.
 Who would like a delay of 2-3 seconds while locking screen?
 
-So betterlockscreen was my attempt to solve this problem, as we dont need to change lockscreen background frequently
+So multilockscreen was my attempt to solve this problem, as we dont need to change lockscreen background frequently
 this script caches images with effect so overall experience is simple and as fast as native i3lock.
 
 ### How it works
@@ -55,31 +57,33 @@ images as lockscreen background depending on argument provided by user.
 > manual installation
 
 ```sh
-git clone https://github.com/pavanjadhaw/betterlockscreen
-cd betterlockscreen
-cp betterlockscreen ~/.local/bin/
+git clone https://github.com/jeffmhubbard/multilockscreen
+cd multilockscreen
+cp multilockscreen ~/.local/bin/
 ```
 
 <p style="text-align: center">OR</p>
 
 ```sh
 # or wget the script ~12KB
-wget -O betterlockscreen https://git.io/fASUJ
-chmod u+x betterlockscreen
-cp betterlockscreen ~/.local/bin/
+wget -O multilockscreen https://git.io/fASUJ
+chmod u+x multilockscreen
+cp multilockscreen ~/.local/bin/
 ```
 
 ```sh
-# Add betterlockscreen to PATH:
+# Add multilockscreen to PATH:
 # (In your .bashrc, .zshrc etc)
 export PATH="${PATH}:${HOME}/.local/bin/"
 ```
+
+# COMING SOON
 
 ### Package Manager
 
 #### Arch Linux
 
-###### Installing dependencies(not required if using betterlockscreen aur package)
+###### Installing dependencies(not required if using multilockscreen aur package)
 
 `pacman -S imagemagick feh xorg-xrandr xorg-xdpyinfo`
 
@@ -106,14 +110,14 @@ Installing using `xbps` (will automatically install all required dependencies): 
 
 ### Configuration
 
-You can customise various colors for betterlockscreen, copy config file from examples directory to `~/.config/betterlockscreenrc` and edit it accordingly.
+You can customise various colors for multilockscreen, copy config file from examples directory to `~/.config/multilockscreenrc` and edit it accordingly.
 
 If configuration file is not found then default configurations will be used.
 
-If you have installed betterlockscreen from AUR package, then you can copy default config from docs
+If you have installed multilockscreen from AUR package, then you can copy default config from docs
 
 ```sh
-cp /usr/share/doc/betterlockscreen/examples/betterlockscreenrc ~/.config
+cp /usr/share/doc/multilockscreen/examples/multilockscreenrc ~/.config
 ```
 
 There are two new options for multi-monitor support:
@@ -122,15 +126,15 @@ There are two new options for multi-monitor support:
 
 ### Usage
 
-Run `betterlockscreen` and point it to either a directory (`betterlockscreen -u "path/to/dir"`) or an image (`betterlockscreen -u "/path/to/img.jpg"`) and that's all. `betterlockscreen` will change update its cache with image you provided.
+Run `multilockscreen` and point it to either a directory (`multilockscreen -u "path/to/dir"`) or an image (`multilockscreen -u "/path/to/img.jpg"`) and that's all. `multilockscreen` will change update its cache with image you provided.
 
 ```sh
-usage: betterlockscreen [-u "path/to/img.jpg"] [-l "dim, blur, dimblur or pixel"]
+usage: multilockscreen [-u "path/to/img.jpg"] [-l "dim, blur, dimblur or pixel"]
 						[-w "dim, blur, dimblur or pixel"] [-s "lockscreen and suspend"]
 						[-t "custom text"] [-b "factor"] [--off <timeout>]
 						[--display <0-9>] [--span]
 
-betterlockscreen - faster and sweet looking lockscreen for linux systems.
+multilockscreen - faster and sweet looking lockscreen for linux systems.
 
 required:
 	-u, --update "path/to/img.jpg"	caches all required images
@@ -160,30 +164,30 @@ usage:
 
 Usage examples:
 1. Updating image cache(required)
-betterlockscreen -u ~/Pictures/Forests.png # caches given image
-betterlockscreen -u ~/Pictures             # caches random image from ~/Pictures directory
+multilockscreen -u ~/Pictures/Forests.png # caches given image
+multilockscreen -u ~/Pictures             # caches random image from ~/Pictures directory
 
 2. Custom blur range
-betterlockscreen -u path/to/directory -b 0.5
+multilockscreen -u path/to/directory -b 0.5
 
 3. Lockscreen
-betterlockscreen -l dim                    # lockscreen with dim effect
+multilockscreen -l dim                    # lockscreen with dim effect
 
 4. Lockscreen with custom text
-betterlockscreen -l dim -t "custom lockscreen text"
+multilockscreen -l dim -t "custom lockscreen text"
 
 5. Set desktop background
-betterlockscreen -w blur                   # set desktop background with blur effect
+multilockscreen -w blur                   # set desktop background with blur effect
 
 6. Lockscreen with custom monitor off timeout
-betterlockscreen --off 5 -l blur           # set monitor off lockscreen timeout (5 seconds)
+multilockscreen --off 5 -l blur           # set monitor off lockscreen timeout (5 seconds)
 
 7. Update image cache with login box on display 1
-betterlockscreen -u image.png -d 1         # cache images with loginbox on display 1
-betterlockscreen -u image.png -d 1 --span  # cache images that spans all displays
+multilockscreen -u image.png -d 1         # cache images with loginbox on display 1
+multilockscreen -u image.png -d 1 --span  # cache images that spans all displays
 
 8. Lockscreen with login box on display 1
-betterlockscreen -l blur -d 1 --span       # lock screen with loginbox on display 1
+multilockscreen -l blur -d 1 --span       # lock screen with loginbox on display 1
 ```
 
 ### Set desktop background on startup
@@ -192,7 +196,7 @@ Add this line to `.xinitrc`.
 
 ```sh
 # set desktop background with custom effect
-betterlockscreen -w dim
+multilockscreen -w dim
 
 # Alternative (set last used background)
 source ~/.fehbg
@@ -204,7 +208,7 @@ Add this line to `~/.config/i3/config`
 
 ```sh
 # set desktop background with custom effect
-exec --no-startup-id betterlockscreen -w dim
+exec --no-startup-id multilockscreen -w dim
 
 # Alternative (set last used background)
 exec --no-startup-id source ~/.fehbg
@@ -219,7 +223,7 @@ To lockscreen using keyboard shortcut
 Add this line to your `~/.config/i3/config`
 
 ```sh
-bindsym $mod+shift+x exec betterlockscreen -l dim
+bindsym $mod+shift+x exec multilockscreen -l dim
 ```
 
 #### bspwm
@@ -229,24 +233,24 @@ Add this line to your `~/.config/sxhkd/sxhkdrc`
 ```sh
 # lockscreen
 alt + shift + x
-    betterlockscreen -l dim
+    multilockscreen -l dim
 ```
 
 ### Lockscreen when suspended(systemd service)
 
 ```sh
 # move service file to proper dir (the aur package does this for you)
-cp betterlockscreen@.service /etc/systemd/system/
+cp multilockscreen@.service /etc/systemd/system/
 
 # enable systemd service
-systemctl enable betterlockscreen@$USER
+systemctl enable multilockscreen@$USER
 
 # disable systemd service
-systemctl disable betterlockscreen@$USER
+systemctl disable multilockscreen@$USER
 
 
 # Note: Now you can call systemctl suspend to suspend your system
-# and betterlockscreen service will be activated
+# and multilockscreen service will be activated
 # so when your system wakes your screen will be locked.
 ```
 
@@ -265,7 +269,7 @@ Thanks to all the amazing people for all your wonderful PRs, issues and ideas!
 
 ## License
 
-Betterlockscreen is under [MIT](https://github.com/pavanjadhaw/betterlockscreen/blob/master/LICENSE) license.
+multilockscreen is under [MIT](https://github.com/jeffmhubbard/multilockscreen/blob/multi-monitor/LICENSE) license.
 
 ## Feel free to use and distribute
 
@@ -273,5 +277,3 @@ Betterlockscreen is under [MIT](https://github.com/pavanjadhaw/betterlockscreen/
 - Thanks to those who contributed to make it better
 - Inspiration - r/unixporn
 
-[logo]: .github/hero.png
-[website]: https://mdxjs.com
