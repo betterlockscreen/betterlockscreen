@@ -25,6 +25,7 @@ init_config () {
 	blur_level=1
 	display_on=0
 	span_image=false
+	lock_timeout=5
 
 	# user configuration file
 	USER_CONF="$HOME/.config/multilockscreenrc"
@@ -59,7 +60,7 @@ init_config
 
 prelock() {
 	if [ -n "$lock_timeout" ]; then
-	  xset dpms "$lock_timeout"
+		xset dpms "$lock_timeout"
 	fi
 	if [ -n "$(pidof dunst)" ]; then
 		pkill -u "$USER" -USR1 dunst
@@ -89,7 +90,7 @@ lock() {
 
 postlock() {
 	if [ -n "$lock_timeout" ]; then
-	  xset dpms "$DEFAULT_TIMEOUT"
+		xset dpms "$DEFAULT_TIMEOUT"
 	fi
 	if [ -n "$(pidof dunst)" ] ; then
 		pkill -u "$USER" -USR2 dunst
