@@ -66,7 +66,7 @@ cp multilockscreen ~/.local/bin/
 
 ```sh
 # or wget the script ~12KB
-wget -O multilockscreen https://git.io/fASUJ
+wget -O multilockscreen https://git.io/JeoAf
 chmod u+x multilockscreen
 cp multilockscreen ~/.local/bin/
 ```
@@ -76,8 +76,6 @@ cp multilockscreen ~/.local/bin/
 # (In your .bashrc, .zshrc etc)
 export PATH="${PATH}:${HOME}/.local/bin/"
 ```
-
-# COMING SOON
 
 ### Package Manager
 
@@ -91,22 +89,9 @@ export PATH="${PATH}:${HOME}/.local/bin/"
 
 #### Aur package
 
-`betterlockscreen` is available in the Arch User repos as `betterlockscreen` and `betterlockscreen-git`.
+`multilockscreen` is available in the Arch User repos as `multilockscreen-git`.
 
-- betterlockscreen - `trizen -S betterlockscreen`
-- betterlockscreen-git - `trizen -S betterlockscreen-git`
-
-#### Debian and derivatives
-
-UtkarshVerma was so kind to provide an installation script for debian based systems, ![check it out here](https://github.com/UtkarshVerma/installer-scripts).
-
-#### Void Linux
-
-##### xbps repository
-
-`betterlockscreen` is available in official Void's repository as `betterlockscreen`.
-
-Installing using `xbps` (will automatically install all required dependencies): `xbps-install -S betterlockscreen`
+- multilockscreen-git - `trizen -S multilockscreen-git`
 
 ### Configuration
 
