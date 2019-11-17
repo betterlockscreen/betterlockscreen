@@ -156,13 +156,13 @@ get_total_size () {
 
 
 get_display_list () {
-	local DNUM=0
-	mapfile -t DARR < <( xrandr --listactivemonitors )
-	for DISP in "${DARR[@]:1}"; do
-		(( DNUM++ ))
-		DISP=$(echo $DISP | sed -r 's/\/[0-9]*//g')
-		IFS=' ' read -r -a LINE <<< "$DISP"
-		DLIST+=("$DNUM ${LINE[3]} ${LINE[2]}")
+	local count=0
+	mapfile -t displays < <(xrandr --listactivemonitors)
+	for display in "${displays[@]:1}"; do
+		((count++))
+		display="$(echo "$display" | sed -r 's/\/[0-9]*//g')"
+		IFS=' ' read -r -a info  <<< "$display"
+		DISPLAY_LIST+=("$count ${info[3]} ${info[2]}")
 	done
 }
 
@@ -236,83 +236,90 @@ purge_cache () {
 # update locker and wallpaper images
 update () {
 
-	wallpaper=$1
-	rectangles=" "
+	local image="$1"
+	local rectangles=" "
 
-	get_user_wall "$wallpaper" # Returns USER_WALL
+	get_user_wall "$image" # USER_WALL
 	echo "Original: $USER_WALL"
-
-	get_display_list # Returns DLIST
-	get_total_size # Return TOTAL_SIZE
-
-	# create base images per display
-	for DISP in "${DLIST[@]}"; do
-		DNUM="$(cut -d" " -f1 <<<"${DISP}")"
-		DDEV="$(cut -d" " -f2 <<<"${DISP}")"
-		DGEO=($(cut -d" " -f3 <<<"${DISP}"))
-		DRES=(${DGEO[0]//[+]/ })
-		DPOS="+${DRES[1]}+${DRES[2]}"
-		DPATH="$CACHE_DIR/$DNUM-$DDEV"
-
-		#get_geometry $DGEO # Returns SCREEN_*
-		if [[ $DNUM -eq "$display_on" ]] || [[ "$display_on" -eq 0 ]]; then
-			SRA=(${DGEO//[x+]/ })
-			CX=$((${SRA[2]} + $(logical_px 25 1)))
-			CY=$((${SRA[3]} + ${SRA[1]} - $(logical_px 30 2)))
-			rectangles+="rectangle $CX,$CY $((CX+$(logical_px 300 1))),$((CY-$(logical_px 80 2))) "
+	
+	get_display_list # DISPLAY_LIST
+	get_total_size # TOTAL_SIZE
+	
+	for display in "${DISPLAY_LIST[@]}"; do
+	
+		IFS=' ' read -r -a dinfo  <<< "$display"
+		local id="${dinfo[0]}"
+		local device="${dinfo[1]}"
+		local geometry="${dinfo[2]}"
+		
+		read -r -a cols <<< "${geometry//[x+-]/ }"
+		local position="${geometry#*${cols[1]}}"
+		local resolution="${geometry%${position}*}"
+		
+		if [[ $id -eq "$display_on" ]] || [[ "$display_on" -eq 0 ]]; then
+		
+			IFS='x' read -r -a dimension <<< "$resolution"
+			#res_x="${dimension[0]}"
+			res_y="${dimension[1]}"
+			read -r -a val <<< "${position//[+-]/ }"
+			read -r -a sym <<< "${position//[0-9]/ }"
+			pos_x="${sym[0]}${val[0]}"
+			pos_y="${sym[1]}${val[1]}"
+			
+			rect_x=$((pos_x + $(logical_px 25 1)))
+			rect_y=$((pos_y + res_y - $(logical_px 30 2)))
+			rectangles+="rectangle $rect_x,$rect_y $((rect_x+$(logical_px 300 1))),$((rect_y-$(logical_px 80 2))) "
 		fi
-
-		echo "Found: $DDEV ($DNUM)"
-		echo "Resolution: ${DRES[0]}"
-
-		purge_cache $DPATH
-
-		# we only need one set of images when spanning
-		if [ "$span_image" = true ] && [ $DNUM -gt 1 ]; then
+		
+		echo "Found: $device ($id)"
+		echo "Resolution: $resolution"
+		
+		local path="$CACHE_DIR/$id-$device"
+		purge_cache "$path"
+		
+		if [ "$span_image" = true ] && [ "$id" -gt 1 ]; then
 			continue
 		fi
-
+		
 		if [ "$span_image" = true ]; then
-			# render wallpaper at total display size (3840x1080)
-			resize_and_render $USER_WALL $DPATH $TOTAL_SIZE
+			resize_and_render "$USER_WALL" "$path" "$TOTAL_SIZE"
 		else
-			# render wallpaper at each display size
-			resize_and_render $USER_WALL $DPATH ${DRES[0]}
-			# add to parameters for position on canvas
-			PARAM_RESIZE="$PARAM_RESIZE $RES_RESIZE -geometry $DPOS -composite "
-			PARAM_DIM="$PARAM_DIM $RES_DIM -geometry $DPOS -composite "
-			PARAM_BLUR="$PARAM_BLUR $RES_BLUR -geometry $DPOS -composite "
-			PARAM_DIMBLUR="$PARAM_DIMBLUR $RES_DIMBLUR -geometry $DPOS -composite "
-			PARAM_PIXEL="$PARAM_PIXEL $RES_PIXEL -geometry $DPOS -composite "
+			resize_and_render "$USER_WALL" "$path" "$resolution"
+			
+			PARAM_RESIZE="$PARAM_RESIZE $RES_RESIZE -geometry $position -composite "
+			PARAM_DIM="$PARAM_DIM $RES_DIM -geometry $position -composite "
+			PARAM_BLUR="$PARAM_BLUR $RES_BLUR -geometry $position -composite "
+			PARAM_DIMBLUR="$PARAM_DIMBLUR $RES_DIMBLUR -geometry $position -composite "
+			PARAM_PIXEL="$PARAM_PIXEL $RES_PIXEL -geometry $position -composite "
 		fi
-
+		
 	done
-
-	purge_cache $CUR_DIR
-
-	if [ "$span_image" = true ] || [ ${#DLIST[@]} -lt 2 ]; then
+	
+	purge_cache "$CUR_DIR"
+	
+	if [ "$span_image" = true ] || [ ${#DISPLAY_LIST[@]} -lt 2 ]; then
 		echo "Copying final wallpaper images..."
-		cp $RES_RESIZE $CUR_W_RESIZE
-		cp $RES_DIM $CUR_W_DIM
-		cp $RES_BLUR $CUR_W_BLUR
-		cp $RES_DIMBLUR $CUR_W_DIMBLUR
-		cp $RES_PIXEL $CUR_W_PIXEL
+		cp "$RES_RESIZE" "$CUR_W_RESIZE"
+		cp "$RES_DIM" "$CUR_W_DIM"
+		cp "$RES_BLUR" "$CUR_W_BLUR"
+		cp "$RES_DIMBLUR" "$CUR_W_DIMBLUR"
+		cp "$RES_PIXEL" "$CUR_W_PIXEL"
 	else
 		echo "Creating canvas: $TOTAL_SIZE"
-		convert -size $TOTAL_SIZE 'xc:black' $CUR_W_RESIZE 
-		convert -size $TOTAL_SIZE 'xc:black' $CUR_W_DIM 
-		convert -size $TOTAL_SIZE 'xc:black' $CUR_W_BLUR 
-		convert -size $TOTAL_SIZE 'xc:black' $CUR_W_DIMBLUR 
-		convert -size $TOTAL_SIZE 'xc:black' $CUR_W_PIXEL 
-
+		convert -size "$TOTAL_SIZE" 'xc:black' "$CUR_W_RESIZE"
+		convert -size "$TOTAL_SIZE" 'xc:black' "$CUR_W_DIM"
+		convert -size "$TOTAL_SIZE" 'xc:black' "$CUR_W_BLUR"
+		convert -size "$TOTAL_SIZE" 'xc:black' "$CUR_W_DIMBLUR"
+		convert -size "$TOTAL_SIZE" 'xc:black' "$CUR_W_PIXEL"
+		
 		echo "Rendering final wallpaper images..."
-		convert $CUR_W_RESIZE $PARAM_RESIZE $CUR_W_RESIZE
-		convert $CUR_W_DIM $PARAM_DIM $CUR_W_DIM
-		convert $CUR_W_BLUR $PARAM_BLUR $CUR_W_BLUR
-		convert $CUR_W_DIMBLUR $PARAM_DIMBLUR $CUR_W_DIMBLUR
-		convert $CUR_W_PIXEL $PARAM_PIXEL $CUR_W_PIXEL
+		convert "$CUR_W_RESIZE" "$PARAM_RESIZE" "$CUR_W_RESIZE"
+		convert "$CUR_W_DIM" "$PARAM_DIM" "$CUR_W_DIM"
+		convert "$CUR_W_BLUR" "$PARAM_BLUR" "$CUR_W_BLUR"
+		convert "$CUR_W_DIMBLUR" "$PARAM_DIMBLUR" "$CUR_W_DIMBLUR"
+		convert "$CUR_W_PIXEL" "$PARAM_PIXEL" "$CUR_W_PIXEL"
 	fi
-
+	
 	echo "Rendering final locker images..."
 	convert "$CUR_W_RESIZE" -draw "fill #$loginbox $rectangles" "$CUR_L_RESIZE"
 	convert "$CUR_W_DIM" -draw "fill #$loginbox $rectangles" "$CUR_L_DIM"
@@ -320,7 +327,6 @@ update () {
 	convert "$CUR_W_DIMBLUR" -draw "fill #$loginbox $rectangles" "$CUR_L_DIMBLUR"
 	convert "$CUR_W_PIXEL" -draw "fill #$loginbox $rectangles" "$CUR_L_PIXEL"
 }
-
 
 wallpaper() {
 	local fopt
