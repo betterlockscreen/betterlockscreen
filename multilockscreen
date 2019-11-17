@@ -300,25 +300,25 @@ update () {
 	
 	if [ "$span_image" = true ] || [ ${#DISPLAY_LIST[@]} -lt 2 ]; then
 		echo "Copying final wallpaper images..."
-		cp "$RES_RESIZE" "$CUR_W_RESIZE"
-		cp "$RES_DIM" "$CUR_W_DIM"
-		cp "$RES_BLUR" "$CUR_W_BLUR"
-		cp "$RES_DIMBLUR" "$CUR_W_DIMBLUR"
-		cp "$RES_PIXEL" "$CUR_W_PIXEL"
+		cp $RES_RESIZE $CUR_W_RESIZE
+		cp $RES_DIM $CUR_W_DIM
+		cp $RES_BLUR $CUR_W_BLUR
+		cp $RES_DIMBLUR $CUR_W_DIMBLUR
+		cp $RES_PIXEL $CUR_W_PIXEL
 	else
 		echo "Creating canvas: $TOTAL_SIZE"
-		convert -size "$TOTAL_SIZE" 'xc:black' "$CUR_W_RESIZE"
-		convert -size "$TOTAL_SIZE" 'xc:black' "$CUR_W_DIM"
-		convert -size "$TOTAL_SIZE" 'xc:black' "$CUR_W_BLUR"
-		convert -size "$TOTAL_SIZE" 'xc:black' "$CUR_W_DIMBLUR"
-		convert -size "$TOTAL_SIZE" 'xc:black' "$CUR_W_PIXEL"
+		convert -size $TOTAL_SIZE 'xc:black' $CUR_W_RESIZE
+		convert -size $TOTAL_SIZE 'xc:black' $CUR_W_DIM
+		convert -size $TOTAL_SIZE 'xc:black' $CUR_W_BLUR
+		convert -size $TOTAL_SIZE 'xc:black' $CUR_W_DIMBLUR
+		convert -size $TOTAL_SIZE 'xc:black' $CUR_W_PIXEL
 		
-		echo "Rendering final wallpaper images..."
-		convert "$CUR_W_RESIZE" "$PARAM_RESIZE" "$CUR_W_RESIZE"
-		convert "$CUR_W_DIM" "$PARAM_DIM" "$CUR_W_DIM"
-		convert "$CUR_W_BLUR" "$PARAM_BLUR" "$CUR_W_BLUR"
-		convert "$CUR_W_DIMBLUR" "$PARAM_DIMBLUR" "$CUR_W_DIMBLUR"
-		convert "$CUR_W_PIXEL" "$PARAM_PIXEL" "$CUR_W_PIXEL"
+		echo Rendering final wallpaper images...
+		convert $CUR_W_RESIZE $PARAM_RESIZE $CUR_W_RESIZE
+		convert $CUR_W_DIM $PARAM_DIM $CUR_W_DIM
+		convert $CUR_W_BLUR $PARAM_BLUR $CUR_W_BLUR
+		convert $CUR_W_DIMBLUR $PARAM_DIMBLUR $CUR_W_DIMBLUR
+		convert $CUR_W_PIXEL $PARAM_PIXEL $CUR_W_PIXEL
 	fi
 	
 	echo "Rendering final locker images..."
