@@ -332,7 +332,7 @@ update () {
 wallpaper() {
 	local fopt
 	get_display_list
-	if [ "$span_image" = true ] || [[ "${#DLIST[@]}" -gt 1 ]]; then
+	if [ "$span_image" = true ] || [[ "${#DISPLAY_LIST[@]}" -gt 1 ]]; then
 		fopt="--no-xinerama"
 	fi
 	case "$1" in
