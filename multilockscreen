@@ -26,6 +26,7 @@ init_config () {
 	display_on=0
 	span_image=false
 	lock_timeout=5
+	fx_list=(dim blur dimblur pixel)
 
 	# user configuration file
 	USER_CONF="$HOME/.config/multilockscreenrc"
@@ -103,27 +104,27 @@ lockselect() {
 	case "$1" in
 		dim)
 			# lockscreen with dimmed background
-			lock "$CUR_L_DIM"
+			[[ -f "$CUR_L_DIM" ]] && lock "$CUR_L_DIM"
 			;;
 
 		blur)
 			# set lockscreen with blurred background
-			lock "$CUR_L_BLUR"
+			[[ -f "$CUR_L_BLUR" ]] && lock "$CUR_L_BLUR"
 			;;
 
 		dimblur)
 			# set lockscreen with dimmed + blurred background
-			lock "$CUR_L_DIMBLUR"
+			[[ -f "$CUR_L_DIMBLUR" ]] && lock "$CUR_L_DIMBLUR"
 			;;
 
 		pixel)
 			# set lockscreen with pixelated background
-			lock "$CUR_L_PIXEL"
+			[[ -f "$CUR_L_PIXEL" ]] && lock "$CUR_L_PIXEL"
 			;;
 
 		*)
 			# default lockscreen
-			lock "$CUR_L_RESIZE"
+			[[ -f "$CUR_L_RESIZE" ]] && lock "$CUR_L_RESIZE"
 			;;
 	esac
 	postlock
@@ -175,8 +176,8 @@ get_user_wall() {
 		return
 	fi
 	dir=("$path"/*)
-	dir="${dir[RANDOM % ${#dir[@]}]}"
-	get_user_wall "$dir"
+	rdir="${dir[RANDOM % ${#dir[@]}]}"
+	get_user_wall "$rdir"
 }
 
 resize_and_render () {
@@ -193,37 +194,89 @@ resize_and_render () {
 	RES_DIMBLUR="$path/dimblur.png"
 	RES_PIXEL="$path/pixel.png"
 
-	echo "Resizing original and applying effects..."
+	base_resize "$base" "$RES_RESIZE" "$resolution"
+	for effect in "${fx_list[@]}"; do
+		case $effect in
+			dim)
+				fx_dim "$RES_RESIZE" "$RES_DIM";;
+			blur)
+				fx_blur "$RES_RESIZE" "$RES_BLUR" "$resolution";;
+			dimblur)
+				fx_dimblur "$RES_RESIZE" "$RES_DIMBLUR" "$resolution";;
+			pixel)
+				fx_pixel "$RES_RESIZE" "$RES_PIXEL";;
+		esac
+	done
 
-	# apply resize
-	eval convert "$base" -resize "$resolution""^" -gravity center -extent "$resolution" "$RES_RESIZE"
+}
 
-	# apply dim
-	eval convert "$RES_RESIZE" -fill black -colorize 40% "$RES_DIM"
+# apply resize
+base_resize() {
+	local input=$1
+	local output=$2
+	local size=$3
 
-	# apply blur
+	echo "Resizing base image..."
+	eval convert "$input" \
+		-resize "$size""^" \
+		-gravity center \
+		-extent "$size" \
+		"$output"
+}
+
+# apply dim
+fx_dim() {
+	local input=$1
+	local output=$2
+
+	echo "Rendering 'dim' effect..."
+	eval convert "$input" \
+		-fill black -colorize 40% \
+		"$output"
+}
+
+# apply blur
+fx_blur() {
+	local input=$1
+	local output=$2
+	local size=$3
+
+	echo "Rendering 'blur' effect..."
 	blur_shrink=$(echo "scale=2; 20 / $blur_level" | bc)
 	blur_sigma=$(echo "scale=2; 0.6 * $blur_level" | bc)
-	eval convert "$RES_RESIZE" \
+	eval convert "$input" \
 		-filter Gaussian \
 		-resize "$blur_shrink%" \
 		-define "filter:sigma=$blur_sigma" \
-		-resize "$resolution^" -gravity center -extent "$resolution" \
-		"$RES_BLUR"
+		-resize "$size^" -gravity center -extent "$size" \
+		"$output"
+}
 
-	# apply dimblur
-	eval convert "$RES_DIM" \
+# apply dimblur
+fx_dimblur() {
+	local input=$1
+	local output=$2
+	local size=$3
+
+	echo "Rendering 'dimblur' effect..."
+	eval convert "$input" \
+		-fill black -colorize 40% \
 		-filter Gaussian \
 		-resize "$blur_shrink%" \
 		-define "filter:sigma=$blur_sigma" \
-		-resize "$resolution^" -gravity center -extent "$resolution" \
-		"$RES_DIMBLUR"
+		-resize "$size^" -gravity center -extent "$size" \
+		"$output"
+}
 
-	# pixelate
-	eval convert "$RES_RESIZE" \
-		-scale 10% \
-		-scale 1000% \
-		"$RES_PIXEL"
+# pixelate
+fx_pixel() {
+	local input=$1
+	local output=$2
+
+	echo "Rendering 'pixel' effect..."
+	eval convert "$input" \
+		-scale 10% -scale 1000% \
+		"$output"
 }
 
 # delete and recreate directory
@@ -300,33 +353,33 @@ update () {
 	
 	if [ "$span_image" = true ] || [ ${#DISPLAY_LIST[@]} -lt 2 ]; then
 		echo "Copying final wallpaper images..."
-		cp $RES_RESIZE $CUR_W_RESIZE
-		cp $RES_DIM $CUR_W_DIM
-		cp $RES_BLUR $CUR_W_BLUR
-		cp $RES_DIMBLUR $CUR_W_DIMBLUR
-		cp $RES_PIXEL $CUR_W_PIXEL
+		[[ -f "$RES_RESIZE" ]] && cp $RES_RESIZE $CUR_W_RESIZE
+		[[ -f "$RES_DIM" ]] && cp $RES_DIM $CUR_W_DIM
+		[[ -f "$RES_BLUR" ]] && cp $RES_BLUR $CUR_W_BLUR
+		[[ -f "$RES_DIMBLUR" ]] && cp $RES_DIMBLUR $CUR_W_DIMBLUR
+		[[ -f "$RES_PIXEL" ]] && cp $RES_PIXEL $CUR_W_PIXEL
 	else
 		echo "Creating canvas: $TOTAL_SIZE"
-		convert -size $TOTAL_SIZE 'xc:blue' $CUR_W_RESIZE
-		convert -size $TOTAL_SIZE 'xc:blue' $CUR_W_DIM
-		convert -size $TOTAL_SIZE 'xc:blue' $CUR_W_BLUR
-		convert -size $TOTAL_SIZE 'xc:blue' $CUR_W_DIMBLUR
-		convert -size $TOTAL_SIZE 'xc:blue' $CUR_W_PIXEL
+		[[ -f "$RES_RESIZE" ]] && convert -size $TOTAL_SIZE 'xc:blue' $CUR_W_RESIZE
+		[[ -f "$RES_DIM" ]] && convert -size $TOTAL_SIZE 'xc:blue' $CUR_W_DIM
+		[[ -f "$RES_BLUR" ]] && convert -size $TOTAL_SIZE 'xc:blue' $CUR_W_BLUR
+		[[ -f "$RES_DIMBLUR" ]] && convert -size $TOTAL_SIZE 'xc:blue' $CUR_W_DIMBLUR
+		[[ -f "$RES_PIXEL" ]] && convert -size $TOTAL_SIZE 'xc:blue' $CUR_W_PIXEL
 		
 		echo Rendering final wallpaper images...
-		convert $CUR_W_RESIZE $PARAM_RESIZE $CUR_W_RESIZE
-		convert $CUR_W_DIM $PARAM_DIM $CUR_W_DIM
-		convert $CUR_W_BLUR $PARAM_BLUR $CUR_W_BLUR
-		convert $CUR_W_DIMBLUR $PARAM_DIMBLUR $CUR_W_DIMBLUR
-		convert $CUR_W_PIXEL $PARAM_PIXEL $CUR_W_PIXEL
+		[[ -f "$CUR_W_RESIZE" ]] && convert $CUR_W_RESIZE $PARAM_RESIZE $CUR_W_RESIZE
+		[[ -f "$CUR_W_DIM" ]] && convert $CUR_W_DIM $PARAM_DIM $CUR_W_DIM
+		[[ -f "$CUR_W_BLUR" ]] && convert $CUR_W_BLUR $PARAM_BLUR $CUR_W_BLUR
+		[[ -f "$CUR_W_DIMBLUR" ]] && convert $CUR_W_DIMBLUR $PARAM_DIMBLUR $CUR_W_DIMBLUR
+		[[ -f "$CUR_W_PIXEL" ]] && convert $CUR_W_PIXEL $PARAM_PIXEL $CUR_W_PIXEL
 	fi
 	
 	echo "Rendering final locker images..."
-	convert "$CUR_W_RESIZE" -draw "fill #$loginbox $rectangles" "$CUR_L_RESIZE"
-	convert "$CUR_W_DIM" -draw "fill #$loginbox $rectangles" "$CUR_L_DIM"
-	convert "$CUR_W_BLUR" -draw "fill #$loginbox $rectangles" "$CUR_L_BLUR"
-	convert "$CUR_W_DIMBLUR" -draw "fill #$loginbox $rectangles" "$CUR_L_DIMBLUR"
-	convert "$CUR_W_PIXEL" -draw "fill #$loginbox $rectangles" "$CUR_L_PIXEL"
+	[[ -f "$CUR_W_RESIZE" ]] && convert "$CUR_W_RESIZE" -draw "fill #$loginbox $rectangles" "$CUR_L_RESIZE"
+	[[ -f "$CUR_W_DIM" ]] && convert "$CUR_W_DIM" -draw "fill #$loginbox $rectangles" "$CUR_L_DIM"
+	[[ -f "$CUR_W_BLUR" ]] && convert "$CUR_W_BLUR" -draw "fill #$loginbox $rectangles" "$CUR_L_BLUR"
+	[[ -f "$CUR_W_DIMBLUR" ]] && convert "$CUR_W_DIMBLUR" -draw "fill #$loginbox $rectangles" "$CUR_L_DIMBLUR"
+	[[ -f "$CUR_W_PIXEL" ]] && convert "$CUR_W_PIXEL" -draw "fill #$loginbox $rectangles" "$CUR_L_PIXEL"
 }
 
 wallpaper() {
