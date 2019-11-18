@@ -259,6 +259,8 @@ fx_dimblur() {
 	local size=$3
 
 	echo "Rendering 'dimblur' effect..."
+	blur_shrink=$(echo "scale=2; 20 / $blur_level" | bc)
+	blur_sigma=$(echo "scale=2; 0.6 * $blur_level" | bc)
 	eval convert "$input" \
 		-fill black -colorize 40% \
 		-filter Gaussian \
