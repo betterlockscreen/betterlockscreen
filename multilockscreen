@@ -20,6 +20,7 @@ init_config () {
 	timecolor=ffffffff
 	datecolor=ffffffff
 	loginbox=00000066
+	loginshadow=00000000
 	locktext='Type password to unlock...'
 	font="sans-serif"
 	blur_level=1
@@ -281,6 +282,20 @@ fx_pixel() {
 		"$output"
 }
 
+# create loginbox rectangle, set RECTANGLE
+create_loginbox () {
+	RECTANGLE="$CUR_DIR/rectangle.png"
+	local shadow="$CUR_DIR/shadow.png"
+	convert -size 300x80 xc:\#"$loginbox" -fill none $RECTANGLE
+	convert $RECTANGLE \
+		\( -clone 0 -background \#"$loginshadow" -shadow 100x5+0+0 \) +swap \
+		-background none -layers merge +repage $shadow
+	composite -compose Dst_Out -gravity center \
+		$RECTANGLE $shadow -alpha Set $shadow
+	convert $shadow $RECTANGLE -geometry +10+10 -composite $RECTANGLE
+	[[ $shadow ]] && rm $shadow
+}
+
 # delete and recreate directory
 purge_cache () {
 	if [[ -d "$1" ]]; then
@@ -297,23 +312,23 @@ update () {
 
 	get_user_wall "$image" # USER_WALL
 	echo "Original: $USER_WALL"
-	
+
 	get_display_list # DISPLAY_LIST
 	get_total_size # TOTAL_SIZE
-	
+
 	for display in "${DISPLAY_LIST[@]}"; do
-	
+
 		IFS=' ' read -r -a dinfo  <<< "$display"
 		local id="${dinfo[0]}"
 		local device="${dinfo[1]}"
 		local geometry="${dinfo[2]}"
-		
+
 		read -r -a cols <<< "${geometry//[x+-]/ }"
 		local position="${geometry#*${cols[1]}}"
 		local resolution="${geometry%${position}*}"
-		
+
 		if [[ $id -eq "$display_on" ]] || [[ "$display_on" -eq 0 ]]; then
-		
+
 			IFS='x' read -r -a dimension <<< "$resolution"
 			#res_x="${dimension[0]}"
 			res_y="${dimension[1]}"
@@ -321,27 +336,27 @@ update () {
 			read -r -a sym <<< "${position//[0-9]/ }"
 			pos_x="${sym[0]}${val[0]}"
 			pos_y="${sym[1]}${val[1]}"
-			
-			rect_x=$((pos_x + $(logical_px 25 1)))
-			rect_y=$((pos_y + res_y - $(logical_px 30 2)))
-			rectangles+="rectangle $rect_x,$rect_y $((rect_x+$(logical_px 300 1))),$((rect_y-$(logical_px 80 2))) "
+
+			rect_x=$((pos_x + $(logical_px 15 1)))
+			rect_y=$((pos_y + res_y - $(logical_px 120 2)))
+			positions+="+$((rect_x))+$((rect_y)) "
 		fi
-		
+
 		echo "Found: $device ($id)"
 		echo "Resolution: $resolution"
 		
 		local path="$CACHE_DIR/$id-$device"
 		purge_cache "$path"
-		
+
 		if [ "$span_image" = true ] && [ "$id" -gt 1 ]; then
 			continue
 		fi
-		
+
 		if [ "$span_image" = true ]; then
 			resize_and_render "$USER_WALL" "$path" "$TOTAL_SIZE"
 		else
 			resize_and_render "$USER_WALL" "$path" "$resolution"
-			
+
 			PARAM_RESIZE="$PARAM_RESIZE $RES_RESIZE -geometry $position -composite "
 			PARAM_DIM="$PARAM_DIM $RES_DIM -geometry $position -composite "
 			PARAM_BLUR="$PARAM_BLUR $RES_BLUR -geometry $position -composite "
@@ -352,7 +367,7 @@ update () {
 	done
 	
 	purge_cache "$CUR_DIR"
-	
+
 	if [ "$span_image" = true ] || [ ${#DISPLAY_LIST[@]} -lt 2 ]; then
 		echo "Copying final wallpaper images..."
 		[[ -f "$RES_RESIZE" ]] && cp $RES_RESIZE $CUR_W_RESIZE
@@ -367,7 +382,7 @@ update () {
 		[[ -f "$RES_BLUR" ]] && convert -size $TOTAL_SIZE 'xc:blue' $CUR_W_BLUR
 		[[ -f "$RES_DIMBLUR" ]] && convert -size $TOTAL_SIZE 'xc:blue' $CUR_W_DIMBLUR
 		[[ -f "$RES_PIXEL" ]] && convert -size $TOTAL_SIZE 'xc:blue' $CUR_W_PIXEL
-		
+
 		echo Rendering final wallpaper images...
 		[[ -f "$CUR_W_RESIZE" ]] && convert $CUR_W_RESIZE $PARAM_RESIZE $CUR_W_RESIZE
 		[[ -f "$CUR_W_DIM" ]] && convert $CUR_W_DIM $PARAM_DIM $CUR_W_DIM
@@ -375,13 +390,22 @@ update () {
 		[[ -f "$CUR_W_DIMBLUR" ]] && convert $CUR_W_DIMBLUR $PARAM_DIMBLUR $CUR_W_DIMBLUR
 		[[ -f "$CUR_W_PIXEL" ]] && convert $CUR_W_PIXEL $PARAM_PIXEL $CUR_W_PIXEL
 	fi
-	
+
 	echo "Rendering final locker images..."
-	[[ -f "$CUR_W_RESIZE" ]] && convert "$CUR_W_RESIZE" -draw "fill #$loginbox $rectangles" "$CUR_L_RESIZE"
-	[[ -f "$CUR_W_DIM" ]] && convert "$CUR_W_DIM" -draw "fill #$loginbox $rectangles" "$CUR_L_DIM"
-	[[ -f "$CUR_W_BLUR" ]] && convert "$CUR_W_BLUR" -draw "fill #$loginbox $rectangles" "$CUR_L_BLUR"
-	[[ -f "$CUR_W_DIMBLUR" ]] && convert "$CUR_W_DIMBLUR" -draw "fill #$loginbox $rectangles" "$CUR_L_DIMBLUR"
-	[[ -f "$CUR_W_PIXEL" ]] && convert "$CUR_W_PIXEL" -draw "fill #$loginbox $rectangles" "$CUR_L_PIXEL"
+	create_loginbox
+
+	for pos in ${positions[@]}; do
+		PARAM_RECT="$PARAM_RECT $RECTANGLE -geometry $pos -composite "
+	done
+
+	[[ -f "$CUR_W_RESIZE" ]] && convert $CUR_W_RESIZE $PARAM_RECT $CUR_L_RESIZE
+	[[ -f "$CUR_W_DIM" ]] && convert $CUR_W_DIM $PARAM_RECT $CUR_L_DIM
+	[[ -f "$CUR_W_BLUR" ]] && convert $CUR_W_BLUR $PARAM_RECT $CUR_L_BLUR
+	[[ -f "$CUR_W_DIMBLUR" ]] && convert $CUR_W_DIMBLUR $PARAM_RECT $CUR_L_DIMBLUR
+	[[ -f "$CUR_W_PIXEL" ]] && convert $CUR_W_PIXEL $PARAM_RECT $CUR_L_PIXEL
+
+	[[ $RECTANGLE ]] && rm "$RECTANGLE"
+
 }
 
 wallpaper() {

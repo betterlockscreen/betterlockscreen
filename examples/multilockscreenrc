@@ -13,6 +13,7 @@ verifcolor=ffffffff
 timecolor=ffffffff
 datecolor=ffffffff
 loginbox=00000066
+loginshadow=00000000
 locktext='Type password to unlock...'
 font="sans-serif"
 display_on=0
