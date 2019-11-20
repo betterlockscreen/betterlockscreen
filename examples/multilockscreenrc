@@ -19,4 +19,5 @@ font="sans-serif"
 display_on=0
 span_image=false
 lock_timeout=5
-fx_list=(dim blur dimblur pixel)
+fx_list=(dim blur dimblur pixel color)
+colorbg=333333

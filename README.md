@@ -139,6 +139,8 @@ usage:
 			set custom lockscreen text
 	-b, blur 0.0 - 1.0
 			set blur range
+	-c, color <hex color> 
+			set color for solid background
 	--off, --off <timeout>
 			sets custom monitor timeout (<timeout> in seconds)
 	-d, --display 0-9

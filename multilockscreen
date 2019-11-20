@@ -21,13 +21,14 @@ init_config () {
 	datecolor=ffffffff
 	loginbox=00000066
 	loginshadow=00000000
-	locktext='Type password to unlock...'
+	locktext="Type password to unlock..."
 	font="sans-serif"
 	blur_level=1
 	display_on=0
 	span_image=false
 	lock_timeout=5
 	fx_list=(dim blur dimblur pixel)
+	colorbg=333333
 
 	# user configuration file
 	USER_CONF="$HOME/.config/multilockscreenrc"
@@ -45,6 +46,7 @@ init_config () {
 	CUR_W_BLUR="$CUR_DIR/wall_blur.png"
 	CUR_W_DIMBLUR="$CUR_DIR/wall_dimblur.png"
 	CUR_W_PIXEL="$CUR_DIR/wall_pixel.png"
+	CUR_W_COLOR="$CUR_DIR/wall_color.png"
 
 	# locker
 	CUR_L_RESIZE="$CUR_DIR/lock_resize.png"
@@ -52,6 +54,7 @@ init_config () {
 	CUR_L_BLUR="$CUR_DIR/lock_blur.png"
 	CUR_L_DIMBLUR="$CUR_DIR/lock_dimblur.png"
 	CUR_L_PIXEL="$CUR_DIR/lock_pixel.png"
+	CUR_L_COLOR="$CUR_DIR/lock_color.png"
 
 	# Original DPMS timeout
 	DEFAULT_TIMEOUT=`cut -d ' ' -f4 <<< $(xset q | sed -n '25p')`
@@ -121,6 +124,11 @@ lockselect() {
 		pixel)
 			# set lockscreen with pixelated background
 			[[ -f "$CUR_L_PIXEL" ]] && lock "$CUR_L_PIXEL"
+			;;
+
+		color)
+			# set lockscreen with solid color background
+			[[ -f "$CUR_L_COLOR" ]] && lock "$CUR_L_COLOR"
 			;;
 
 		*)
@@ -194,6 +202,7 @@ resize_and_render () {
 	RES_BLUR="$path/blur.png"
 	RES_DIMBLUR="$path/dimblur.png"
 	RES_PIXEL="$path/pixel.png"
+	RES_COLOR="$path/color.png"
 
 	base_resize "$base" "$RES_RESIZE" "$resolution"
 	for effect in "${fx_list[@]}"; do
@@ -206,6 +215,8 @@ resize_and_render () {
 				fx_dimblur "$RES_RESIZE" "$RES_DIMBLUR" "$resolution";;
 			pixel)
 				fx_pixel "$RES_RESIZE" "$RES_PIXEL";;
+			color)
+				fx_color "$RES_COLOR" "$resolution";;
 		esac
 	done
 
@@ -282,6 +293,15 @@ fx_pixel() {
 		"$output"
 }
 
+# create solid color
+fx_color() {
+	local output=$1
+	local size=$2
+
+	echo "Rendering 'color' effect..."
+	eval convert -size "$size" canvas:\#"$colorbg" "$RES_COLOR"
+}
+
 # create loginbox rectangle, set RECTANGLE
 create_loginbox () {
 	RECTANGLE="$CUR_DIR/rectangle.png"
@@ -308,7 +328,6 @@ purge_cache () {
 update () {
 
 	local image="$1"
-	local rectangles=" "
 
 	get_user_wall "$image" # USER_WALL
 	echo "Original: $USER_WALL"
@@ -339,7 +358,7 @@ update () {
 
 			rect_x=$((pos_x + $(logical_px 15 1)))
 			rect_y=$((pos_y + res_y - $(logical_px 120 2)))
-			positions+="+$((rect_x))+$((rect_y)) "
+			positions+=("+$((rect_x))+$((rect_y))")
 		fi
 
 		echo "Found: $device ($id)"
@@ -362,6 +381,7 @@ update () {
 			PARAM_BLUR="$PARAM_BLUR $RES_BLUR -geometry $position -composite "
 			PARAM_DIMBLUR="$PARAM_DIMBLUR $RES_DIMBLUR -geometry $position -composite "
 			PARAM_PIXEL="$PARAM_PIXEL $RES_PIXEL -geometry $position -composite "
+			PARAM_COLOR="$PARAM_COLOR $RES_COLOR -geometry $position -composite "
 		fi
 		
 	done
@@ -375,6 +395,7 @@ update () {
 		[[ -f "$RES_BLUR" ]] && cp $RES_BLUR $CUR_W_BLUR
 		[[ -f "$RES_DIMBLUR" ]] && cp $RES_DIMBLUR $CUR_W_DIMBLUR
 		[[ -f "$RES_PIXEL" ]] && cp $RES_PIXEL $CUR_W_PIXEL
+		[[ -f "$RES_COLOR" ]] && cp $RES_COLOR $CUR_W_COLOR
 	else
 		echo "Creating canvas: $TOTAL_SIZE"
 		[[ -f "$RES_RESIZE" ]] && convert -size $TOTAL_SIZE 'xc:blue' $CUR_W_RESIZE
@@ -382,6 +403,7 @@ update () {
 		[[ -f "$RES_BLUR" ]] && convert -size $TOTAL_SIZE 'xc:blue' $CUR_W_BLUR
 		[[ -f "$RES_DIMBLUR" ]] && convert -size $TOTAL_SIZE 'xc:blue' $CUR_W_DIMBLUR
 		[[ -f "$RES_PIXEL" ]] && convert -size $TOTAL_SIZE 'xc:blue' $CUR_W_PIXEL
+		[[ -f "$RES_COLOR" ]] && convert -size $TOTAL_SIZE 'xc:blue' $CUR_W_COLOR
 
 		echo Rendering final wallpaper images...
 		[[ -f "$CUR_W_RESIZE" ]] && convert $CUR_W_RESIZE $PARAM_RESIZE $CUR_W_RESIZE
@@ -389,12 +411,13 @@ update () {
 		[[ -f "$CUR_W_BLUR" ]] && convert $CUR_W_BLUR $PARAM_BLUR $CUR_W_BLUR
 		[[ -f "$CUR_W_DIMBLUR" ]] && convert $CUR_W_DIMBLUR $PARAM_DIMBLUR $CUR_W_DIMBLUR
 		[[ -f "$CUR_W_PIXEL" ]] && convert $CUR_W_PIXEL $PARAM_PIXEL $CUR_W_PIXEL
+		[[ -f "$CUR_W_COLOR" ]] && convert $CUR_W_COLOR $PARAM_COLOR $CUR_W_COLOR
 	fi
 
 	echo "Rendering final locker images..."
 	create_loginbox
 
-	for pos in ${positions[@]}; do
+	for pos in "${positions[@]}"; do
 		PARAM_RECT="$PARAM_RECT $RECTANGLE -geometry $pos -composite "
 	done
 
@@ -403,6 +426,7 @@ update () {
 	[[ -f "$CUR_W_BLUR" ]] && convert $CUR_W_BLUR $PARAM_RECT $CUR_L_BLUR
 	[[ -f "$CUR_W_DIMBLUR" ]] && convert $CUR_W_DIMBLUR $PARAM_RECT $CUR_L_DIMBLUR
 	[[ -f "$CUR_W_PIXEL" ]] && convert $CUR_W_PIXEL $PARAM_RECT $CUR_L_PIXEL
+	[[ -f "$CUR_W_COLOR" ]] && convert $CUR_W_COLOR $PARAM_RECT $CUR_L_COLOR
 
 	[[ $RECTANGLE ]] && rm "$RECTANGLE"
 
@@ -438,6 +462,11 @@ wallpaper() {
 		pixel)
 			# set pixelated image as wallpaper
 			feh --bg-fill "$fopt" "$CUR_W_PIXEL"
+			;;
+
+		color)
+			# set pixelated image as wallpaper
+			feh --bg-fill "$fopt" "$CUR_W_COLOR"
 			;;
 	esac
 }
@@ -487,6 +516,7 @@ usage() {
 	echo '		E.g: multilockscreen -l dim (for dimmed background)'
 	echo '		E.g: multilockscreen -l blur (for blurred background)'
 	echo '		E.g: multilockscreen -l dimblur (for dimmed + blurred background)'
+	echo '		E.g: multilockscreen -l color (for solid color background)'
 	echo
 	echo
 	echo '	-s --suspend'
@@ -526,6 +556,13 @@ usage() {
 	echo '		E.g: multilockscreen -u path/to/image.png --blur 0.5'
 	echo
 	echo
+	echo '	-c --color'
+	echo '		to be used after -u'
+	echo '		used to set a solid color background. Default to #333333.'
+	echo '		E.g: multilockscreen -u path/to/image.png -c 333333'
+	echo '		E.g: multilockscreen -u path/to/image.png --color 59cfcf'
+	echo
+	echo
 	echo '	-t --text'
 	echo '		to set custom lockscreen text (max 31 chars)'
 	echo "		E.g: multilockscreen -l dim -t \"Don't touch my machine!\""
@@ -563,6 +600,11 @@ for arg in "$@"; do
 
 		-w | --wall | --wallpaper)
 			wallpaper "$2"
+			shift 2
+			;;
+
+		-c | --color)
+			colorbg="${2//\#/}"
 			shift 2
 			;;
 
