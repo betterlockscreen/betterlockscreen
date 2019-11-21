@@ -23,12 +23,14 @@ init_config () {
 	loginshadow=00000000
 	locktext="Type password to unlock..."
 	font="sans-serif"
-	blur_level=1
 	display_on=0
 	span_image=false
 	lock_timeout=5
-	fx_list=(dim blur dimblur pixel)
-	colorbg=333333
+	fx_list=(dim blur dimblur pixel color)
+	dim_level=40
+	blur_level=1
+	pixel_scale=10,1000
+	solid_color=333333
 
 	# user configuration file
 	USER_CONF="$HOME/.config/multilockscreenrc"
@@ -243,7 +245,7 @@ fx_dim() {
 
 	echo "Rendering 'dim' effect..."
 	eval convert "$input" \
-		-fill black -colorize 40% \
+		-fill black -colorize "$dim_level"% \
 		"$output"
 }
 
@@ -274,7 +276,7 @@ fx_dimblur() {
 	blur_shrink=$(echo "scale=2; 20 / $blur_level" | bc)
 	blur_sigma=$(echo "scale=2; 0.6 * $blur_level" | bc)
 	eval convert "$input" \
-		-fill black -colorize 40% \
+		-fill black -colorize "$dim_level"% \
 		-filter Gaussian \
 		-resize "$blur_shrink%" \
 		-define "filter:sigma=$blur_sigma" \
@@ -288,8 +290,9 @@ fx_pixel() {
 	local output=$2
 
 	echo "Rendering 'pixel' effect..."
+	IFS=',' read -ra range <<< "$pixel_scale"
 	eval convert "$input" \
-		-scale 10% -scale 1000% \
+		-scale "${range[0]}"% -scale "${range[1]}"% \
 		"$output"
 }
 
@@ -299,7 +302,7 @@ fx_color() {
 	local size=$2
 
 	echo "Rendering 'color' effect..."
-	eval convert -size "$size" canvas:\#"$colorbg" "$RES_COLOR"
+	eval convert -size "$size" canvas:\#"$solid_color" "$RES_COLOR"
 }
 
 # create loginbox rectangle, set RECTANGLE
@@ -536,10 +539,9 @@ usage() {
 	echo '		E.g: multilockscreen -w dimblur (for dimmed + blurred wallpaper)'
 	echo
 	echo
-	echo '	-d --display'
-	echo '		to be used after -u'
+	echo '	--display'
+	echo '		to be used after -u or -l (must be the same)'
 	echo '		used to set which screen to display login box.'
-	echo '		E.g: multilockscreen -u path/to/image.png -d 1'
 	echo '		E.g: multilockscreen -u path/to/image.png --display 2'
 	echo
 	echo
@@ -549,30 +551,45 @@ usage() {
 	echo '		E.g: multilockscreen -u path/to/image.png --span'
 	echo
 	echo
-	echo '	-b --blur'
-	echo '		to be used after -u'
-	echo '		used to set blur intensity. Default to 1.'
-	echo '		E.g: multilockscreen -u path/to/image.png -b 3'
-	echo '		E.g: multilockscreen -u path/to/image.png --blur 0.5'
-	echo
-	echo
-	echo '	-c --color'
-	echo '		to be used after -u'
-	echo '		used to set a solid color background. Default to #333333.'
-	echo '		E.g: multilockscreen -u path/to/image.png -c 333333'
-	echo '		E.g: multilockscreen -u path/to/image.png --color 59cfcf'
-	echo
-	echo
-	echo '	-t --text'
-	echo '		to set custom lockscreen text (max 31 chars)'
-	echo "		E.g: multilockscreen -l dim -t \"Don't touch my machine!\""
-	echo '		E.g: multilockscreen --text "Hi, user!" -s blur'
-	echo
-	echo
 	echo '	--off <timeout>'
 	echo '		to set custom monitor turn off timeout for lockscreen'
 	echo '		timeout is in seconds'
 	echo '		E.g: multilockscreen -l dim --off 5'
+	echo
+	echo
+	echo '	--text'
+	echo '		to set custom lockscreen text (max 31 chars)'
+	echo '		E.g: multilockscreen --text "Hi, user!" -s blur'
+	echo
+	echo
+	echo '	--fx'
+	echo '		to be used after -u'
+	echo '		used to set which effects are generated. Default to all effects.'
+	echo '		E.g: multilockscreen -u path/to/image.png --fx dimblur,color'
+	echo
+	echo
+	echo '	--dim'
+	echo '		to be used after -u'
+	echo '		used to set dim percentage. Default to 40.'
+	echo '		E.g: multilockscreen -u path/to/image.png --dim 40'
+	echo
+	echo
+	echo '	--blur'
+	echo '		to be used after -u'
+	echo '		used to set blur intensity. Default to 1.'
+	echo '		E.g: multilockscreen -u path/to/image.png --blur 0.5'
+	echo
+	echo
+	echo '	--pixel'
+	echo '		to be used after -u'
+	echo '		used to set scale percentages. Default to 10,1000.'
+	echo '		E.g: multilockscreen -u path/to/image.png --pixel 10,1000'
+	echo
+	echo
+	echo '	--color'
+	echo '		to be used after -u'
+	echo '		used to set a solid color background. Default to #333333.'
+	echo '		E.g: multilockscreen -u path/to/image.png --color 59cfcf'
 }
 
 
@@ -588,9 +605,11 @@ for arg in "$@"; do
 			break
 			;;
 
-		-s | --suspend)
-			runsuspend=true
-			;&
+		-u | --update)
+			runupdate=true
+			imagepath="$2"
+			shift 2
+			;;
 
 		-l | --lock)
 			runlock=true
@@ -598,33 +617,16 @@ for arg in "$@"; do
 			[[ ${2:0:1} = '-' ]] && shift 1 || { lockstyle="$2"; shift 2; }
 			;;
 
-		-w | --wall | --wallpaper)
+		-s | --suspend)
+			runsuspend=true
+			;&
+
+		-w | --wall)
 			wallpaper "$2"
 			shift 2
 			;;
 
-		-c | --color)
-			colorbg="${2//\#/}"
-			shift 2
-			;;
-
-		-u | --update)
-			runupdate=true
-			imagepath="$2"
-			shift 2
-			;;
-
-		-t | --text)
-			locktext="$2"
-			shift 2
-			;;
-
-		--off)
-			lock_timeout="$2"
-			shift 2
-			;;
-
-		-d | --display)
+		--display)
 			display_on="$2"
 			shift 2
 			;;
@@ -634,8 +636,38 @@ for arg in "$@"; do
 			shift 1
 			;;
 
-		-b | --blur)
+		--off)
+			lock_timeout="$2"
+			shift 2
+			;;
+
+		--text)
+			locktext="$2"
+			shift 2
+			;;
+
+		--fx)
+			IFS=',' read -ra fx_list <<< "$2"
+			shift 2
+			;;
+
+		--dim)
+			dim_level="$2"
+			shift 2
+			;;
+
+		--blur)
 			blur_level="$2"
+			shift 2
+			;;
+
+		--pixel)
+			pixel_scale="$2"
+			shift 2
+			;;
+
+		--color)
+			solid_color="${2//\#/}"
 			shift 2
 			;;
 

@@ -127,26 +127,32 @@ required:
 usage:
 	-l, --lock effect-name
 			locks with provided effect
-	-w, --wall effect-name
-			set desktop background with provided effect
 	-s, --suspend effect-name
 			lockscreen and suspend
+	-w, --wall effect-name
+			set desktop background with provided effect
 
-			Available effects:
-				dim, blur, dimblur or pixel
+	Available effects:
+		dim, blur, dimblur, pixel or color
 
-	-t, --text "custom text"
-			set custom lockscreen text
-	-b, blur 0.0 - 1.0
-			set blur range
-	-c, color <hex color> 
-			set color for solid background
-	--off, --off <timeout>
-			sets custom monitor timeout (<timeout> in seconds)
-	-d, --display 0-9
+	--display <0-9>
 			screen to display loginbox (0 for all)
 	--span
 			span multiple screens
+	--off <seconds>
+			sets custom monitor timeout
+	--text "<text>"
+			set custom lockscreen text
+	--fx <csv>
+			set effects to generate
+	--dim <0-100>
+			set dim percent
+	--blur <0.0-1.0>
+			set blur intensity
+	--pixel <scale> 
+			set scale to pixelate
+	--color <hex color> 
+			set color for solid background
 
 
 Usage examples:
@@ -155,7 +161,7 @@ multilockscreen -u ~/Pictures/Forests.png # caches given image
 multilockscreen -u ~/Pictures             # caches random image from ~/Pictures directory
 
 2. Custom blur range
-multilockscreen -u path/to/directory -b 0.5
+multilockscreen -u path/to/directory --blur 0.5
 
 3. Lockscreen
 multilockscreen -l dim                    # lockscreen with dim effect
@@ -170,11 +176,11 @@ multilockscreen -w blur                   # set desktop background with blur eff
 multilockscreen --off 5 -l blur           # set monitor off lockscreen timeout (5 seconds)
 
 7. Update image cache with login box on display 1
-multilockscreen -u image.png -d 1         # cache images with loginbox on display 1
-multilockscreen -u image.png -d 1 --span  # cache images that spans all displays
+multilockscreen -u image.png --display 1  # cache images with loginbox on display 1
+multilockscreen -u image.png --span       # cache images that spans all displays
 
 8. Lockscreen with login box on display 1
-multilockscreen -l blur -d 1 --span       # lock screen with loginbox on display 1
+multilockscreen -l blur --display 1       # lock screen with loginbox on display 1
 ```
 
 ### Set desktop background on startup
