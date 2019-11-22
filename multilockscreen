@@ -50,7 +50,7 @@ init_config () {
 	CUR_W_PIXEL="$CUR_DIR/wall_pixel.png"
 	CUR_W_COLOR="$CUR_DIR/wall_color.png"
 
-	# locker
+	# lockscreen
 	CUR_L_RESIZE="$CUR_DIR/lock_resize.png"
 	CUR_L_DIM="$CUR_DIR/lock_dim.png"
 	CUR_L_BLUR="$CUR_DIR/lock_blur.png"
@@ -327,16 +327,19 @@ purge_cache () {
 	mkdir -p "$1" 
 }
 
-# update locker and wallpaper images
+# update lockscreen and wallpaper images
 update () {
+
+	echo "Updating Image Cache..."
 
 	local image="$1"
 
 	get_user_wall "$image" # USER_WALL
-	echo "Original: $USER_WALL"
+	echo "Original Image: $USER_WALL"
 
 	get_display_list # DISPLAY_LIST
 	get_total_size # TOTAL_SIZE
+	echo "Detected ${#DISPLAY_LIST[@]} Displays @ $TOTAL_SIZE Resolution"
 
 	for display in "${DISPLAY_LIST[@]}"; do
 
@@ -364,7 +367,7 @@ update () {
 			positions+=("+$((rect_x))+$((rect_y))")
 		fi
 
-		echo "Found: $device ($id)"
+		echo "Display: $device ($id)"
 		echo "Resolution: $resolution"
 		
 		local path="$CACHE_DIR/$id-$device"
@@ -392,7 +395,6 @@ update () {
 	purge_cache "$CUR_DIR"
 
 	if [ "$span_image" = true ] || [ ${#DISPLAY_LIST[@]} -lt 2 ]; then
-		echo "Copying final wallpaper images..."
 		[[ -f "$RES_RESIZE" ]] && cp $RES_RESIZE $CUR_W_RESIZE
 		[[ -f "$RES_DIM" ]] && cp $RES_DIM $CUR_W_DIM
 		[[ -f "$RES_BLUR" ]] && cp $RES_BLUR $CUR_W_BLUR
@@ -417,7 +419,7 @@ update () {
 		[[ -f "$CUR_W_COLOR" ]] && convert $CUR_W_COLOR $PARAM_COLOR $CUR_W_COLOR
 	fi
 
-	echo "Rendering final locker images..."
+	echo "Rendering final lockscreen images..."
 	create_loginbox
 
 	for pos in "${positions[@]}"; do
@@ -432,6 +434,8 @@ update () {
 	[[ -f "$CUR_W_COLOR" ]] && convert $CUR_W_COLOR $PARAM_RECT $CUR_L_COLOR
 
 	[[ $RECTANGLE ]] && rm "$RECTANGLE"
+
+	echo "Done"
 
 }
 
@@ -540,15 +544,17 @@ usage() {
 	echo
 	echo
 	echo '	--display'
-	echo '		to be used after -u or -l (must be the same)'
+	echo '		to be used with -u and -l (must be the same)'
 	echo '		used to set which screen to display login box.'
 	echo '		E.g: multilockscreen -u path/to/image.png --display 2'
+	echo '		E.g: multilockscreen -l dimblur --display 2'
 	echo
 	echo
 	echo '	--span'
-	echo '		to be used after -u'
-	echo '		used to create wall and locker images that span multiple displays.'
+	echo '		to be used with -u and -l (must be the same)'
+	echo '		used to create wall and lockscreen images that span multiple displays.'
 	echo '		E.g: multilockscreen -u path/to/image.png --span'
+	echo '		E.g: multilockscreen -l dimblur --span'
 	echo
 	echo
 	echo '	--off <timeout>'
@@ -563,31 +569,31 @@ usage() {
 	echo
 	echo
 	echo '	--fx'
-	echo '		to be used after -u'
+	echo '		to be used with -u'
 	echo '		used to set which effects are generated. Default to all effects.'
 	echo '		E.g: multilockscreen -u path/to/image.png --fx dimblur,color'
 	echo
 	echo
 	echo '	--dim'
-	echo '		to be used after -u'
+	echo '		to be used with -u'
 	echo '		used to set dim percentage. Default to 40.'
 	echo '		E.g: multilockscreen -u path/to/image.png --dim 40'
 	echo
 	echo
 	echo '	--blur'
-	echo '		to be used after -u'
+	echo '		to be used with -u'
 	echo '		used to set blur intensity. Default to 1.'
 	echo '		E.g: multilockscreen -u path/to/image.png --blur 0.5'
 	echo
 	echo
 	echo '	--pixel'
-	echo '		to be used after -u'
+	echo '		to be used with -u'
 	echo '		used to set scale percentages. Default to 10,1000.'
 	echo '		E.g: multilockscreen -u path/to/image.png --pixel 10,1000'
 	echo
 	echo
 	echo '	--color'
-	echo '		to be used after -u'
+	echo '		to be used with -u'
 	echo '		used to set a solid color background. Default to #333333.'
 	echo '		E.g: multilockscreen -u path/to/image.png --color 59cfcf'
 }
