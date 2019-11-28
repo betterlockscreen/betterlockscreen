@@ -1,28 +1,12 @@
 #!/usr/bin/env bash
 
-# Author : Pavan Jadhaw
-# Github Profile : https://github.com/pavanjadhaw
-# Project Repository : https://github.com/pavanjadhaw/betterlockscreen
+# multilockscreen
+# i3lock wrapper with multi-monitor support
+# https://github.com/jeffmhubbard/multilockscreen
 
 init_config () {
 
-	# default configuration options
-	insidecolor=00000000
-	ringcolor=ffffffff
-	keyhlcolor=d23c3dff
-	bshlcolor=d23c3dff
-	separatorcolor=00000000
-	insidevercolor=00000000
-	insidewrongcolor=d23c3dff
-	ringvercolor=ffffffff
-	ringwrongcolor=ffffffff
-	verifcolor=ffffffff
-	timecolor=ffffffff
-	datecolor=ffffffff
-	loginbox=00000066
-	loginshadow=00000000
-	locktext="Type password to unlock..."
-	font="sans-serif"
+	# default options
 	display_on=0
 	span_image=false
 	lock_timeout=5
@@ -32,14 +16,32 @@ init_config () {
 	pixel_scale=10,1000
 	solid_color=333333
 
+	# default theme
+	loginbox=00000066
+	loginshadow=00000000
+	locktext="Type password to unlock..."
+	font="sans-serif"
+	ringcolor=ffffffff
+	insidecolor=00000000
+	separatorcolor=00000000
+	ringvercolor=ffffffff
+	insidevercolor=00000000
+	ringwrongcolor=ffffffff
+	insidewrongcolor=d23c3dff
+	keyhlcolor=d23c3dff
+	bshlcolor=d23c3dff
+	verifcolor=ffffffff
+	timecolor=ffffffff
+	datecolor=ffffffff
+
 	# user configuration file
-	USER_CONF="$HOME/.config/multilockscreenrc"
+	USER_CONF="$HOME/.config/multilock/config"
 	if [ -e "$USER_CONF" ]; then
 		# shellcheck source=/dev/null
 		source "$USER_CONF"
 	fi
 
-	CACHE_DIR="$HOME/.cache/i3lock"
+	CACHE_DIR="$HOME/.cache/multilock"
 	CUR_DIR="$CACHE_DIR/current"
 
 	# wallpaper
@@ -59,7 +61,7 @@ init_config () {
 	CUR_L_COLOR="$CUR_DIR/lock_color.png"
 
 	# Original DPMS timeout
-	DEFAULT_TIMEOUT=`cut -d ' ' -f4 <<< $(xset q | sed -n '25p')`
+	DEFAULT_TIMEOUT=$(cut -d ' ' -f4 <<< "$(xset q | sed -n '25p')")
 }
 init_config
 
@@ -330,9 +332,10 @@ purge_cache () {
 # update lockscreen and wallpaper images
 update () {
 
-	echo "Updating Image Cache..."
-
 	local image="$1"
+
+	echo "Updating Image Cache..."
+	mkdir -p "$CACHE_DIR" &>/dev/null
 
 	get_user_wall "$image" # USER_WALL
 	echo "Original Image: $USER_WALL"
