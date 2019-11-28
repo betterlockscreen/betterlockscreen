@@ -34,13 +34,14 @@ init_config () {
 	timecolor=ffffffff
 	datecolor=ffffffff
 
-	# user configuration file
+	# read user config
 	USER_CONF="$HOME/.config/multilock/config"
 	if [ -e "$USER_CONF" ]; then
 		# shellcheck source=/dev/null
 		source "$USER_CONF"
 	fi
 
+	# paths
 	CACHE_DIR="$HOME/.cache/multilock"
 	CUR_DIR="$CACHE_DIR/current"
 
@@ -66,22 +67,26 @@ init_config () {
 init_config
 
 
-
+# called before screen is locked
 prelock() {
+	# set dpms timeout
 	if [ -n "$lock_timeout" ]; then
 		xset dpms "$lock_timeout"
 	fi
+	# pause dunst
 	if [ -n "$(pidof dunst)" ]; then
 		pkill -u "$USER" -USR1 dunst
 	fi
 }
 
 
+# lock screen with specified image
 lock() {
-	#$1 image path
+
+	local image="$1"
 
 	i3lock \
-		-i "$1" \
+		-i "$image" \
 		--screen "$display_on" \
 		--timepos='ix-170:iy-0' \
 		--datepos='ix-240:iy+25' \
@@ -97,79 +102,70 @@ lock() {
 }
 
 
+# called after screen is unlocked
 postlock() {
+	# restore default dpms timeout
 	if [ -n "$lock_timeout" ]; then
 		xset dpms "$DEFAULT_TIMEOUT"
 	fi
+	# unpause dunst
 	if [ -n "$(pidof dunst)" ] ; then
 		pkill -u "$USER" -USR2 dunst
 	fi
 }
 
 
+# select effect and lock screen
 lockselect() {
+
 	prelock
+
 	case "$1" in
-		dim)
-			# lockscreen with dimmed background
-			[[ -f "$CUR_L_DIM" ]] && lock "$CUR_L_DIM"
-			;;
-
-		blur)
-			# set lockscreen with blurred background
-			[[ -f "$CUR_L_BLUR" ]] && lock "$CUR_L_BLUR"
-			;;
-
-		dimblur)
-			# set lockscreen with dimmed + blurred background
-			[[ -f "$CUR_L_DIMBLUR" ]] && lock "$CUR_L_DIMBLUR"
-			;;
-
-		pixel)
-			# set lockscreen with pixelated background
-			[[ -f "$CUR_L_PIXEL" ]] && lock "$CUR_L_PIXEL"
-			;;
-
-		color)
-			# set lockscreen with solid color background
-			[[ -f "$CUR_L_COLOR" ]] && lock "$CUR_L_COLOR"
-			;;
-
-		*)
-			# default lockscreen
-			[[ -f "$CUR_L_RESIZE" ]] && lock "$CUR_L_RESIZE"
-			;;
+		dim) [[ -f "$CUR_L_DIM" ]] && lock "$CUR_L_DIM";;
+		blur) [[ -f "$CUR_L_BLUR" ]] && lock "$CUR_L_BLUR";;
+		dimblur) [[ -f "$CUR_L_DIMBLUR" ]] && lock "$CUR_L_DIMBLUR";;
+		pixel) [[ -f "$CUR_L_PIXEL" ]] && lock "$CUR_L_PIXEL";;
+		color) [[ -f "$CUR_L_COLOR" ]] && lock "$CUR_L_COLOR";;
+		*) [[ -f "$CUR_L_RESIZE" ]] && lock "$CUR_L_RESIZE";;
 	esac
+
 	postlock
 }
 
-# $1: number of pixels to convert
-# $2: 1 for width. 2 for height
+# calculate adjustments for hidpi displays
 logical_px() {
+
+	# $1: number of pixels to convert
+	# $2: 1 for width. 2 for height
+	local pixels="$1"
+	local direction="$2"
+
 	# get dpi value from xdpyinfo
-	local DPI=$(xdpyinfo | sed -En "s/\s*resolution:\s*([0-9]*)x([0-9]*)\s.*/\\$2/p" | head -n1)
+	local DPI
+	DPI=$(xdpyinfo | sed -En "s/\s*resolution:\s*([0-9]*)x([0-9]*)\s.*/\\$direction/p" | head -n1)
 	
 	# return the default value if no DPI is set
 	if [ -z "$DPI" ]; then
-		echo $1
+		echo "$pixels"
 	else
-		local SCALE=$(echo "scale=2; $DPI / 96.0" | bc)
+		local SCALE
+		SCALE=$(echo "scale=2; $DPI / 96.0" | bc)
 
 		# check if scaling the value is worthy
-		if [ $(echo "$SCALE > 1.25" | bc -l) -eq 0 ]; then
-			echo $1
+		if [ "$(echo "$SCALE > 1.25" | bc -l)" -eq 0 ]; then
+			echo "$pixels"
 		else
-			echo "$SCALE * $1 / 1" | bc
+			echo "$SCALE * $pixels / 1" | bc
 		fi
 	fi
 }
 
-# get total resolution
+# get total resolution, sets $TOTAL_SIZE
 get_total_size () {
 	TOTAL_SIZE=$(xdpyinfo | grep -w "dimensions" | sed -r 's/^[^0-9]*([0-9]+x[0-9]+).*$/\1/')
 }
 
-
+# get list of displays, sets $DISPLAY_LIST
 get_display_list () {
 	local count=0
 	mapfile -t displays < <(xrandr --listactivemonitors)
@@ -181,9 +177,13 @@ get_display_list () {
 	done
 }
 
-
+# get image path, sets $USER_WALL
+# if arg is file, return that
+# if arg is dir, return random image
 get_user_wall() {
+
 	local path="$1"
+
 	if [ ! -d "$path" ]; then
 		USER_WALL="$path"
 		return
@@ -191,16 +191,17 @@ get_user_wall() {
 	dir=("$path"/*)
 	rdir="${dir[RANDOM % ${#dir[@]}]}"
 	get_user_wall "$rdir"
+
 }
 
+# scale base image and generate effects
 resize_and_render () {
 
-	# arguments
-	local base=$1
-	local path=$2
-	local resolution=$3
+	local base="$1"
+	local path="$2"
+	local resolution="$3"
 
-	# wallpaper
+	# resource paths
 	RES_RESIZE="$path/resize.png"
 	RES_DIM="$path/dim.png"
 	RES_BLUR="$path/blur.png"
@@ -208,19 +209,17 @@ resize_and_render () {
 	RES_PIXEL="$path/pixel.png"
 	RES_COLOR="$path/color.png"
 
+	# resize
 	base_resize "$base" "$RES_RESIZE" "$resolution"
+
+	# effects
 	for effect in "${fx_list[@]}"; do
 		case $effect in
-			dim)
-				fx_dim "$RES_RESIZE" "$RES_DIM";;
-			blur)
-				fx_blur "$RES_RESIZE" "$RES_BLUR" "$resolution";;
-			dimblur)
-				fx_dimblur "$RES_RESIZE" "$RES_DIMBLUR" "$resolution";;
-			pixel)
-				fx_pixel "$RES_RESIZE" "$RES_PIXEL";;
-			color)
-				fx_color "$RES_COLOR" "$resolution";;
+			dim) fx_dim "$RES_RESIZE" "$RES_DIM";;
+			blur) fx_blur "$RES_RESIZE" "$RES_BLUR" "$resolution";;
+			dimblur) fx_dimblur "$RES_RESIZE" "$RES_DIMBLUR" "$resolution";;
+			pixel) fx_pixel "$RES_RESIZE" "$RES_PIXEL";;
+			color) fx_color "$RES_COLOR" "$resolution";;
 		esac
 	done
 
@@ -228,9 +227,10 @@ resize_and_render () {
 
 # apply resize
 base_resize() {
-	local input=$1
-	local output=$2
-	local size=$3
+
+	local input="$1"
+	local output="$2"
+	local size="$3"
 
 	echo "Resizing base image..."
 	eval convert "$input" \
@@ -242,8 +242,8 @@ base_resize() {
 
 # apply dim
 fx_dim() {
-	local input=$1
-	local output=$2
+	local input="$1"
+	local output="$2"
 
 	echo "Rendering 'dim' effect..."
 	eval convert "$input" \
@@ -253,9 +253,9 @@ fx_dim() {
 
 # apply blur
 fx_blur() {
-	local input=$1
-	local output=$2
-	local size=$3
+	local input="$1"
+	local output="$2"
+	local size="$3"
 
 	echo "Rendering 'blur' effect..."
 	blur_shrink=$(echo "scale=2; 20 / $blur_level" | bc)
@@ -270,9 +270,9 @@ fx_blur() {
 
 # apply dimblur
 fx_dimblur() {
-	local input=$1
-	local output=$2
-	local size=$3
+	local input="$1"
+	local output="$2"
+	local size="$3"
 
 	echo "Rendering 'dimblur' effect..."
 	blur_shrink=$(echo "scale=2; 20 / $blur_level" | bc)
@@ -288,8 +288,8 @@ fx_dimblur() {
 
 # pixelate
 fx_pixel() {
-	local input=$1
-	local output=$2
+	local input="$1"
+	local output="$2"
 
 	echo "Rendering 'pixel' effect..."
 	IFS=',' read -ra range <<< "$pixel_scale"
@@ -300,14 +300,14 @@ fx_pixel() {
 
 # create solid color
 fx_color() {
-	local output=$1
-	local size=$2
+	local output="$1"
+	local size="$2"
 
 	echo "Rendering 'color' effect..."
 	eval convert -size "$size" canvas:\#"$solid_color" "$RES_COLOR"
 }
 
-# create loginbox rectangle, set RECTANGLE
+# create loginbox rectangle, set $RECTANGLE
 create_loginbox () {
 	RECTANGLE="$CUR_DIR/rectangle.png"
 	local shadow="$CUR_DIR/shadow.png"
@@ -442,46 +442,30 @@ update () {
 
 }
 
+# set wallpaper with effect
 wallpaper() {
-	local fopt
+
+	local effect="$1"
+	local span
+
+	# make wallpaper span displays
 	get_display_list
 	if [ "$span_image" = true ] || [[ "${#DISPLAY_LIST[@]}" -gt 1 ]]; then
-		fopt="--no-xinerama"
+		span="--no-xinerama"
 	fi
-	case "$1" in
-		'')
-			# set resized image as wallpaper if no argument is supplied by user
-			feh --bg-fill "$fopt" "$CUR_W_RESIZE"
-			;;
 
-		dim)
-			# set dimmed image as wallpaper
-			feh --bg-fill "$fopt" "$CUR_W_DIM"
-			;;
-
-		blur)
-			# set blurred image as wallpaper
-			feh --bg-fill "$fopt" "$CUR_W_BLUR"
-			;;
-
-		dimblur)
-			# set dimmed + blurred image as wallpaper
-			feh --bg-fill "$fopt" "$CUR_W_DIMBLUR"
-			;;
-
-		pixel)
-			# set pixelated image as wallpaper
-			feh --bg-fill "$fopt" "$CUR_W_PIXEL"
-			;;
-
-		color)
-			# set pixelated image as wallpaper
-			feh --bg-fill "$fopt" "$CUR_W_COLOR"
-			;;
+	# set wallpaper
+	case "$effect" in
+		dim) feh --bg-fill "$span" "$CUR_W_DIM";;
+		blur) feh --bg-fill "$span" "$CUR_W_BLUR";;
+		dimblur) feh --bg-fill "$span" "$CUR_W_DIMBLUR";;
+		pixel) feh --bg-fill "$span" "$CUR_W_PIXEL";;
+		color) feh --bg-fill "$span" "$CUR_W_COLOR";;
+		*) feh --bg-fill "$span" "$CUR_W_RESIZE";;
 	esac
 }
 
-
+# help message
 usage() {
 	echo
 	echo "Usage: multilockscreen [-u <PATH>] [-l <EFFECT>] [-w <EFFECT>]"
@@ -529,9 +513,10 @@ usage() {
 	exit 1
 }
 
-# Options
+# show usage when no arguments passed
 [[ "$1" = "" ]] && usage
 
+# process arguments
 for arg in "$@"; do
 	[[ "${arg:0:1}" = '-' ]] || continue
 
