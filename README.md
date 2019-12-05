@@ -1,272 +1,151 @@
-# multilockscreen
+﻿# multilockscreen
 
 This is a fork of [betterlockscreen](https://github.com/pavanjadhaw/betterlockscreen) with support for multiple monitors.
-
-> simple, minimal lockscreen
-
-Multilockscreen allows you to cache images with different filters and lockscreen with blazing speed.
-
-## Example
-
-> lockscreen with blurred effect
-
-```sh
-multilockscreen --lock blur
-```
-
-![scrot2](https://github.com/pavanjadhaw/betterlockscreen.demo/raw/master/scrots/scrot2.png 'scrot2.png')
-
-> [Watch some of the features of betterlockscreen in action](https://www.youtube.com/watch?v=9Ng5FZwnn6M&feature=youtu.be)
-
-## Table of Contents
-
-- [about](#about)
-- [how it works](#how-it-works)
-- [requirements](#requirements)
-- [installation](#installation)
-- [configuration](#configuration)
-- [usage](#usage)
-- [background](#set-desktop-background-on-startup)
-- [keybinding](#keybindings)
-- [lockscreen on suspend](#lockscreen-when-suspendedsystemd-service)
-
-### About
-
-Most of i3lock wrapper scripts out there takes an image, adds some effect and locks the screen
-adding effects, overall experience doesn't feel natural given delay of 2-3 seconds.
-Who would like a delay of 2-3 seconds while locking screen?
-
-So multilockscreen was my attempt to solve this problem, as we dont need to change lockscreen background frequently
-this script caches images with effect so overall experience is simple and as fast as native i3lock.
-
-### How it works
-
-The script takes image adds various effects and caches those images in special directory and then uses those
-images as lockscreen background depending on argument provided by user.
-
+  
+![Multilockscreen](https://camo.githubusercontent.com/bd90f582f8fea8467dc59b8b9c5f154aa1dff00f/68747470733a2f2f692e696d6775722e636f6d2f4a5a6139644c432e706e67)
+  
+  
+### New Features  
+- Support for multiple monitors with *almost* any layout
+- Control which effects are applied with new `fx_list` option
+- New 'color' effect to create solid color backgrounds
+- Revised command line arguments
+- Drop-shadow for loginbox
+  
+  
 ### Requirements
+- [i3lock-color](https://github.com/PandorasFox/i3lock-color) - i3lock fork with additional features  
+- [imagemagick](https://www.imagemagick.org/) - Image effects  
+- [xrandr](https://www.x.org/) - Display info  
+- [xdpyinfo](https://www.x.org/) - Display info & HiDPI support
+- [feh](https://feh.finalrewind.org/) - Set wallpaper  
+  
+  
+### Install
 
-> Note: Make sure your system has all dependencies satisfied
-
-- [i3lock-color](https://github.com/PandorasFox/i3lock-color) - i3lock fork with additional features( >= 2.11-c )
-- [imagemagick](https://www.imagemagick.org/script/index.php) - To apply effects to images
-- [xdpyinfo](https://www.x.org/archive/X11R7.7/doc/man/man1/xdpyinfo.1.xhtml), [xrandr](https://www.x.org/wiki/Projects/XRandR/), [bc](https://www.gnu.org/software/bc/) and [feh](https://feh.finalrewind.org/) - To find screen resolution, set custom blur level and wallpaper handling.
-
-### Installation
-
-> manual installation
-
-```sh
+Manual
+```bash
 git clone https://github.com/jeffmhubbard/multilockscreen
 cd multilockscreen
-cp multilockscreen ~/.local/bin/
+sudo install -Dm 755 multilockscreen /usr/bin/multilockscreen
 ```
 
-<p style="text-align: center">OR</p>
-
-```sh
-# or wget the script ~12KB
-wget -O multilockscreen https://git.io/JeoAf
-chmod u+x multilockscreen
-cp multilockscreen ~/.local/bin/
+AUR
+```bash
+git clone https://aur.archlinux.org/multilockscreen-git.git
+cd multilockscreen-git
+less PKGBUILD
+makepkg -si
 ```
-
-```sh
-# Add multilockscreen to PATH:
-# (In your .bashrc, .zshrc etc)
-export PATH="${PATH}:${HOME}/.local/bin/"
+  
+  
+### Usage
 ```
+Usage: multilockscreen [-u <PATH>] [-l <EFFECT>] [-w <EFFECT>]
 
-### Package Manager
+  -u --update <PATH>
+      Update lock screen image
 
-#### Arch Linux
+  -l --lock <EFFECT>
+      Lock screen with cached image
 
-###### Installing dependencies(not required if using multilockscreen aur package)
+  -w --wall <EFFECT>
+      Set wallpaper with cached image
 
-`pacman -S imagemagick feh xorg-xrandr xorg-xdpyinfo`
+Additional arguments:
 
-- i3lock-color - `trizen -S i3lock-color`
+  --display <N>
+      Set display to draw loginbox
 
-#### Aur package
+  --span
+      Scale image to span multiple displays
 
-`multilockscreen` is available in the Arch User repos as `multilockscreen-git`.
+  --off <N>
+      Turn display off after N minutes
 
-- multilockscreen-git - `trizen -S multilockscreen-git`
+  --fx <EFFECT,EFFECT,EFFECT>
+      List of effects to apply
 
+  -- <ARGS>
+      Pass following arguments to i3lock
+
+Effects arguments:
+
+  --dim <N>
+      Dim image N percent (0-100)
+
+  --blur <N>
+      Blur image N amount (0.0-1.0)
+
+  --pixel <N,N>
+      Pixelate image with N shrink and N grow (unsupported)
+
+  --color <HEX>
+      Solid color background with HEX
+```
+  
+> Examples
+
+Update image cache with random image
+`multilockscreen --update ~/Wallpapers`
+
+Update image cache with only dim and pixel effects
+`multilockscreen -u ~/Wallpapers/image.png --fx dim,pixel`
+
+Update image cache with multiple monitors, spanning
+`multilockscreen -u ~/Wallpapers/Dual/ --fx dimblur,color --display 1 --span`
+
+Update image cache with solid background only (ignore errors)
+`multilockscreen -u . --fx color --color 5833ff`
+
+Lock screen with blur effect
+`multilockscreen --lock blur`
+
+Lock screen with multiple monitors, spanning
+`multilockscreen -l dimblur --display 1 --span`
+  
 ### Configuration
 
-You can customise various colors for multilockscreen, copy config file from examples directory to `~/.config/multilockscreenrc` and edit it accordingly.
+Copy the example config to `~/.config/multilock/config`.  
+```ini
+# default options
+display_on=0
+span_image=false
+lock_timeout=5
+fx_list=(dim blur dimblur pixel color)
+dim_level=40
+blur_level=1
+pixel_scale=10,1000
+solid_color=333333
 
-If configuration file is not found then default configurations will be used.
-
-If you have installed multilockscreen from AUR package, then you can copy default config from docs
-
-```sh
-cp /usr/share/doc/multilockscreen/examples/multilockscreenrc ~/.config
+# theme options
+loginbox=00000066
+loginshadow=00000000
+locktext="Type password to unlock..."
+font="sans-serif"
+ringcolor=ffffffff
+insidecolor=00000000
+separatorcolor=00000000
+ringvercolor=ffffffff
+insidevercolor=00000000
+ringwrongcolor=ffffffff
+insidewrongcolor=d23c3dff
+keyhlcolor=d23c3dff
+bshlcolor=d23c3dff
+verifcolor=ffffffff
+timecolor=ffffffff
+datecolor=ffffffff
 ```
 
-There are two new options for multi-monitor support:
-  `display_on` controls which screen the indicator is displayed on (0 for all)
-  `span_image` whether image should span multiple displays (true or false)
+### Tips
 
-### Usage
+Use the config file.
 
-Run `multilockscreen` and point it to either a directory (`multilockscreen -u "path/to/dir"`) or an image (`multilockscreen -u "/path/to/img.jpg"`) and that's all. `multilockscreen` will change update its cache with image you provided.
-
-```sh
-usage: multilockscreen [-u "path/to/img.jpg"] [-l "dim, blur, dimblur or pixel"]
-						[-w "dim, blur, dimblur or pixel"] [-s "lockscreen and suspend"]
-						[-t "custom text"] [-b "factor"] [--off <timeout>]
-						[--display <0-9>] [--span]
-
-multilockscreen - faster and sweet looking lockscreen for linux systems.
-
-required:
-	-u, --update "path/to/img.jpg"	caches all required images
-
-usage:
-	-l, --lock effect-name
-			locks with provided effect
-	-s, --suspend effect-name
-			lockscreen and suspend
-	-w, --wall effect-name
-			set desktop background with provided effect
-
-	Available effects:
-		dim, blur, dimblur, pixel or color
-
-	--display <0-9>
-			screen to display loginbox (0 for all)
-	--span
-			span multiple screens
-	--off <seconds>
-			sets custom monitor timeout
-	--text "<text>"
-			set custom lockscreen text
-	--fx <csv>
-			set effects to generate
-	--dim <0-100>
-			set dim percent
-	--blur <0.0-1.0>
-			set blur intensity
-	--pixel <scale> 
-			set scale to pixelate
-	--color <hex color> 
-			set color for solid background
-
-
-Usage examples:
-1. Updating image cache(required)
-multilockscreen -u ~/Pictures/Forests.png # caches given image
-multilockscreen -u ~/Pictures             # caches random image from ~/Pictures directory
-
-2. Custom blur range
-multilockscreen -u path/to/directory --blur 0.5
-
-3. Lockscreen
-multilockscreen -l dim                    # lockscreen with dim effect
-
-4. Lockscreen with custom text
-multilockscreen -l dim -t "custom lockscreen text"
-
-5. Set desktop background
-multilockscreen -w blur                   # set desktop background with blur effect
-
-6. Lockscreen with custom monitor off timeout
-multilockscreen --off 5 -l blur           # set monitor off lockscreen timeout (5 seconds)
-
-7. Update image cache with login box on display 1
-multilockscreen -u image.png --display 1  # cache images with loginbox on display 1
-multilockscreen -u image.png --span       # cache images that spans all displays
-
-8. Lockscreen with login box on display 1
-multilockscreen -l blur --display 1       # lock screen with loginbox on display 1
+Do not use systemd service. Use `xss-lock` instead 
+```bash
+# .xinitrc
+xss-lock -l -- multilockscreen --lock blur &
 ```
 
-### Set desktop background on startup
-
-Add this line to `.xinitrc`.
-
-```sh
-# set desktop background with custom effect
-multilockscreen -w dim
-
-# Alternative (set last used background)
-source ~/.fehbg
-```
-
-#### i3wm
-
-Add this line to `~/.config/i3/config`
-
-```sh
-# set desktop background with custom effect
-exec --no-startup-id multilockscreen -w dim
-
-# Alternative (set last used background)
-exec --no-startup-id source ~/.fehbg
-```
-
-### Keybindings
-
-To lockscreen using keyboard shortcut
-
-#### i3wm
-
-Add this line to your `~/.config/i3/config`
-
-```sh
-bindsym $mod+shift+x exec multilockscreen -l dim
-```
-
-#### bspwm
-
-Add this line to your `~/.config/sxhkd/sxhkdrc`
-
-```sh
-# lockscreen
-alt + shift + x
-    multilockscreen -l dim
-```
-
-### Lockscreen when suspended(systemd service)
-
-```sh
-# move service file to proper dir (the aur package does this for you)
-cp multilockscreen@.service /etc/systemd/system/
-
-# enable systemd service
-systemctl enable multilockscreen@$USER
-
-# disable systemd service
-systemctl disable multilockscreen@$USER
-
-
-# Note: Now you can call systemctl suspend to suspend your system
-# and multilockscreen service will be activated
-# so when your system wakes your screen will be locked.
-```
-
----
-
-### Countributing
-
-Thanks to all the amazing people for all your wonderful PRs, issues and ideas!
-
-[![](https://sourcerer.io/fame/pavanjadhaw/pavanjadhaw/betterlockscreen/images/0)](https://sourcerer.io/fame/pavanjadhaw/pavanjadhaw/betterlockscreen/links/0)[![](https://sourcerer.io/fame/pavanjadhaw/pavanjadhaw/betterlockscreen/images/1)](https://sourcerer.io/fame/pavanjadhaw/pavanjadhaw/betterlockscreen/links/1)[![](https://sourcerer.io/fame/pavanjadhaw/pavanjadhaw/betterlockscreen/images/2)](https://sourcerer.io/fame/pavanjadhaw/pavanjadhaw/betterlockscreen/links/2)[![](https://sourcerer.io/fame/pavanjadhaw/pavanjadhaw/betterlockscreen/images/3)](https://sourcerer.io/fame/pavanjadhaw/pavanjadhaw/betterlockscreen/links/3)[![](https://sourcerer.io/fame/pavanjadhaw/pavanjadhaw/betterlockscreen/images/4)](https://sourcerer.io/fame/pavanjadhaw/pavanjadhaw/betterlockscreen/links/4)[![](https://sourcerer.io/fame/pavanjadhaw/pavanjadhaw/betterlockscreen/images/5)](https://sourcerer.io/fame/pavanjadhaw/pavanjadhaw/betterlockscreen/links/5)[![](https://sourcerer.io/fame/pavanjadhaw/pavanjadhaw/betterlockscreen/images/6)](https://sourcerer.io/fame/pavanjadhaw/pavanjadhaw/betterlockscreen/links/6)[![](https://sourcerer.io/fame/pavanjadhaw/pavanjadhaw/betterlockscreen/images/7)](https://sourcerer.io/fame/pavanjadhaw/pavanjadhaw/betterlockscreen/links/7)
-
-## How can I support developers?
-
-- Star our GitHub repo :star:
-- Create pull requests, submit bugs, suggest new features or documentation updates :wrench:
-
-## License
-
-multilockscreen is under [MIT](https://github.com/jeffmhubbard/multilockscreen/blob/multi-monitor/LICENSE) license.
-
-## Feel free to use and distribute
-
-- Hat tip to anyone who's code was used
-- Thanks to those who contributed to make it better
-- Inspiration - r/unixporn
-
+### License
+multilockscreen  is under [MIT](https://github.com/jeffmhubbard/multilockscreen/blob/multi-monitor/LICENSE) license

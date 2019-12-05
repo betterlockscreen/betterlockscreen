@@ -490,11 +490,11 @@ usage() {
 	echo "  --off <N>"
 	echo "      Turn display off after N minutes"
 	echo
-	echo "  -fx <EFFECT,EFFECT,EFFECT>"
+	echo "  --fx <EFFECT,EFFECT,EFFECT>"
 	echo "      List of effects to generate"
 	echo
 	echo "  -- <ARGS>"
-	echo "      Pass following arguments to i3lock"
+	echo "      Pass additional arguments to i3lock"
 	echo
 	echo "Effects arguments:"
 	echo
@@ -504,10 +504,10 @@ usage() {
 	echo "  --blur <N>"
 	echo "      Blur image N amount (0.0-1.0)"
 	echo
-	echo "  --pixelate <S,G>"
-	echo "      Pixelate image with S shrink and G grow (unsupported)"
+	echo "  --pixel <N,N>"
+	echo "      Pixelate image with N shrink and N grow (unsupported)"
 	echo
-	echo "  -color <HEX>"
+	echo "  --color <HEX>"
 	echo "      Solid color background with HEX"
 	echo
 	exit 1
