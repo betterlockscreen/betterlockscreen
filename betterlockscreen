@@ -6,7 +6,7 @@
 
 # find your resolution so images can be resized to match your screen resolution
 res=$(xdpyinfo | grep dimensions | sed -r 's/^[^0-9]*([0-9]+x[0-9]+).*$/\1/')
-default_timeout="$(cut -d ' ' -f4 <<< $(xset q | sed -n '25p'))"
+default_timeout="$(cut -d ' ' -f4 <<< "$(xset q | sed -n '25p')")"
 
 init_filenames() {
 	#$1 resolution
@@ -38,7 +38,7 @@ init_filenames() {
 	res_folder="$HOME/.cache/i3lock/$1"
 	folder="$HOME/.cache/i3lock/current"
 	echo "Got" "$@" "$res_folder"
-	if [ ! -d "$folder" -o -n "$2" ]; then
+	if [ ! -d "$folder" ] || [ -n "$2" ]; then
 		rm -rf "$folder"
 		mkdir -p "$res_folder"
 		ln -s "$res_folder" "$folder"
@@ -71,10 +71,10 @@ init_filenames "$res"
 
 
 prelock() {
-	if [ ! -z "$lock_timeout" ]; then
+	if [ -n "$lock_timeout" ]; then
 	  xset dpms "$lock_timeout"
 	fi
-	if [ ! -z "$(pidof dunst)" ]; then
+	if [ -n "$(pidof dunst)" ]; then
 		pkill -u "$USER" -USR1 dunst
 	fi
 }
@@ -95,16 +95,16 @@ lock() {
 		--radius=20 --ring-width=4 --veriftext='' --wrongtext='' \
 		--verifcolor="$verifcolor" --timecolor="$timecolor" --datecolor="$datecolor" \
 		--time-font="$font" --date-font="$font" --layout-font="$font" --verif-font="$font" --wrong-font="$font" \
-		--noinputtext='' --force-clock --pass-media-keys $lockargs 
+		--noinputtext='' --force-clock --pass-media-keys "$lockargs"
 
 }
 
 
 postlock() {
-	if [ ! -z "$lock_timeout" ]; then
+	if [ -n "$lock_timeout" ]; then
 	  xset dpms "$default_timeout"
 	fi
-	if [ ! -z "$(pidof dunst)" ] ; then
+	if [ -n "$(pidof dunst)" ] ; then
 		pkill -u "$USER" -USR2 dunst
 	fi
 }
@@ -158,7 +158,7 @@ lockselect() {
 logical_px() {
 	# get dpi value from xrdb
 	local DPI
-	DPI=$(cat ~/.Xresources | grep -oP 'Xft.dpi:\s*\K\d+' | bc)
+	DPI=$(grep -oP 'Xft.dpi:\s*\K\d+' ~/.Xresources | bc)
 	if [ -z "$DPI" ]; then
 		DPI=$(xdpyinfo | sed -En "s/\s*resolution:\s*([0-9]*)x([0-9]*)\s.*/\\$2/p" | head -n1)
 	fi
@@ -189,7 +189,7 @@ update() {
 	rectangles=" "
 	SR=$(xrandr --query | grep ' connected' | grep -o '[0-9][0-9]*x[0-9][0-9]*[^ ]*')
 	for RES in $SR; do
-		SRA=(${RES//[x+]/ })
+		SRA=("${RES//[x+]/ }")
 		CX=$((SRA[2] + $(logical_px 25 1)))
 		CY=$((SRA[1] - $(logical_px 30 2)))
 		rectangles+="rectangle $CX,$CY $((CX+$(logical_px 300 1))),$((CY-$(logical_px 80 2))) "
@@ -218,18 +218,18 @@ update() {
 	cp "$user_image" "$orig_wall"
 	rm "$user_image"
 
-	echo 'Generating alternate images based on the image you specified,'
-	echo 'please wait this might take few seconds...'
+	echo 'Generating alternate images based on the image you specified,
+please wait this might take few seconds...'
 
 	# wallpapers
 
-	echo
-	echo 'Converting provided image to match your resolution...'
+	echo '
+Converting provided image to match your resolution...'
 	# resize image
 	convert "$orig_wall" -resize "$res""^" -gravity center -extent "$res" "$resized"
 
-	echo
-	echo 'Applying dim, blur, and pixelation effect to resized image'
+	echo '
+Applying dim, blur, and pixelation effect to resized image'
 	# dim
 	convert "$resized" -fill black -colorize 40% "$dim"
 
@@ -256,8 +256,8 @@ update() {
 
 	# lockscreen backgrounds
 
-	echo
-	echo 'Caching images for faster screen locking'
+	echo '
+Caching images for faster screen locking'
 	# resized
 	convert "$resized" -draw "fill #$loginbox $rectangles" "$l_resized"
 
@@ -272,8 +272,8 @@ update() {
 
 	# pixel
 	convert "$pixel" -draw "fill #$loginbox $rectangles" "$l_pixel"
-	echo
-	echo 'All required changes have been applied'
+	echo '
+All required changes have been applied'
 }
 
 
@@ -309,91 +309,92 @@ wallpaper() {
 
 empty() {
 	if [ -f "$l_dim" ]; then
-		echo -e "\nSeems you haven't provided any arguments. See below for usage details."
+		echo "
+Seems you haven't provided any arguments. See below for usage details."
 	else
 		echo 'Important: Update the image cache (e.g. betterlockscreen -u path/to/image.jpg).'
-		echo
-		echo '		Image cache must be updated to initially configure or update the wallpaper used.'
+		echo '
+		Image cache must be updated to initially configure or update the wallpaper used.'
 	fi
 
-	echo
-	echo 'For other sets of options and help, use the help command.'
+	echo '
+For other sets of options and help, use the help command.'
 	echo 'e.g. betterlockscreen -h or betterlockscreen --help'
-	echo
-	echo 'See: https://github.com/pavanjadhaw/betterlockscreen for additional info...'
+	echo '
+See: https://github.com/pavanjadhaw/betterlockscreen for additional info...'
 	exit 1
 }
 
 
 usage() {
-	echo 'Important: Update the image cache (e.g. betterlockscreen -u path/to/image.jpg).'
-	echo '	Image cache must be updated to initially configure or update wallpaper used'
-	echo
-	echo
-	echo 'See: https://github.com/pavanjadhaw/betterlockscreen for additional info...'
-	echo
-	echo
-	echo 'Options:'
-	echo
-	echo '	-h --help'
-	echo '		For help (e.g. betterlockscreen -h or betterlockscreen --help).'
-	echo
-	echo
-	echo '	-u --update'
-	echo '		to update image cache, you should do this before using any other options'
-	echo '		E.g: betterlockscreen -u path/to/image.png when image.png is custom background'
-	echo '		Or you can use betterlockscreen -u path/to/imagedir and a random file will be selected.'
-	echo
-	echo
-	echo '	-l --lock'
-	echo '		to lock screen (e.g. betterlockscreen -l)'
-	echo '		you can also use dimmed or blurred background for lockscreen.'
-	echo '		E.g: betterlockscreen -l dim (for dimmed background)'
-	echo '		E.g: betterlockscreen -l blur (for blurred background)'
-	echo '		E.g: betterlockscreen -l dimblur (for dimmed + blurred background)'
-	echo
-	echo
-	echo '	-s --suspend'
-	echo '		to suspend system and lock screen (e.g. betterlockscreen -s)'
-	echo '		you can also use dimmed or blurred background for lockscreen.'
-	echo '		E.g: betterlockscreen -s dim (for dimmed background)'
-	echo '		E.g: betterlockscreen -s blur (for blurred background)'
-	echo '		E.g: betterlockscreen -s dimblur (for dimmed + blurred background)'
-	echo
-	echo
-	echo '	-w --wall'
-	echo '		you can also set lockscreen background as wallpaper'
-	echo '		to set wallpaper (e.g. betterlockscreen -w or betterlockscreen --wall)'
-	echo '		you can also use dimmed or blurred variants.'
-	echo '		E.g: betterlockscreen -w dim (for dimmed wallpaper)'
-	echo '		E.g: betterlockscreen -w blur (for blurred wallpaper)'
-	echo '		E.g: betterlockscreen -w dimblur (for dimmed + blurred wallpaper)'
-	echo
-	echo
-	echo '	-r --resolution'
-	echo '		to be used after -u'
-	echo '		used to set a custom resolution for the image cache.'
-	echo '		E.g: betterlockscreen -u path/to/image.png -r 1920x1080'
-	echo '		E.g: betterlockscreen -u path/to/image.png --resolution 3840x1080'
-	echo
-	echo
-	echo '	-b --blur'
-	echo '		to be used after -u'
-	echo '		used to set blur intensity. Default to 1.'
-	echo '		E.g: betterlockscreen -u path/to/image.png -b 3'
-	echo '		E.g: betterlockscreen -u path/to/image.png --blur 0.5'
-	echo
-	echo
-	echo '	-t --text'
-	echo '		to set custom lockscreen text (max 31 chars)'
-	echo "		E.g: betterlockscreen -l dim -t \"Don't touch my machine!\""
-	echo '		E.g: betterlockscreen --text "Hi, user!" -s blur'
-	echo
-	echo
-	echo '	--off <timeout>'
-	echo '            to set custom monitor turn off timeout for lockscreen'
-	echo '            timeout is in seconds'
-	echo '            E.g: betterlockscreen -l dim --off 5'
+	echo "Important: Update the image cache (e.g. betterlockscreen -u path/to/image.jpg).
+	Image cache must be updated to initially configure or update wallpaper used
+
+
+See: https://github.com/pavanjadhaw/betterlockscreen for additional info...
+
+
+Options:
+
+	-h --help
+		For help (e.g. betterlockscreen -h or betterlockscreen --help).
+
+
+	-u --update
+		to update image cache, you should do this before using any other options
+		E.g: betterlockscreen -u path/to/image.png when image.png is custom background
+		Or you can use betterlockscreen -u path/to/imagedir and a random file will be selected.
+
+
+	-l --lock
+		to lock screen (e.g. betterlockscreen -l)
+		you can also use dimmed or blurred background for lockscreen.
+		E.g: betterlockscreen -l dim (for dimmed background)
+		E.g: betterlockscreen -l blur (for blurred background)
+		E.g: betterlockscreen -l dimblur (for dimmed + blurred background)
+
+
+	-s --suspend
+		to suspend system and lock screen (e.g. betterlockscreen -s)
+		you can also use dimmed or blurred background for lockscreen.
+		E.g: betterlockscreen -s dim (for dimmed background)
+		E.g: betterlockscreen -s blur (for blurred background)
+		E.g: betterlockscreen -s dimblur (for dimmed + blurred background)
+
+
+	-w --wall
+		you can also set lockscreen background as wallpaper
+		to set wallpaper (e.g. betterlockscreen -w or betterlockscreen --wall)
+		you can also use dimmed or blurred variants.
+		E.g: betterlockscreen -w dim (for dimmed wallpaper)
+		E.g: betterlockscreen -w blur (for blurred wallpaper)
+		E.g: betterlockscreen -w dimblur (for dimmed + blurred wallpaper)
+
+
+	-r --resolution
+		to be used after -u
+		used to set a custom resolution for the image cache.
+		E.g: betterlockscreen -u path/to/image.png -r 1920x1080
+		E.g: betterlockscreen -u path/to/image.png --resolution 3840x1080
+
+
+	-b --blur
+		to be used after -u
+		used to set blur intensity. Default to 1.
+		E.g: betterlockscreen -u path/to/image.png -b 3
+		E.g: betterlockscreen -u path/to/image.png --blur 0.5
+
+
+	-t --text
+		to set custom lockscreen text (max 31 chars)
+		E.g: betterlockscreen -l dim -t \"Don't touch my machine!\"
+		E.g: betterlockscreen --text \"Hi, user!\" -s blur
+
+
+	--off <timeout>
+		to set custom monitor turn off timeout for lockscreen
+            	timeout is in seconds
+            	E.g: betterlockscreen -l dim --off 5"
 }
 
 
