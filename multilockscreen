@@ -311,7 +311,10 @@ fx_color() {
 create_loginbox () {
 	RECTANGLE="$CUR_DIR/rectangle.png"
 	local shadow="$CUR_DIR/shadow.png"
-	convert -size 300x80 xc:\#"$loginbox" -fill none $RECTANGLE
+	local width height
+	width=$(logical_px 300 1)
+	height=$(logical_px 80 2)
+	convert -size "$width"x"$height" xc:\#"$loginbox" -fill none $RECTANGLE
 	convert $RECTANGLE \
 		\( -clone 0 -background \#"$loginshadow" -shadow 100x5+0+0 \) +swap \
 		-background none -layers merge +repage $shadow
