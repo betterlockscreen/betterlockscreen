@@ -98,7 +98,7 @@ lock() {
 		--radius=20 --ring-width=4 --veriftext='' --wrongtext='' \
 		--verifcolor="$verifcolor" --timecolor="$timecolor" --datecolor="$datecolor" \
 		--time-font="$font" --date-font="$font" --layout-font="$font" --verif-font="$font" --wrong-font="$font" \
-		--noinputtext='' --force-clock "$lockargs"
+		--noinputtext='' --force-clock "${lockargs[@]}"
 }
 
 
@@ -517,6 +517,7 @@ usage() {
 [[ "$1" = "" ]] && usage
 
 # process arguments
+lockargs=()
 for arg in "$@"; do
 	[[ "${arg:0:1}" = '-' ]] || continue
 
@@ -529,7 +530,7 @@ for arg in "$@"; do
 
 		-l | --lock)
 			runlock=true
-			[[ $runsuspend ]] || lockargs="$lockargs -n"
+			[[ $runsuspend ]] || lockargs+=(-n)
 			[[ ${2:0:1} = '-' ]] && shift 1 || { lockstyle="$2"; shift 2; }
 			;;
 
@@ -588,7 +589,7 @@ for arg in "$@"; do
 			;;
 
 		--)
-			lockargs="$lockargs ${*:2}"
+			lockargs+=("${@:2}")
 			break
 			;;
 
