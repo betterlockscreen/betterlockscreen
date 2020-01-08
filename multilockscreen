@@ -79,7 +79,6 @@ prelock() {
 	fi
 }
 
-
 # lock screen with specified image
 lock() {
 
@@ -99,6 +98,25 @@ lock() {
 		--verifcolor="$verifcolor" --timecolor="$timecolor" --datecolor="$datecolor" \
 		--time-font="$font" --date-font="$font" --layout-font="$font" --verif-font="$font" --wrong-font="$font" \
 		--noinputtext='' --force-clock "${lockargs[@]}"
+}
+
+# in case image isn't found
+failsafe() {
+
+	local bgcolor="000000"
+	local text="ffffffff"
+
+	i3lock \
+		-c "$bgcolor" \
+		--screen "$display_on" \
+		--timepos='ix-170:iy-0' \
+		--datepos='ix-240:iy+25' \
+		--clock --date-align 1 --datestr "$locktext" \
+		--indpos='x+280:y+h-70' \
+		--radius=20 --ring-width=4 --veriftext='' --wrongtext='' \
+		--verifcolor="$text" --timecolor="$text" --datecolor="$text" \
+		--time-font="$font" --date-font="$font" --layout-font="$font" --verif-font="$font" --wrong-font="$font" \
+		--noinputtext='' --force-clock
 }
 
 
@@ -121,12 +139,12 @@ lockselect() {
 	prelock
 
 	case "$1" in
-		dim) [[ -f "$CUR_L_DIM" ]] && lock "$CUR_L_DIM";;
-		blur) [[ -f "$CUR_L_BLUR" ]] && lock "$CUR_L_BLUR";;
-		dimblur) [[ -f "$CUR_L_DIMBLUR" ]] && lock "$CUR_L_DIMBLUR";;
-		pixel) [[ -f "$CUR_L_PIXEL" ]] && lock "$CUR_L_PIXEL";;
-		color) [[ -f "$CUR_L_COLOR" ]] && lock "$CUR_L_COLOR";;
-		*) [[ -f "$CUR_L_RESIZE" ]] && lock "$CUR_L_RESIZE";;
+		dim) if [ -f "$CUR_L_DIM" ]; then lock "$CUR_L_DIM"; else failsafe; fi ;;
+		blur) if [ -f "$CUR_L_BLUR" ]; then lock "$CUR_L_BLUR"; else failsafe; fi ;;
+		dimblur) if [ -f "$CUR_L_DIMBLUR" ]; then lock "$CUR_L_DIMBLUR"; else failsafe; fi ;;
+		pixel) if [ -f "$CUR_L_PIXEL" ]; then lock "$CUR_L_PIXEL"; else failsafe; fi ;;
+		color) if [ -f "$CUR_L_COLOR" ]; then lock "$CUR_L_COLOR"; else failsafe; fi ;;
+		*) if [ -f "$CUR_L_RESIZE" ]; then lock "$CUR_L_RESIZE"; else failsafe; fi ;;
 	esac
 
 	postlock
