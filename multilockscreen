@@ -15,6 +15,7 @@ init_config () {
 	blur_level=1
 	pixel_scale=10,1000
 	solid_color=333333
+	description=""
 
 	# default theme
 	loginbox=00000066
@@ -342,6 +343,20 @@ create_loginbox () {
 	[[ $shadow ]] && rm $shadow
 }
 
+# create rectangle with description, set $DESCRECT
+create_description () {
+	DESCRECT="$CUR_DIR/description.png"
+	local shadow="$CUR_DIR/shadow.png"
+	convert -background none -family "$(fc-match "$font" family)" -style Normal -pointsize 14 -fill \#"$datecolor" label:"\ $description\ " -bordercolor \#"$loginbox" -border 10 $DESCRECT
+	convert $DESCRECT \
+		\( -clone 0 -background \#"$loginshadow" -shadow 100x5+0+0 \) +swap \
+		-background none -layers merge +repage $shadow
+	composite -compose Dst_Out -gravity center \
+		$DESCRECT $shadow -alpha Set $shadow
+	convert $shadow $DESCRECT -geometry +10+10 -composite $DESCRECT
+	[[ $shadow ]] && rm $shadow
+}
+
 # delete and recreate directory
 purge_cache () {
 	if [[ -d "$1" ]]; then
@@ -365,6 +380,16 @@ update () {
 	get_total_size # TOTAL_SIZE
 	echo "Detected ${#DISPLAY_LIST[@]} Displays @ $TOTAL_SIZE Resolution"
 
+	# Prepare description box to obtain width for positioning
+	if [ -z "$description" ]; then
+		local descwidth=0
+		local descheight=0
+	else
+		create_description
+		local descwidth=$(identify -format "%[fx:w]" "$DESCRECT")
+		local descheight=$(identify -format "%[fx:h]" "$DESCRECT")
+	fi
+
 	for display in "${DISPLAY_LIST[@]}"; do
 
 		IFS=' ' read -r -a dinfo  <<< "$display"
@@ -379,7 +404,7 @@ update () {
 		if [[ $id -eq "$display_on" ]] || [[ "$display_on" -eq 0 ]]; then
 
 			IFS='x' read -r -a dimension <<< "$resolution"
-			#res_x="${dimension[0]}"
+			res_x="${dimension[0]}"
 			res_y="${dimension[1]}"
 			read -r -a val <<< "${position//[+-]/ }"
 			read -r -a sym <<< "${position//[0-9]/ }"
@@ -389,6 +414,10 @@ update () {
 			rect_x=$((pos_x + $(logical_px 15 1)))
 			rect_y=$((pos_y + res_y - $(logical_px 120 2)))
 			positions+=("+$((rect_x))+$((rect_y))")
+
+			descrect_x=$((pos_x + res_x - descwidth - $(logical_px 15 1)))
+			descrect_y=$((pos_y + res_y - descheight - $(logical_px 20 2)))
+			positions_desc+=("+$((descrect_x))+$((descrect_y))")
 		fi
 
 		echo "Display: $device ($id)"
@@ -444,11 +473,18 @@ update () {
 	fi
 
 	echo "Rendering final lockscreen images..."
-	create_loginbox
 
+	create_loginbox
 	for pos in "${positions[@]}"; do
 		PARAM_RECT="$PARAM_RECT $RECTANGLE -geometry $pos -composite "
 	done
+
+	if [ ! -z "$description" ]; then
+		create_description
+		for descpos in "${positions_desc[@]}"; do
+			PARAM_RECT="$PARAM_RECT $DESCRECT -geometry $descpos -composite "
+		done
+	fi
 
 	[[ -f "$CUR_W_RESIZE" ]] && convert $CUR_W_RESIZE $PARAM_RECT $CUR_L_RESIZE
 	[[ -f "$CUR_W_DIM" ]] && convert $CUR_W_DIM $PARAM_RECT $CUR_L_DIM
@@ -458,6 +494,7 @@ update () {
 	[[ -f "$CUR_W_COLOR" ]] && convert $CUR_W_COLOR $PARAM_RECT $CUR_L_COLOR
 
 	[[ $RECTANGLE ]] && rm "$RECTANGLE"
+	[[ $DESCRECT ]] && rm "$DESCRECT"
 
 	echo "Done"
 
@@ -513,6 +550,10 @@ usage() {
 	echo
 	echo "  --fx <EFFECT,EFFECT,EFFECT>"
 	echo "      List of effects to generate"
+	echo
+	echo "  --desc <DESCRIPTION>"
+	echo "      Set a description for the new lock screen image"
+	echo "      (Only has an effect in combination with --update)"
 	echo
 	echo "  -- <ARGS>"
 	echo "      Pass additional arguments to i3lock"
@@ -606,6 +647,11 @@ for arg in "$@"; do
 
 		--color)
 			solid_color="${2//\#/}"
+			shift 2
+			;;
+
+		--desc)
+			description="$2"
 			shift 2
 			;;
 
