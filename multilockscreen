@@ -10,7 +10,7 @@ init_config () {
 	display_on=0
 	span_image=false
 	lock_timeout=5
-	fx_list=(dim blur dimblur pixel color)
+	fx_list=(dim blur dimblur pixel dimpixel color)
 	dim_level=40
 	blur_level=1
 	pixel_scale=10,1000
@@ -52,6 +52,7 @@ init_config () {
 	CUR_W_BLUR="$CUR_DIR/wall_blur.png"
 	CUR_W_DIMBLUR="$CUR_DIR/wall_dimblur.png"
 	CUR_W_PIXEL="$CUR_DIR/wall_pixel.png"
+	CUR_W_DIMPIXEL="$CUR_DIR/wall_dimpixel.png"
 	CUR_W_COLOR="$CUR_DIR/wall_color.png"
 
 	# lockscreen
@@ -60,6 +61,7 @@ init_config () {
 	CUR_L_BLUR="$CUR_DIR/lock_blur.png"
 	CUR_L_DIMBLUR="$CUR_DIR/lock_dimblur.png"
 	CUR_L_PIXEL="$CUR_DIR/lock_pixel.png"
+	CUR_L_DIMPIXEL="$CUR_DIR/lock_dimpixel.png"
 	CUR_L_COLOR="$CUR_DIR/lock_color.png"
 
 	# Original DPMS timeout
@@ -144,6 +146,7 @@ lockselect() {
 		blur) if [ -f "$CUR_L_BLUR" ]; then lock "$CUR_L_BLUR"; else failsafe; fi ;;
 		dimblur) if [ -f "$CUR_L_DIMBLUR" ]; then lock "$CUR_L_DIMBLUR"; else failsafe; fi ;;
 		pixel) if [ -f "$CUR_L_PIXEL" ]; then lock "$CUR_L_PIXEL"; else failsafe; fi ;;
+		dimpixel) if [ -f "$CUR_L_DIMPIXEL" ]; then lock "$CUR_L_DIMPIXEL"; else failsafe; fi ;;
 		color) if [ -f "$CUR_L_COLOR" ]; then lock "$CUR_L_COLOR"; else failsafe; fi ;;
 		*) if [ -f "$CUR_L_RESIZE" ]; then lock "$CUR_L_RESIZE"; else failsafe; fi ;;
 	esac
@@ -226,6 +229,7 @@ resize_and_render () {
 	RES_BLUR="$path/blur.png"
 	RES_DIMBLUR="$path/dimblur.png"
 	RES_PIXEL="$path/pixel.png"
+	RES_DIMPIXEL="$path/dimpixel.png"
 	RES_COLOR="$path/color.png"
 
 	# resize
@@ -238,6 +242,7 @@ resize_and_render () {
 			blur) fx_blur "$RES_RESIZE" "$RES_BLUR" "$resolution";;
 			dimblur) fx_dimblur "$RES_RESIZE" "$RES_DIMBLUR" "$resolution";;
 			pixel) fx_pixel "$RES_RESIZE" "$RES_PIXEL";;
+			dimpixel) fx_dimpixel "$RES_RESIZE" "$RES_DIMPIXEL";;
 			color) fx_color "$RES_COLOR" "$resolution";;
 		esac
 	done
@@ -313,6 +318,19 @@ fx_pixel() {
 	echo "Rendering 'pixel' effect..."
 	IFS=',' read -ra range <<< "$pixel_scale"
 	eval convert "$input" \
+		-scale "${range[0]}"% -scale "${range[1]}"% \
+		"$output"
+}
+
+# apply dimpixel
+fx_dimpixel() {
+	local input="$1"
+	local output="$2"
+
+	echo "Rendering 'dimpixel' effect..."
+	IFS=',' read -ra range <<< "$pixel_scale"
+	eval convert "$input" \
+		-fill black -colorize "$dim_level"% \
 		-scale "${range[0]}"% -scale "${range[1]}"% \
 		"$output"
 }
@@ -440,6 +458,7 @@ update () {
 			PARAM_BLUR="$PARAM_BLUR $RES_BLUR -geometry $position -composite "
 			PARAM_DIMBLUR="$PARAM_DIMBLUR $RES_DIMBLUR -geometry $position -composite "
 			PARAM_PIXEL="$PARAM_PIXEL $RES_PIXEL -geometry $position -composite "
+			PARAM_DIMPIXEL="$PARAM_DIMPIXEL $RES_DIMPIXEL -geometry $position -composite "
 			PARAM_COLOR="$PARAM_COLOR $RES_COLOR -geometry $position -composite "
 		fi
 		
@@ -453,6 +472,7 @@ update () {
 		[[ -f "$RES_BLUR" ]] && cp $RES_BLUR $CUR_W_BLUR
 		[[ -f "$RES_DIMBLUR" ]] && cp $RES_DIMBLUR $CUR_W_DIMBLUR
 		[[ -f "$RES_PIXEL" ]] && cp $RES_PIXEL $CUR_W_PIXEL
+		[[ -f "$RES_DIMPIXEL" ]] && cp $RES_DIMPIXEL $CUR_W_DIMPIXEL
 		[[ -f "$RES_COLOR" ]] && cp $RES_COLOR $CUR_W_COLOR
 	else
 		echo "Creating canvas: $TOTAL_SIZE"
@@ -461,6 +481,7 @@ update () {
 		[[ -f "$RES_BLUR" ]] && convert -size $TOTAL_SIZE 'xc:blue' $CUR_W_BLUR
 		[[ -f "$RES_DIMBLUR" ]] && convert -size $TOTAL_SIZE 'xc:blue' $CUR_W_DIMBLUR
 		[[ -f "$RES_PIXEL" ]] && convert -size $TOTAL_SIZE 'xc:blue' $CUR_W_PIXEL
+		[[ -f "$RES_DIMPIXEL" ]] && convert -size $TOTAL_SIZE 'xc:blue' $CUR_W_DIMPIXEL
 		[[ -f "$RES_COLOR" ]] && convert -size $TOTAL_SIZE 'xc:blue' $CUR_W_COLOR
 
 		echo Rendering final wallpaper images...
@@ -469,6 +490,7 @@ update () {
 		[[ -f "$CUR_W_BLUR" ]] && convert $CUR_W_BLUR $PARAM_BLUR $CUR_W_BLUR
 		[[ -f "$CUR_W_DIMBLUR" ]] && convert $CUR_W_DIMBLUR $PARAM_DIMBLUR $CUR_W_DIMBLUR
 		[[ -f "$CUR_W_PIXEL" ]] && convert $CUR_W_PIXEL $PARAM_PIXEL $CUR_W_PIXEL
+		[[ -f "$CUR_W_DIMPIXEL" ]] && convert $CUR_W_DIMPIXEL $PARAM_DIMPIXEL $CUR_W_DIMPIXEL
 		[[ -f "$CUR_W_COLOR" ]] && convert $CUR_W_COLOR $PARAM_COLOR $CUR_W_COLOR
 	fi
 
@@ -491,6 +513,7 @@ update () {
 	[[ -f "$CUR_W_BLUR" ]] && convert $CUR_W_BLUR $PARAM_RECT $CUR_L_BLUR
 	[[ -f "$CUR_W_DIMBLUR" ]] && convert $CUR_W_DIMBLUR $PARAM_RECT $CUR_L_DIMBLUR
 	[[ -f "$CUR_W_PIXEL" ]] && convert $CUR_W_PIXEL $PARAM_RECT $CUR_L_PIXEL
+	[[ -f "$CUR_W_DIMPIXEL" ]] && convert $CUR_W_DIMPIXEL $PARAM_RECT $CUR_L_DIMPIXEL
 	[[ -f "$CUR_W_COLOR" ]] && convert $CUR_W_COLOR $PARAM_RECT $CUR_L_COLOR
 
 	[[ $RECTANGLE ]] && rm "$RECTANGLE"
@@ -518,6 +541,7 @@ wallpaper() {
 		blur) feh --bg-fill "$span" "$CUR_W_BLUR";;
 		dimblur) feh --bg-fill "$span" "$CUR_W_DIMBLUR";;
 		pixel) feh --bg-fill "$span" "$CUR_W_PIXEL";;
+		dimpixel) feh --bg-fill "$span" "$CUR_W_DIMPIXEL";;
 		color) feh --bg-fill "$span" "$CUR_W_COLOR";;
 		*) feh --bg-fill "$span" "$CUR_W_RESIZE";;
 	esac

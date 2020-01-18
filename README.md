@@ -112,7 +112,7 @@ Copy the example config to `~/.config/multilock/config`.
 display_on=0
 span_image=false
 lock_timeout=5
-fx_list=(dim blur dimblur pixel color)
+fx_list=(dim blur dimblur pixel dimpixel color)
 dim_level=40
 blur_level=1
 pixel_scale=10,1000
