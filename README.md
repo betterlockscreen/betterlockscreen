@@ -98,6 +98,9 @@ Update image cache with multiple monitors, spanning
 Update image cache with solid background only (ignore errors)
 `multilockscreen -u . --fx color --color 5833ff`
 
+Update image cache with different background images
+`multilockscreen -u ~/Wallpapers/image1.png -u ~/Wallpapers/image2.png --fx dimpixel --display 1`
+
 Lock screen with blur effect
 `multilockscreen --lock blur`
 

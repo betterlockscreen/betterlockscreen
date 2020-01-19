@@ -165,7 +165,7 @@ logical_px() {
 	# get dpi value from xdpyinfo
 	local DPI
 	DPI=$(xdpyinfo | sed -En "s/\s*resolution:\s*([0-9]*)x([0-9]*)\s.*/\\$direction/p" | head -n1)
-	
+
 	# return the default value if no DPI is set
 	if [ -z "$DPI" ]; then
 		echo "$pixels"
@@ -199,20 +199,58 @@ get_display_list () {
 	done
 }
 
-# get image path, sets $USER_WALL
-# if arg is file, return that
-# if arg is dir, return random image
-get_user_wall() {
+# populate $WALL_LIST depending on number of displays and images passed
+get_wall_list() {
+
+	local paths=("$@")
+	declare -ga WALL_LIST
+
+	# multiple images and spanning conflict, bail out
+	if [ "${#paths[@]}" -gt 1 ] && [ "$span_image" = true ]; then
+		echo "ERROR: can't use --span with multiple images"
+		exit 1
+	fi
+
+	# if # paths is 1
+	if [ "${#paths[@]}" -eq 1 ]; then
+		for ((i=0; i<${#DISPLAY_LIST[@]}; i++)); do
+			# add same image to $WALL_LIST for each display
+			get_image "${paths[0]}"
+		done
+
+	# if # of paths equals # of displays
+	elif [ ${#paths[@]} -eq "${#DISPLAY_LIST[@]}" ]; then
+		for ((i=0; i<${#DISPLAY_LIST[@]}; i++)); do
+			# add each image to $WALL_LIST
+			get_image "${paths[$i]}"
+		done
+
+	# if # of paths differ from # of display, bail out
+	else
+		echo "ERROR: ${#paths[@]} images provided for ${#DISPLAY_LIST[@]} displays!"
+		exit 1
+	fi
+}
+
+# get image path, append to $WALL_LIST
+get_image() {
 
 	local path="$1"
 
-	if [ ! -d "$path" ]; then
-		USER_WALL="$path"
+	# we have a file
+	if [ -f "$path" ]; then
+		WALL_LIST+=("$path")
 		return
+	# we have a directory
+	elif [ -d "$path" ]; then
+		dir=("$path"/*)
+		rdir="${dir[RANDOM % ${#dir[@]}]}"
+		get_image "$rdir" # <-- calls itself
+	# not file or directory, bail out
+	else
+		echo "ERROR: invalid path" "$path"
+		exit 1
 	fi
-	dir=("$path"/*)
-	rdir="${dir[RANDOM % ${#dir[@]}]}"
-	get_user_wall "$rdir"
 
 }
 
@@ -380,23 +418,23 @@ purge_cache () {
 	if [[ -d "$1" ]]; then
 		rm -r "$1"
 	fi
-	mkdir -p "$1" 
+	mkdir -p "$1"
 }
 
 # update lockscreen and wallpaper images
 update () {
 
-	local image="$1"
+	local images=("$@")
 
 	echo "Updating Image Cache..."
 	mkdir -p "$CACHE_DIR" &>/dev/null
 
-	get_user_wall "$image" # USER_WALL
-	echo "Original Image: $USER_WALL"
-
 	get_display_list # DISPLAY_LIST
 	get_total_size # TOTAL_SIZE
 	echo "Detected ${#DISPLAY_LIST[@]} Displays @ $TOTAL_SIZE Resolution"
+
+	get_wall_list "${images[@]}" # WALL_LIST
+	echo "Original Image(s): ${WALL_LIST[@]##*/}"
 
 	# Prepare description box to obtain width for positioning
 	if [ -z "$description" ]; then
@@ -408,7 +446,9 @@ update () {
 		local descheight=$(identify -format "%[fx:h]" "$DESCRECT")
 	fi
 
-	for display in "${DISPLAY_LIST[@]}"; do
+	for ((i=0; i<${#DISPLAY_LIST[@]}; i++)); do
+		display="${DISPLAY_LIST[$i]}"
+		USER_WALL="${WALL_LIST[$i]}"
 
 		IFS=' ' read -r -a dinfo  <<< "$display"
 		local id="${dinfo[0]}"
@@ -440,7 +480,7 @@ update () {
 
 		echo "Display: $device ($id)"
 		echo "Resolution: $resolution"
-		
+
 		local path="$CACHE_DIR/$id-$device"
 		purge_cache "$path"
 
@@ -461,9 +501,9 @@ update () {
 			PARAM_DIMPIXEL="$PARAM_DIMPIXEL $RES_DIMPIXEL -geometry $position -composite "
 			PARAM_COLOR="$PARAM_COLOR $RES_COLOR -geometry $position -composite "
 		fi
-		
+
 	done
-	
+
 	purge_cache "$CUR_DIR"
 
 	if [ "$span_image" = true ] || [ ${#DISPLAY_LIST[@]} -lt 2 ]; then
@@ -610,7 +650,7 @@ for arg in "$@"; do
 	case "$1" in
 		-u | --update)
 			runupdate=true
-			imagepath="$2"
+			imagepaths+=("$2")
 			shift 2
 			;;
 
@@ -692,7 +732,7 @@ for arg in "$@"; do
 done
 
 # Run image generation
-[[ $runupdate ]] && update "$imagepath"
+[[ $runupdate ]] && update "${imagepaths[@]}"
 
 # Activate lockscreen
 [[ $runlock ]] && lockselect "$lockstyle" && \
