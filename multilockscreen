@@ -211,8 +211,12 @@ get_wall_list() {
 		exit 1
 	fi
 
+	# if spanning return 1 image
+	if [ "$span_image" = true ]; then
+		get_image "${paths[0]}"
+
 	# if # paths is 1
-	if [ "${#paths[@]}" -eq 1 ]; then
+	elif [ "${#paths[@]}" -eq 1 ]; then
 		for ((i=0; i<${#DISPLAY_LIST[@]}; i++)); do
 			# add same image to $WALL_LIST for each display
 			get_image "${paths[0]}"
@@ -434,7 +438,7 @@ update () {
 	echo "Detected ${#DISPLAY_LIST[@]} Displays @ $TOTAL_SIZE Resolution"
 
 	get_wall_list "${images[@]}" # WALL_LIST
-	echo "Original Image(s): ${WALL_LIST[@]##*/}"
+	echo "Original Image(s): ${WALL_LIST[*]##*/}"
 
 	# Prepare description box to obtain width for positioning
 	if [ -z "$description" ]; then
@@ -478,18 +482,24 @@ update () {
 			positions_desc+=("+$((descrect_x))+$((descrect_y))")
 		fi
 
-		echo "Display: $device ($id)"
-		echo "Resolution: $resolution"
-
 		local path="$CACHE_DIR/$id-$device"
 		purge_cache "$path"
 
-		if [ "$span_image" = true ] && [ "$id" -gt 1 ]; then
-			continue
+		if [ "$span_image" = true ]; then
+			if [ "$id" -gt 1 ]; then
+				continue
+			else
+				device="[span]"
+				id="*"
+				resolution="$TOTAL_SIZE"
+			fi
 		fi
 
+		echo "Display: $device ($id)"
+		echo "Resolution: $resolution"
+
 		if [ "$span_image" = true ]; then
-			resize_and_render "$USER_WALL" "$path" "$TOTAL_SIZE"
+			resize_and_render "$USER_WALL" "$path" "$resolution"
 		else
 			resize_and_render "$USER_WALL" "$path" "$resolution"
 
@@ -507,6 +517,7 @@ update () {
 	purge_cache "$CUR_DIR"
 
 	if [ "$span_image" = true ] || [ ${#DISPLAY_LIST[@]} -lt 2 ]; then
+		echo "Rendering final wallpaper images..."
 		[[ -f "$RES_RESIZE" ]] && cp $RES_RESIZE $CUR_W_RESIZE
 		[[ -f "$RES_DIM" ]] && cp $RES_DIM $CUR_W_DIM
 		[[ -f "$RES_BLUR" ]] && cp $RES_BLUR $CUR_W_BLUR
@@ -524,7 +535,7 @@ update () {
 		[[ -f "$RES_DIMPIXEL" ]] && convert -size $TOTAL_SIZE 'xc:blue' $CUR_W_DIMPIXEL
 		[[ -f "$RES_COLOR" ]] && convert -size $TOTAL_SIZE 'xc:blue' $CUR_W_COLOR
 
-		echo Rendering final wallpaper images...
+		echo "Rendering final wallpaper images..."
 		[[ -f "$CUR_W_RESIZE" ]] && convert $CUR_W_RESIZE $PARAM_RESIZE $CUR_W_RESIZE
 		[[ -f "$CUR_W_DIM" ]] && convert $CUR_W_DIM $PARAM_DIM $CUR_W_DIM
 		[[ -f "$CUR_W_BLUR" ]] && convert $CUR_W_BLUR $PARAM_BLUR $CUR_W_BLUR
