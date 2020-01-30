@@ -72,6 +72,9 @@ init_config
 
 # called before screen is locked
 prelock() {
+
+	echof act "Running prelock..."
+
 	# set dpms timeout
 	if [ -n "$lock_timeout" ]; then
 		xset dpms "$lock_timeout"
@@ -84,6 +87,8 @@ prelock() {
 
 # lock screen with specified image
 lock() {
+
+	echof act "Locking screen..."
 
 	local image="$1"
 
@@ -106,6 +111,8 @@ lock() {
 # in case image isn't found
 failsafe() {
 
+	echof act "Locking screen... (FAILSAFE MODE)"
+
 	local bgcolor="000000"
 	local text="ffffffff"
 
@@ -125,6 +132,9 @@ failsafe() {
 
 # called after screen is unlocked
 postlock() {
+
+	echof act "Running postlock..."
+
 	# restore default dpms timeout
 	if [ -n "$lock_timeout" ]; then
 		xset dpms "$DEFAULT_TIMEOUT"
@@ -207,7 +217,7 @@ get_wall_list() {
 
 	# multiple images and spanning conflict, bail out
 	if [ "${#paths[@]}" -gt 1 ] && [ "$span_image" = true ]; then
-		echo "ERROR: can't use --span with multiple images"
+		echof err "Can't use --span with multiple images!"
 		exit 1
 	fi
 
@@ -231,7 +241,7 @@ get_wall_list() {
 
 	# if # of paths differ from # of display, bail out
 	else
-		echo "ERROR: ${#paths[@]} images provided for ${#DISPLAY_LIST[@]} displays!"
+		echof err "${#paths[@]} images provided for ${#DISPLAY_LIST[@]} displays!"
 		exit 1
 	fi
 }
@@ -252,7 +262,7 @@ get_image() {
 		get_image "$rdir" # <-- calls itself
 	# not file or directory, bail out
 	else
-		echo "ERROR: invalid path" "$path"
+		echfo err "invalid path: $path"
 		exit 1
 	fi
 
@@ -298,7 +308,7 @@ base_resize() {
 	local output="$2"
 	local size="$3"
 
-	echo "Resizing base image..."
+	echof act "Resizing base image..."
 	eval convert "$input" \
 		-resize "$size""^" \
 		-gravity center \
@@ -311,7 +321,7 @@ fx_dim() {
 	local input="$1"
 	local output="$2"
 
-	echo "Rendering 'dim' effect..."
+	echof act "Rendering 'dim' effect..."
 	eval convert "$input" \
 		-fill black -colorize "$dim_level"% \
 		"$output"
@@ -323,7 +333,7 @@ fx_blur() {
 	local output="$2"
 	local size="$3"
 
-	echo "Rendering 'blur' effect..."
+	echof act "Rendering 'blur' effect..."
 	blur_shrink=$(echo "scale=2; 20 / $blur_level" | bc)
 	blur_sigma=$(echo "scale=2; 0.6 * $blur_level" | bc)
 	eval convert "$input" \
@@ -340,7 +350,7 @@ fx_dimblur() {
 	local output="$2"
 	local size="$3"
 
-	echo "Rendering 'dimblur' effect..."
+	echof act "Rendering 'dimblur' effect..."
 	blur_shrink=$(echo "scale=2; 20 / $blur_level" | bc)
 	blur_sigma=$(echo "scale=2; 0.6 * $blur_level" | bc)
 	eval convert "$input" \
@@ -357,7 +367,7 @@ fx_pixel() {
 	local input="$1"
 	local output="$2"
 
-	echo "Rendering 'pixel' effect..."
+	echof act "Rendering 'pixel' effect..."
 	IFS=',' read -ra range <<< "$pixel_scale"
 	eval convert "$input" \
 		-scale "${range[0]}"% -scale "${range[1]}"% \
@@ -369,7 +379,7 @@ fx_dimpixel() {
 	local input="$1"
 	local output="$2"
 
-	echo "Rendering 'dimpixel' effect..."
+	echof act "Rendering 'dimpixel' effect..."
 	IFS=',' read -ra range <<< "$pixel_scale"
 	eval convert "$input" \
 		-fill black -colorize "$dim_level"% \
@@ -382,7 +392,7 @@ fx_color() {
 	local output="$1"
 	local size="$2"
 
-	echo "Rendering 'color' effect..."
+	echof act "Rendering 'color' effect..."
 	eval convert -size "$size" canvas:\#"$solid_color" "$RES_COLOR"
 }
 
@@ -430,15 +440,15 @@ update () {
 
 	local images=("$@")
 
-	echo "Updating Image Cache..."
+	echof act "Updating image cache..."
 	mkdir -p "$CACHE_DIR" &>/dev/null
 
 	get_display_list # DISPLAY_LIST
 	get_total_size # TOTAL_SIZE
-	echo "Detected ${#DISPLAY_LIST[@]} Displays @ $TOTAL_SIZE Resolution"
+	echof info "Detected ${#DISPLAY_LIST[@]} display(s) @ $TOTAL_SIZE total resolution"
 
 	get_wall_list "${images[@]}" # WALL_LIST
-	echo "Original Image(s): ${WALL_LIST[*]##*/}"
+	echof info "Original image(s): ${WALL_LIST[*]##*/}"
 
 	# Prepare description box to obtain width for positioning
 	if [ -z "$description" ]; then
@@ -495,8 +505,8 @@ update () {
 			fi
 		fi
 
-		echo "Display: $device ($id)"
-		echo "Resolution: $resolution"
+		echof info "Processing display: $device ($id)"
+		echof info "Resolution: $resolution"
 
 		if [ "$span_image" = true ]; then
 			resize_and_render "$USER_WALL" "$path" "$resolution"
@@ -517,7 +527,7 @@ update () {
 	purge_cache "$CUR_DIR"
 
 	if [ "$span_image" = true ] || [ ${#DISPLAY_LIST[@]} -lt 2 ]; then
-		echo "Rendering final wallpaper images..."
+		echof act "Rendering final wallpaper images..."
 		[[ -f "$RES_RESIZE" ]] && cp $RES_RESIZE $CUR_W_RESIZE
 		[[ -f "$RES_DIM" ]] && cp $RES_DIM $CUR_W_DIM
 		[[ -f "$RES_BLUR" ]] && cp $RES_BLUR $CUR_W_BLUR
@@ -526,7 +536,7 @@ update () {
 		[[ -f "$RES_DIMPIXEL" ]] && cp $RES_DIMPIXEL $CUR_W_DIMPIXEL
 		[[ -f "$RES_COLOR" ]] && cp $RES_COLOR $CUR_W_COLOR
 	else
-		echo "Creating canvas: $TOTAL_SIZE"
+		echof act "Creating canvas: $TOTAL_SIZE"
 		[[ -f "$RES_RESIZE" ]] && convert -size $TOTAL_SIZE 'xc:blue' $CUR_W_RESIZE
 		[[ -f "$RES_DIM" ]] && convert -size $TOTAL_SIZE 'xc:blue' $CUR_W_DIM
 		[[ -f "$RES_BLUR" ]] && convert -size $TOTAL_SIZE 'xc:blue' $CUR_W_BLUR
@@ -535,7 +545,7 @@ update () {
 		[[ -f "$RES_DIMPIXEL" ]] && convert -size $TOTAL_SIZE 'xc:blue' $CUR_W_DIMPIXEL
 		[[ -f "$RES_COLOR" ]] && convert -size $TOTAL_SIZE 'xc:blue' $CUR_W_COLOR
 
-		echo "Rendering final wallpaper images..."
+		echof act "Rendering final wallpaper images..."
 		[[ -f "$CUR_W_RESIZE" ]] && convert $CUR_W_RESIZE $PARAM_RESIZE $CUR_W_RESIZE
 		[[ -f "$CUR_W_DIM" ]] && convert $CUR_W_DIM $PARAM_DIM $CUR_W_DIM
 		[[ -f "$CUR_W_BLUR" ]] && convert $CUR_W_BLUR $PARAM_BLUR $CUR_W_BLUR
@@ -545,7 +555,7 @@ update () {
 		[[ -f "$CUR_W_COLOR" ]] && convert $CUR_W_COLOR $PARAM_COLOR $CUR_W_COLOR
 	fi
 
-	echo "Rendering final lockscreen images..."
+	echof act "Rendering final lockscreen images..."
 
 	create_loginbox
 	for pos in "${positions[@]}"; do
@@ -570,7 +580,7 @@ update () {
 	[[ $RECTANGLE ]] && rm "$RECTANGLE"
 	[[ $DESCRECT ]] && rm "$DESCRECT"
 
-	echo "Done"
+	echof ok "Done"
 
 }
 
@@ -596,6 +606,23 @@ wallpaper() {
 		color) feh --bg-fill "$span" "$CUR_W_COLOR";;
 		*) feh --bg-fill "$span" "$CUR_W_RESIZE";;
 	esac
+}
+
+# wrap echo with fancy prefix
+echof() {
+
+	local prefix="$1"
+	local message="$2"
+
+	case "$prefix" in
+		header) msgpfx="[\e[1;95mm\e[m]";;
+		info) msgpfx="[\e[1;97m=\e[m]";;
+		act) msgpfx="[\e[1;92m*\e[m]";;
+		ok) msgpfx="[\e[1;93m+\e[m]";;
+		error) msgpfx="[\e[1;91m!\e[m]";;
+		*) msgpfx="";;
+	esac
+	echo -e "$msgpfx $message"
 }
 
 # help message
@@ -649,6 +676,8 @@ usage() {
 	echo
 	exit 1
 }
+
+echof header "multilockscreen"
 
 # show usage when no arguments passed
 [[ "$1" = "" ]] && usage
