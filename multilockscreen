@@ -262,7 +262,7 @@ get_image() {
 		get_image "$rdir" # <-- calls itself
 	# not file or directory, bail out
 	else
-		echfo err "invalid path: $path"
+		echof err "invalid path: $path"
 		exit 1
 	fi
 
