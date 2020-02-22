@@ -464,6 +464,11 @@ update () {
 		display="${DISPLAY_LIST[$i]}"
 		USER_WALL="${WALL_LIST[$i]}"
 
+		# escape spaces for IM
+		if echo "$USER_WALL" | grep -E -q "[[:space:]]"; then
+			USER_WALL="${USER_WALL// /\\ }"
+		fi
+
 		IFS=' ' read -r -a dinfo  <<< "$display"
 		local id="${dinfo[0]}"
 		local device="${dinfo[1]}"
