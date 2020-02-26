@@ -7,6 +7,7 @@
 # find your resolution so images can be resized to match your screen resolution
 res=$(xdpyinfo | grep dimensions | sed -r 's/^[^0-9]*([0-9]+x[0-9]+).*$/\1/')
 default_timeout="$(cut -d ' ' -f4 <<< $(xset q | sed -n '25p'))"
+default_dpms=$(xset q | awk '/^[[:blank:]]*DPMS is/ {print $(NF)}')
 
 init_filenames() {
 	#$1 resolution
@@ -104,6 +105,9 @@ lock() {
 postlock() {
 	if [ ! -z "$lock_timeout" ]; then
 	  xset dpms "$default_timeout"
+	  if [ "$default_dpms" = "Disabled" ]; then
+		xset -dpms
+	  fi
 	fi
 	if [ ! -z "$(pidof dunst)" ] ; then
 		pkill -u "$USER" -USR2 dunst
