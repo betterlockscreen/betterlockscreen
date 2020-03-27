@@ -59,6 +59,7 @@ init_filenames() {
 	blur="$folder/blur.png" # blurred version
 	dimblur="$folder/dimblur.png"
 	pixel="$folder/pixel.png" # pixelated image
+    glitch="$folder/glitch.png"
 
 	# lockscreen images (images to be used as lockscreen background)
 	l_resized="$folder/l_resized.png"
@@ -66,6 +67,7 @@ init_filenames() {
 	l_blur="$folder/l_blur.png"
 	l_dimblur="$folder/l_dimblur.png"
 	l_pixel="$folder/l_pixel.png"
+    l_glitch="$folder/l_glitch.png"
 }
 
 init_filenames "$res"
@@ -148,7 +150,10 @@ lockselect() {
 			# set lockscreen with pixelated background
 			lock "$l_pixel"
 			;;
-
+        glitch)
+			# set lockscreen with glitched background
+            lock "$l_glitch"
+            ;;
 		*)
 			# default lockscreen
 			lock "$l_resized"
@@ -233,7 +238,7 @@ update() {
 	convert "$orig_wall" -resize "$res""^" -gravity center -extent "$res" "$resized"
 
 	echo
-	echo 'Applying dim, blur, and pixelation effect to resized image'
+	echo 'Applying dim, blur, glitch, and pixelation effect to resized image'
 	# dim
 	convert "$resized" -fill black -colorize 40% "$dim"
 
@@ -258,6 +263,13 @@ update() {
 		-resize "$res^" -gravity center -extent "$res" \
 		"$dimblur"
 
+    #glitch
+    tmp="$folder/$(basename $glitch png)bmp"
+    convert "$resized" "$tmp"
+    sox -q -t ul -c 1 -r 48k "$tmp" -t ul "$glitch" trim 0 100s : echo 0.4 0.8 10 0.9 2>/dev/null
+    rm $tmp
+    convert -quiet "$glitch" "$glitch"
+
 	# lockscreen backgrounds
 
 	echo
@@ -276,6 +288,10 @@ update() {
 
 	# pixel
 	convert "$pixel" -draw "fill #$loginbox $rectangles" "$l_pixel"
+
+    # glitch
+    convert "$glitch" -draw "fill #$loginbox $rectangles" "$l_glitch"
+
 	echo
 	echo 'All required changes have been applied'
 }
@@ -307,6 +323,10 @@ wallpaper() {
 			# set pixelated image as wallpaper
 			feh --bg-fill "$pixel"
 			;;
+        glitch)
+			# set glitched image as wallpaper
+            feh --bg-fill "$glitch"
+            ;;
 	esac
 }
 
@@ -355,6 +375,7 @@ usage() {
 	echo '		E.g: betterlockscreen -l dim (for dimmed background)'
 	echo '		E.g: betterlockscreen -l blur (for blurred background)'
 	echo '		E.g: betterlockscreen -l dimblur (for dimmed + blurred background)'
+	echo '		E.g: betterlockscreen -l glitch (for glitched background)'
 	echo
 	echo
 	echo '	-s --suspend'
