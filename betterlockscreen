@@ -12,27 +12,28 @@ default_dpms=$(xset q | awk '/^[[:blank:]]*DPMS is/ {print $(NF)}')
 init_filenames() {
 	#$1 resolution
 
-	# custom i3lock colors
+	# copy this block to ~/.config/betterlockscreenrc" to customize
+	insidecolor=00000000
+	ringcolor=ffffffff
+	keyhlcolor=d23c3dff
+	bshlcolor=d23c3dff
+	separatorcolor=00000000
+	insidevercolor=00000000
+	insidewrongcolor=d23c3dff
+	ringvercolor=ffffffff
+	ringwrongcolor=ffffffff
+	verifcolor=ffffffff
+	timecolor=ffffffff
+	datecolor=ffffffff
+	loginbox=00000066
+	font="sans-serif"
+	locktext='Type password to unlock...'
+	wallpaper_cmd='feh --bg-fill --no-fehbg'
+
+	# override defaults with config
 	theme_rc="$HOME/.config/betterlockscreenrc"
 	if [ -e "$theme_rc" ]; then
-	    source "$theme_rc"
-	else
-        # copy this block to ~/.config/betterlockscreenrc" to customize
-	    insidecolor=00000000
-	    ringcolor=ffffffff
-	    keyhlcolor=d23c3dff
-	    bshlcolor=d23c3dff
-	    separatorcolor=00000000
-	    insidevercolor=00000000
-	    insidewrongcolor=d23c3dff
-	    ringvercolor=ffffffff
-	    ringwrongcolor=ffffffff
-	    verifcolor=ffffffff
-	    timecolor=ffffffff
-	    datecolor=ffffffff
-	    loginbox=00000066
-		font="sans-serif"
-      	locktext='Type password to unlock...'
+		source "$theme_rc"
 	fi
 
 	# create folder in ~/.cache/i3lock directory
@@ -73,7 +74,7 @@ init_filenames "$res"
 
 prelock() {
 	if [ ! -z "$lock_timeout" ]; then
-	  xset dpms "$lock_timeout"
+		xset dpms "$lock_timeout"
 	fi
 	if [ ! -z "$(pidof dunst)" ]; then
 		pkill -u "$USER" -USR1 dunst
@@ -96,17 +97,17 @@ lock() {
 		--radius=20 --ring-width=4 --veriftext='' --wrongtext='' \
 		--verifcolor="$verifcolor" --timecolor="$timecolor" --datecolor="$datecolor" \
 		--time-font="$font" --date-font="$font" --layout-font="$font" --verif-font="$font" --wrong-font="$font" \
-		--noinputtext='' --force-clock --pass-media-keys $lockargs 
+		--noinputtext='' --force-clock --pass-media-keys $lockargs
 
 }
 
 
 postlock() {
 	if [ ! -z "$lock_timeout" ]; then
-	  xset dpms "$default_timeout"
-	  if [ "$default_dpms" = "Disabled" ]; then
-		xset -dpms
-	  fi
+		xset dpms "$default_timeout"
+		if [ "$default_dpms" = "Disabled" ]; then
+			xset -dpms
+		fi
 	fi
 	if [ ! -z "$(pidof dunst)" ] ; then
 		pkill -u "$USER" -USR2 dunst
@@ -285,29 +286,30 @@ wallpaper() {
 	case "$1" in
 		'')
 			# set resized image as wallpaper if no argument is supplied by user
-			feh --bg-fill "$resized"
+			wallpaper="$resized"
 			;;
 
 		dim)
 			# set dimmed image as wallpaper
-			feh --bg-fill "$dim"
+			wallpaper="$dim"
 			;;
 
 		blur)
 			# set blurred image as wallpaper
-			feh --bg-fill "$blur"
+			wallpaper="$blur"
 			;;
 
 		dimblur)
 			# set dimmed + blurred image as wallpaper
-			feh --bg-fill "$dimblur"
+			wallpaper="$dimblur"
 			;;
 
 		pixel)
 			# set pixelated image as wallpaper
-			feh --bg-fill "$pixel"
+			wallpaper="$pixel"
 			;;
 	esac
+	eval "$wallpaper_cmd $wallpaper"
 }
 
 
@@ -368,6 +370,7 @@ usage() {
 	echo '	-w --wall'
 	echo '		you can also set lockscreen background as wallpaper'
 	echo '		to set wallpaper (e.g. betterlockscreen -w or betterlockscreen --wall)'
+	echo '		(The default wallpaper setter is feh, to set your own use the -wc command)'
 	echo '		you can also use dimmed or blurred variants.'
 	echo '		E.g: betterlockscreen -w dim (for dimmed wallpaper)'
 	echo '		E.g: betterlockscreen -w blur (for blurred wallpaper)'
@@ -395,9 +398,15 @@ usage() {
 	echo
 	echo
 	echo '	--off <timeout>'
-	echo '            to set custom monitor turn off timeout for lockscreen'
-	echo '            timeout is in seconds'
-	echo '            E.g: betterlockscreen -l dim --off 5'
+	echo '		to set custom monitor turn off timeout for lockscreen'
+	echo '		timeout is in seconds'
+	echo '		E.g: betterlockscreen -l dim --off 5'
+	echo
+	echo
+	echo '	-wc --wallpaper_cmd <command>'
+	echo '		to set your custom wallpaper setter'
+	echo '		the default is "feh --bg-fill --no-fehbg"'
+	echo '		E.g: betterlockscreen -wc "xwallpaper --zoom" -w'
 }
 
 
@@ -423,7 +432,7 @@ for arg in "$@"; do
 			if [[ ${2:0:1} = '-' ]]; then
 				shift 1
 			else
-		       		lockstyle="$2"; shift 2
+				lockstyle="$2"; shift 2
 			fi
 			;;
 
@@ -456,6 +465,11 @@ for arg in "$@"; do
 
 		-b | --blur)
 			blur_level="$2"
+			shift 2
+			;;
+
+		-wc | --wallpaper_cmd)
+			wallpaper_cmd="$2"
 			shift 2
 			;;
 
