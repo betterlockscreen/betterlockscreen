@@ -27,3 +27,26 @@ bshlcolor=d23c3dff
 verifcolor=ffffffff
 timecolor=ffffffff
 datecolor=ffffffff
+
+# custom prelock
+prelock() {
+
+	# ...
+
+	# start away timer
+	away_start="$(date -u +%s)"
+
+}
+
+# custom postlock
+postlock() {
+
+	# ...
+
+	# show time away
+	away_end="$(date -u +%s)"
+	if [[ ! "$away_start" -ne "$away_end" ]]; then
+		notify-send "Welcome Back" "You were gone for $(($away_end-$away_start)) seconds!"
+	fi
+
+}

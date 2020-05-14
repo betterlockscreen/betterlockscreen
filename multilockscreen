@@ -68,13 +68,9 @@ init_config () {
 	# Original DPMS timeout
 	DEFAULT_TIMEOUT=$(cut -d ' ' -f4 <<< "$(xset q | sed -n '25p')")
 }
-init_config
-
 
 # called before screen is locked
 prelock() {
-
-	echof act "Running prelock..."
 
 	# set dpms timeout
 	if [ -n "$lock_timeout" ]; then
@@ -136,8 +132,6 @@ failsafe() {
 # called after screen is unlocked
 postlock() {
 
-	echof act "Running postlock..."
-
 	# restore default dpms timeout
 	if [ -n "$lock_timeout" ]; then
 		xset dpms "$DEFAULT_TIMEOUT"
@@ -152,6 +146,7 @@ postlock() {
 # select effect and lock screen
 lockselect() {
 
+	echof act "Running prelock..."
 	prelock
 
 	case "$1" in
@@ -164,6 +159,7 @@ lockselect() {
 		*) if [ -f "$CUR_L_RESIZE" ]; then lock "$CUR_L_RESIZE"; else failsafe; fi ;;
 	esac
 
+	echof act "Running postlock..."
 	postlock
 }
 
@@ -686,6 +682,8 @@ usage() {
 }
 
 echof header "multilockscreen"
+
+init_config
 
 # show usage when no arguments passed
 [[ "$1" = "" ]] && usage
