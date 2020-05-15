@@ -46,7 +46,7 @@ images as lockscreen background depending on argument provided by user.
 
 > Note: Make sure your system has all dependencies satisfied
 
-- [i3lock-color](https://github.com/PandorasFox/i3lock-color) - i3lock fork with additional features( >= 2.11-c )
+- [i3lock-color](https://github.com/Raymo111/i3lock-color) - i3lock fork with additional features( >= 2.11-c )
 - [imagemagick](https://www.imagemagick.org/script/index.php) - To apply effects to images
 - [xdpyinfo](https://www.x.org/archive/X11R7.7/doc/man/man1/xdpyinfo.1.xhtml), [xrandr](https://www.x.org/wiki/Projects/XRandR/), [bc](https://www.gnu.org/software/bc/) and [feh](https://feh.finalrewind.org/) - To find screen resolution, set custom blur level and wallpaper handling.
 
