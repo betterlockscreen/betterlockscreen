@@ -700,15 +700,18 @@ for arg in "$@"; do
 			shift 2
 			;;
 
-		-l | --lock)
-			runlock=true
-			[[ $runsuspend ]] || lockargs+=(-n)
-			{ [[ ${2:0:1} = '-' ]] && shift 1; } || { lockstyle="$2"; shift 2; }
-			;;
-
 		-s | --suspend)
 			runsuspend=true
 			;&
+
+		-l | --lock)
+			runlock=true
+			if [[ ${2:0:1} = '-' ]]; then
+				shift 1
+			else
+				lockstyle="$2"; shift 2
+			fi
+			;;
 
 		-w | --wall)
 			wallpaper "$2"
@@ -781,6 +784,7 @@ done
 [[ $runupdate ]] && update "${imagepaths[@]}"
 
 # Activate lockscreen
+[[ $runsuspend ]] || lockargs+=(-n)
 [[ $runlock ]] && lockselect "$lockstyle" && \
 	{ [[ $runsuspend ]] && systemctl suspend; }
 
