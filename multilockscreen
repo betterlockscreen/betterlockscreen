@@ -77,8 +77,9 @@ prelock() {
 		xset dpms "$lock_timeout"
 	fi
 	# pause dunst
-	if [ -n "$(pidof dunst)" ]; then
-		pkill -u "$USER" -USR1 dunst
+	if command -v dunstctl &>/dev/null
+	then
+		dunstctl set-paused true
 	fi
 }
 
@@ -137,8 +138,9 @@ postlock() {
 		xset dpms "$DEFAULT_TIMEOUT"
 	fi
 	# unpause dunst
-	if [ -n "$(pidof dunst)" ] ; then
-		pkill -u "$USER" -USR2 dunst
+	if command -v dunstctl &>/dev/null
+	then
+		dunstctl set-paused false
 	fi
 }
 
