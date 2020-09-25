@@ -67,6 +67,8 @@ init_config () {
 
 	# Original DPMS timeout
 	DEFAULT_TIMEOUT=$(cut -d ' ' -f4 <<< "$(xset q | sed -n '25p')")
+	# Original DPMS status
+	DEFAULT_DPMS=$(xset q | awk '/^[[:blank:]]*DPMS is/ {print $(NF)}')
 }
 
 # called before screen is locked
@@ -136,6 +138,9 @@ postlock() {
 	# restore default dpms timeout
 	if [ -n "$lock_timeout" ]; then
 		xset dpms "$DEFAULT_TIMEOUT"
+		if [ "$DEFAULT_DPMS" = "Disabled" ]; then
+			xset -dpms
+		fi
 	fi
 	# unpause dunst
 	if command -v dunstctl &>/dev/null
