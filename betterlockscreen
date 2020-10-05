@@ -8,6 +8,7 @@
 res=$(xdpyinfo | grep dimensions | sed -r 's/^[^0-9]*([0-9]+x[0-9]+).*$/\1/')
 default_timeout="$(cut -d ' ' -f4 <<< $(xset q | sed -n '25p'))"
 default_dpms=$(xset q | awk '/^[[:blank:]]*DPMS is/ {print $(NF)}')
+theme_rc="$HOME/.config/betterlockscreenrc"
 
 init_filenames() {
 	#$1 resolution
@@ -31,7 +32,6 @@ init_filenames() {
 	wallpaper_cmd='feh --bg-fill --no-fehbg'
 
 	# override defaults with config
-	theme_rc="$HOME/.config/betterlockscreenrc"
 	if [ -e "$theme_rc" ]; then
 		source "$theme_rc"
 	fi
@@ -432,7 +432,12 @@ for arg in "$@"; do
 			if [[ ${2:0:1} = '-' ]]; then
 				shift 1
 			else
-				lockstyle="$2"; shift 2
+				if [[ -z "$2" ]]; then
+					source "$theme_rc"
+					shift 1
+				else
+					lockstyle="$2"; shift 2
+				fi
 			fi
 			;;
 
