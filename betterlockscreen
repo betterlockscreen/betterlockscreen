@@ -31,14 +31,14 @@ init_filenames() {
 	wallpaper_cmd='feh --bg-fill --no-fehbg'
 
 	# override defaults with config
-	theme_rc="$HOME/.config/betterlockscreenrc"
+	theme_rc="${XDG_CONFIG_HOME:-$HOME/.config}/betterlockscreenrc"
 	if [ -e "$theme_rc" ]; then
 		source "$theme_rc"
 	fi
 
 	# create folder in ~/.cache/i3lock directory
-	res_folder="$HOME/.cache/i3lock/$1"
-	folder="$HOME/.cache/i3lock/current"
+	res_folder="${XDG_CACHE_HOME:-$HOME/.cache}/i3lock/$1"
+	folder="${XDG_CACHE_HOME:-$HOME/.cache}/i3lock/current"
 	echo "Got" "$@" "$res_folder"
 	if [ ! -d "$folder" -o -n "$2" ]; then
 		rm -rf "$folder"
