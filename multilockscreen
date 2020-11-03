@@ -34,6 +34,7 @@ init_config () {
 	verifcolor=ffffffff
 	timecolor=ffffffff
 	datecolor=ffffffff
+	layoutcolor=ffffffff
 	nocolor=00000000
 
 	# read user config
@@ -97,6 +98,7 @@ lock() {
 		--screen "$display_on" \
 		--timepos='ix-170:iy-0' \
 		--datepos='ix-240:iy+25' \
+		--layoutpos='ix-90:iy-0' --layout-align 1 --layoutcolor=$layoutcolor $keylayout \
 		--clock --date-align 1 --datestr "$locktext" \
 		--insidecolor=$insidecolor --ringcolor=$ringcolor --line-uses-inside \
 		--keyhlcolor=$keyhlcolor --bshlcolor=$bshlcolor --separatorcolor=$separatorcolor \
@@ -668,6 +670,9 @@ usage() {
 	echo "      Set a description for the new lock screen image"
 	echo "      (Only has an effect in combination with --update)"
 	echo
+	echo "  --show-layout"
+	echo "      Show current keyboard layout"
+	echo
 	echo "  -- <ARGS>"
 	echo "      Pass additional arguments to i3lock"
 	echo
@@ -743,6 +748,11 @@ for arg in "$@"; do
 		--text)
 			locktext="$2"
 			shift 2
+			;;
+
+		--show-layout)
+			keylayout="--keylayout 2";
+			shift 1
 			;;
 
 		--fx)
