@@ -86,6 +86,7 @@ lock() {
 	#$1 image path
 
 	i3lock \
+		-c 00000000 \
 		-t -i "$1" \
 		--timepos='x+110:h-70' \
 		--datepos='x+43:h-45' \
