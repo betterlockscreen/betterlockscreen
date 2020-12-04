@@ -76,7 +76,7 @@ init_config () {
 prelock() {
 
 	# set dpms timeout
-	if [ -n "$lock_timeout" ]; then
+	if [ "$DEFAULT_DPMS" == "Enabled" ]; then
 		xset dpms "$lock_timeout"
 	fi
 	# pause dunst
@@ -138,12 +138,10 @@ failsafe() {
 postlock() {
 
 	# restore default dpms timeout
-	if [ -n "$lock_timeout" ]; then
+	if [ "$DEFAULT_DPMS" == "Enabled" ]; then
 		xset dpms "$DEFAULT_TIMEOUT"
-		if [ "$DEFAULT_DPMS" = "Disabled" ]; then
-			xset -dpms
-		fi
 	fi
+
 	# unpause dunst
 	if command -v dunstctl &>/dev/null
 	then
