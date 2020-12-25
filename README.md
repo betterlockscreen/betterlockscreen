@@ -52,27 +52,10 @@ images as lockscreen background depending on argument provided by user.
 
 ### Installation
 
-> manual installation
-
 ```sh
-git clone https://github.com/pavanjadhaw/betterlockscreen
-cd betterlockscreen
-cp betterlockscreen ~/.local/bin/
-```
-
-<p style="text-align: center">OR</p>
-
-```sh
-# or wget the script ~12KB
-wget -O betterlockscreen https://git.io/fASUJ
-chmod u+x betterlockscreen
-cp betterlockscreen ~/.local/bin/
-```
-
-```sh
-# Add betterlockscreen to PATH:
-# (In your .bashrc, .zshrc etc)
-export PATH="${PATH}:${HOME}/.local/bin/"
+$ git clone https://github.com/pavanjadhaw/betterlockscreen
+$ cd betterlockscreen
+# make install
 ```
 
 ### Package Manager

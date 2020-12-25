@@ -12,33 +12,14 @@ default_dpms=$(xset q | awk '/^[[:blank:]]*DPMS is/ {print $(NF)}')
 init_filenames() {
 	#$1 resolution
 
-	# copy this block to ~/.config/betterlockscreenrc" to customize
-	insidecolor=00000000
-	ringcolor=ffffffff
-	keyhlcolor=d23c3dff
-	bshlcolor=d23c3dff
-	separatorcolor=00000000
-	insidevercolor=00000000
-	insidewrongcolor=d23c3dff
-	ringvercolor=ffffffff
-	ringwrongcolor=ffffffff
-	verifcolor=ffffffff
-	timecolor=ffffffff
-	datecolor=ffffffff
-	loginbox=00000066
-	font="sans-serif"
-	locktext='Type password to unlock...'
-	wallpaper_cmd='feh --bg-fill --no-fehbg'
-
-	# override defaults with config
-	theme_rc="$HOME/.config/betterlockscreenrc"
-	if [ -e "$theme_rc" ]; then
-		source "$theme_rc"
-	fi
+	# if no config is found, use the default config
+	theme_rc="${XDG_CONFIG_HOME:-$HOME/.config}/betterlockscreen/betterlockscreenrc"
+	default_rc="/etc/betterlockscreen/betterlockscreenrc"
+	[ -f "${theme_rc}" ] && . "${theme_rc}" || . "${default_rc}"
 
 	# create folder in ~/.cache/i3lock directory
-	res_folder="$HOME/.cache/i3lock/$1"
-	folder="$HOME/.cache/i3lock/current"
+	res_folder="${XDG_CACHE_HOME:-$HOME/.cache}/i3lock/$1"
+	folder="${XDG_CACHE_HOME:-$HOME/.cache}/i3lock/current"
 	echo "Got" "$@" "$res_folder"
 	if [ ! -d "$folder" -o -n "$2" ]; then
 		rm -rf "$folder"
@@ -332,81 +313,83 @@ empty() {
 
 
 usage() {
-	echo 'Important: Update the image cache (e.g. betterlockscreen -u path/to/image.jpg).'
-	echo '	Image cache must be updated to initially configure or update wallpaper used'
-	echo
-	echo
-	echo 'See: https://github.com/pavanjadhaw/betterlockscreen for additional info...'
-	echo
-	echo
-	echo 'Options:'
-	echo
-	echo '	-h --help'
-	echo '		For help (e.g. betterlockscreen -h or betterlockscreen --help).'
-	echo
-	echo
-	echo '	-u --update'
-	echo '		to update image cache, you should do this before using any other options'
-	echo '		E.g: betterlockscreen -u path/to/image.png when image.png is custom background'
-	echo '		Or you can use betterlockscreen -u path/to/imagedir and a random file will be selected.'
-	echo
-	echo
-	echo '	-l --lock'
-	echo '		to lock screen (e.g. betterlockscreen -l)'
-	echo '		you can also use dimmed or blurred background for lockscreen.'
-	echo '		E.g: betterlockscreen -l dim (for dimmed background)'
-	echo '		E.g: betterlockscreen -l blur (for blurred background)'
-	echo '		E.g: betterlockscreen -l dimblur (for dimmed + blurred background)'
-	echo
-	echo
-	echo '	-s --suspend'
-	echo '		to suspend system and lock screen (e.g. betterlockscreen -s)'
-	echo '		you can also use dimmed or blurred background for lockscreen.'
-	echo '		E.g: betterlockscreen -s dim (for dimmed background)'
-	echo '		E.g: betterlockscreen -s blur (for blurred background)'
-	echo '		E.g: betterlockscreen -s dimblur (for dimmed + blurred background)'
-	echo
-	echo
-	echo '	-w --wall'
-	echo '		you can also set lockscreen background as wallpaper'
-	echo '		to set wallpaper (e.g. betterlockscreen -w or betterlockscreen --wall)'
-	echo '		(The default wallpaper setter is feh, to set your own use the -wc command)'
-	echo '		you can also use dimmed or blurred variants.'
-	echo '		E.g: betterlockscreen -w dim (for dimmed wallpaper)'
-	echo '		E.g: betterlockscreen -w blur (for blurred wallpaper)'
-	echo '		E.g: betterlockscreen -w dimblur (for dimmed + blurred wallpaper)'
-	echo
-	echo
-	echo '	-r --resolution'
-	echo '		to be used after -u'
-	echo '		used to set a custom resolution for the image cache.'
-	echo '		E.g: betterlockscreen -u path/to/image.png -r 1920x1080'
-	echo '		E.g: betterlockscreen -u path/to/image.png --resolution 3840x1080'
-	echo
-	echo
-	echo '	-b --blur'
-	echo '		to be used after -u'
-	echo '		used to set blur intensity. Default to 1.'
-	echo '		E.g: betterlockscreen -u path/to/image.png -b 3'
-	echo '		E.g: betterlockscreen -u path/to/image.png --blur 0.5'
-	echo
-	echo
-	echo '	-t --text'
-	echo '		to set custom lockscreen text (max 31 chars)'
-	echo "		E.g: betterlockscreen -l dim -t \"Don't touch my machine!\""
-	echo '		E.g: betterlockscreen --text "Hi, user!" -s blur'
-	echo
-	echo
-	echo '	--off <timeout>'
-	echo '		to set custom monitor turn off timeout for lockscreen'
-	echo '		timeout is in seconds'
-	echo '		E.g: betterlockscreen -l dim --off 5'
-	echo
-	echo
-	echo '	-wc --wallpaper_cmd <command>'
-	echo '		to set your custom wallpaper setter'
-	echo '		the default is "feh --bg-fill --no-fehbg"'
-	echo '		E.g: betterlockscreen -wc "xwallpaper --zoom" -w'
+	cat << _EOF
+Important: Update the image cache (e.g. betterlockscreen -u path/to/image.jpg).
+	Image cache must be updated to initially configure or update wallpaper used
+
+
+See: https://github.com/pavanjadhaw/betterlockscreen for additional info...
+
+
+Options:
+
+	-h --help
+		For help (e.g. betterlockscreen -h or betterlockscreen --help).
+
+
+	-u --update
+		to update image cache, you should do this before using any other options
+		E.g: betterlockscreen -u path/to/image.png when image.png is custom background
+		Or you can use betterlockscreen -u path/to/imagedir and a random file will be selected.
+
+
+	-l --lock
+		to lock screen (e.g. betterlockscreen -l)
+		you can also use dimmed or blurred background for lockscreen.
+		E.g: betterlockscreen -l dim (for dimmed background)
+		E.g: betterlockscreen -l blur (for blurred background)
+		E.g: betterlockscreen -l dimblur (for dimmed + blurred background)
+
+
+	-s --suspend
+		to suspend system and lock screen (e.g. betterlockscreen -s)
+		you can also use dimmed or blurred background for lockscreen.
+		E.g: betterlockscreen -s dim (for dimmed background)
+		E.g: betterlockscreen -s blur (for blurred background)
+		E.g: betterlockscreen -s dimblur (for dimmed + blurred background)
+
+
+	-w --wall
+		you can also set lockscreen background as wallpaper
+		to set wallpaper (e.g. betterlockscreen -w or betterlockscreen --wall)
+		(The default wallpaper setter is feh, to set your own use the -wc command)
+		you can also use dimmed or blurred variants.
+		E.g: betterlockscreen -w dim (for dimmed wallpaper)
+		E.g: betterlockscreen -w blur (for blurred wallpaper)
+		E.g: betterlockscreen -w dimblur (for dimmed + blurred wallpaper)
+
+
+	-r --resolution
+		to be used after -u
+		used to set a custom resolution for the image cache.
+		E.g: betterlockscreen -u path/to/image.png -r 1920x1080
+		E.g: betterlockscreen -u path/to/image.png --resolution 3840x1080
+
+
+	-b --blur
+		to be used after -u
+		used to set blur intensity. Default to 1.
+		E.g: betterlockscreen -u path/to/image.png -b 3
+		E.g: betterlockscreen -u path/to/image.png --blur 0.5
+
+
+	-t --text
+		to set custom lockscreen text (max 31 chars)
+		E.g: betterlockscreen -l dim -t "Don't touch my machine!"
+		E.g: betterlockscreen --text "Hi, user!" -s blur
+
+
+	--off <timeout>
+		to set custom monitor turn off timeout for lockscreen
+		timeout is in seconds
+		E.g: betterlockscreen -l dim --off 5
+
+
+	-wc --wallpaper_cmd <command>
+		to set your custom wallpaper setter
+		the default is "feh --bg-fill --no-fehbg"
+		E.g: betterlockscreen -wc "xwallpaper --zoom" -w
+_EOF
 }
 
 

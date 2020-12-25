@@ -1,0 +1,63 @@
+.TH BETTERLOCKSCREEN 1
+.SH NAME
+betterlockscreen \- faster and sweet looking lockscreen for linux systems
+.SH SYNOPSIS
+.B betterlockscreen
+\-u, \-\-update [\fIIMAGE\fR] [\fIOPTIONS\fR]
+.SH DESCRIPTION
+Betterlockscreen allows you to cache images with different filters and lockscreen with blazing speed.
+.SH OPTIONS
+.TP
+.BR "\-u, \-\-update \fIIMAGE\fR"
+caches all required images
+.TP
+.BR "\-l, \-\-lock \fIeffect-name\fR"
+locks with provided effect
+.TP
+.BR "\-w, \-\-wall \fIeffect-name\fR"
+set desktop background with \fIeffect-name\fR
+.TP
+.BR "\-s, \-\-suspend \fIeffect-name\fR"
+lockscreen and suspend with \fIeffect-name\fT
+.TP
+.BR "\-t, \-\-text \fIcustom-text\fR"
+set custom lockscreen text to \fIcustom-text\fR
+.TP
+.BR "\-b, blur [\fI0.0 \- 1.0\fR]"
+set blur range
+.TP
+.BR "\-r, \-\-resolution \fIres\fR"
+use a custom resolution \fIres\fR
+.TP
+.BR "\-\-off, \-\-off \fItimeout\fR"
+sets custom monitor timeout (\fItimeout\fR in seconds)
+.SH
+effect-name
+Available effects are: \fIdim\fR, \fIblur\fR, \fIpixel\fR or \fIdimblur\fR
+.SH EXAMPLES
+.TP
+.pp
+Updating image cache(required)
+.BI "betterlockscreen \-u ~/Pictures/Forests.png # caches given image"
+.br
+.BI "betterlockscreen \-u ~/Pictures             # caches random image from ~/Pictures directory"
+.TP
+.pp
+Custom resolution and blur range
+.BI "betterlockscreen \-u path/to/directory \-r 1920x1080 \-b 0.5"
+.TP
+.pp
+Lockscreen
+.BI "betterlockscreen \-l dim                    # lockscreen with dim effect"
+.TP
+.pp
+Lockscreen with custom text
+.BI "betterlockscreen \-l pixel \-t ``custom lockscreen text''"
+.TP
+.pp
+Set desktop background
+.BI "betterlockscreen \-w blur                   # set desktop background with blur effect"
+.TP
+.pp
+Lockscreeen with custom monitor off timeout
+.BI "betterlockscreen \-\-off 5 \-l blur           # set monitor off lockscreen timeout (5 seconds)"
