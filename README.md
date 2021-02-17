@@ -18,15 +18,15 @@ betterlockscreen --lock blur
 
 ## Table of Contents
 
-- [about](#about)
-- [how it works](#how-it-works)
-- [requirements](#requirements)
-- [installation](#installation)
-- [configuration](#configuration)
-- [usage](#usage)
-- [background](#set-desktop-background-on-startup)
-- [keybinding](#keybindings)
-- [lockscreen on suspend](#lockscreen-when-suspendedsystemd-service)
+- [About](#about)
+- [How it works](#how-it-works)
+- [Requirements](#requirements)
+- [Installation](#installation)
+- [Configuration](#configuration)
+- [Usage](#usage)
+- [Background](#set-desktop-background-on-startup)
+- [Keybinding](#keybindings)
+- [Lockscreen on suspend](#lockscreen-when-suspendedsystemd-service)
 
 ### About
 
@@ -94,7 +94,7 @@ export PATH="${PATH}:${HOME}/.local/bin/"
 
 #### Debian and derivatives
 
-UtkarshVerma was so kind to provide an installation script for debian based systems, ![check it out here](https://github.com/UtkarshVerma/installer-scripts).
+UtkarshVerma was so kind to provide an installation script for debian based systems, [check it out here](https://github.com/UtkarshVerma/installer-scripts).
 
 #### Void Linux
 
