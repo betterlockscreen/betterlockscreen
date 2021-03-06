@@ -154,7 +154,7 @@ postlock() {
 lockselect() {
 
 	echof act "Running prelock..."
-	prelock
+	prelock &
 
 	case "$1" in
 		dim) if [ -f "$CUR_L_DIM" ]; then lock "$CUR_L_DIM"; else failsafe; fi ;;
@@ -167,7 +167,7 @@ lockselect() {
 	esac
 
 	echof act "Running postlock..."
-	postlock
+	postlock &
 }
 
 # calculate adjustments for hidpi displays
