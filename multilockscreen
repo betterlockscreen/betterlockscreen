@@ -36,6 +36,7 @@ init_config () {
 	datecolor=ffffffff
 	layoutcolor=ffffffff
 	nocolor=00000000
+	bgcolor=000000ff
 
 	# read user config
 	USER_CONF="$HOME/.config/multilock/config"
@@ -95,6 +96,7 @@ lock() {
 
 	i3lock \
 		-i "$image" \
+		-c "$bgcolor" \
 		--screen "$display_on" \
 		--timepos='ix-170:iy-0' \
 		--datepos='ix-240:iy+25' \
