@@ -257,7 +257,7 @@ Betterlockscreen is under [MIT](https://github.com/pavanjadhaw/betterlockscreen/
 
 - Hat tip to anyone who's code was used
 - Thanks to those who contributed to make it better
-- Inspiration - r/unixporn
+- Inspiration - [r/unixporn](https://www.reddit.com/r/unixporn)
 
 [logo]: .github/hero.png
 [website]: https://mdxjs.com
