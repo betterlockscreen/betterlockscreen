@@ -16,3 +16,4 @@ loginbox=00000066
 font="sans-serif"
 locktext='Type password to unlock...'
 lock_timeout=5
+time_format='%H:%M:%S'

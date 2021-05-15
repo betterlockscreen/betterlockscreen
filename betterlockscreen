@@ -29,6 +29,7 @@ init_filenames() {
 	font="sans-serif"
 	locktext='Type password to unlock...'
 	wallpaper_cmd='feh --bg-fill --no-fehbg'
+	time_format='%H:%M:%S'
 
 	# override defaults with config
 	theme_rc="$HOME/.config/betterlockscreenrc"
@@ -90,7 +91,7 @@ lock() {
 		-t -i "$1" \
 		--timepos='x+110:h-70' \
 		--datepos='x+43:h-45' \
-		--clock --date-align 1 --datestr "$locktext" \
+		--clock --date-align 1 --datestr "$locktext" --timestr "$time_format" \
 		--insidecolor=$insidecolor --ringcolor=$ringcolor --line-uses-inside \
 		--keyhlcolor=$keyhlcolor --bshlcolor=$bshlcolor --separatorcolor=$separatorcolor \
 		--insidevercolor=$insidevercolor --insidewrongcolor=$insidewrongcolor \
@@ -408,6 +409,12 @@ usage() {
 	echo '		to set your custom wallpaper setter'
 	echo '		the default is "feh --bg-fill --no-fehbg"'
 	echo '		E.g: betterlockscreen -wc "xwallpaper --zoom" -w'
+	echo
+	echo
+	echo '	-tf --time_format <format>'
+	echo '		to set the time format used by i3lock-color'
+	echo '		see the i3lock or strftime man pages for more details.'
+	echo '		E.g: betterlockscreen -l dim -tf "%I:%M %p"'
 }
 
 
@@ -471,6 +478,11 @@ for arg in "$@"; do
 
 		-wc | --wallpaper_cmd)
 			wallpaper_cmd="$2"
+			shift 2
+			;;
+
+		-tf | --time_format)
+			time_format="$2"
 			shift 2
 			;;
 
