@@ -9,4 +9,6 @@ please notify the maintainer @AUTplayed via a mention (like used here with the @
 
 Also, in case of adding new dependencies, please notify @AUTplayed and @m1m3-50.
 
+For nix-users: We include a nix-shell for development :-)
+
 Thanks
