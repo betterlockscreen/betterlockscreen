@@ -219,10 +219,9 @@ alt + shift + x
 ```
 
 ### Lockscreen when suspended(systemd service)
-
 ```sh
 # move service file to proper dir (the aur package does this for you)
-cp betterlockscreen@.service /etc/systemd/system/
+cp betterlockscreen@.service /usr/lib/systemd/system/
 
 # enable systemd service
 systemctl enable betterlockscreen@$USER
@@ -230,11 +229,12 @@ systemctl enable betterlockscreen@$USER
 # disable systemd service
 systemctl disable betterlockscreen@$USER
 
-
 # Note: Now you can call systemctl suspend to suspend your system
 # and betterlockscreen service will be activated
 # so when your system wakes your screen will be locked.
 ```
+
+**Hint:** The systemd-unit expects betterlockscreen to be installed in "/usr/local/bin", so maybe you want to check or change this!
 
 ---
 
