@@ -14,7 +14,7 @@ betterlockscreen --lock blur
 
 ![scrot2](https://github.com/pavanjadhaw/betterlockscreen.demo/raw/master/scrots/scrot2.png 'scrot2.png')
 
-> [Watch some of the features of betterlockscreen in action](https://www.youtube.com/watch?v=9Ng5FZwnn6M&feature=youtu.be)
+> [Watch some of the features of betterlockscreen in action](https://youtu.be/9Ng5FZwnn6M)
 
 ## Table of Contents
 
@@ -257,7 +257,7 @@ Betterlockscreen is under [MIT](https://github.com/pavanjadhaw/betterlockscreen/
 
 - Hat tip to anyone who's code was used
 - Thanks to those who contributed to make it better
-- Inspiration - r/unixporn
+- Inspiration - [r/unixporn](https://www.reddit.com/r/unixporn)
 
 [logo]: .github/hero.png
 [website]: https://mdxjs.com
