@@ -236,6 +236,10 @@ systemctl disable betterlockscreen@$USER
 
 **Hint:** The systemd-unit expects betterlockscreen to be installed in "/usr/local/bin", so maybe you want to check or change this!
 
+Resources and more informations:
+ * https://gist.github.com/Raymo111/91ffd256b7aca6a85e8a99d6331d3b7b
+ * https://github.com/Raymo111/i3lock-color/issues/174#issuecomment-687149213
+
 ---
 
 ### Countributing
