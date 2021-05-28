@@ -90,17 +90,17 @@ lock() {
 	i3lock \
 		-c 00000000 \
 		-t -i "$1" \
-		--timepos='x+110:h-70' \
-		--datepos='x+43:h-45' \
-		--clock --date-align 1 --datestr "$locktext" --timestr "$time_format" \
-		--insidecolor=$insidecolor --ringcolor=$ringcolor --line-uses-inside \
-		--keyhlcolor=$keyhlcolor --bshlcolor=$bshlcolor --separatorcolor=$separatorcolor \
-		--insidevercolor=$insidevercolor --insidewrongcolor=$insidewrongcolor \
-		--ringvercolor=$ringvercolor --ringwrongcolor=$ringwrongcolor --indpos='x+280:h-70' \
-		--radius=20 --ring-width=4 --veriftext='' --wrongtext='' \
-		--verifcolor="$verifcolor" --timecolor="$timecolor" --datecolor="$datecolor" \
+		--time-pos='x+110:h-70' \
+		--date-pos='x+43:h-45' \
+		--clock --date-align 1 --date-str "$locktext" --time-str "$time_format" \
+		--inside-color=$insidecolor --ring-color=$ringcolor --line-uses-inside \
+		--keyhl-color=$keyhlcolor --bshl-color=$bshlcolor --separator-color=$separatorcolor \
+		--insidever-color=$insidevercolor --insidewrong-color=$insidewrongcolor \
+		--ringver-color=$ringvercolor --ringwrong-color=$ringwrongcolor --ind-pos='x+280:h-70' \
+		--radius=20 --ring-width=4 --verif-text='' --wrong-text='' \
+		--verif-color="$verifcolor" --time-color="$timecolor" --date-color="$datecolor" \
 		--time-font="$font" --date-font="$font" --layout-font="$font" --verif-font="$font" --wrong-font="$font" \
-		--noinputtext='' --force-clock --pass-media-keys "$lockargs"
+		--noinput-text='' --force-clock --pass-media-keys "$lockargs"
 
 }
 
