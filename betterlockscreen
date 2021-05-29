@@ -81,6 +81,9 @@ prelock() {
 	if [ -n "$(pidof dunst)" ]; then
 		pkill -u "$USER" -USR1 dunst
 	fi
+	if [[ "$runsuspend" = "true" ]]; then
+		lockargs="$lockargs -n"
+	fi
 }
 
 
@@ -124,10 +127,9 @@ rec_get_random() {
 		user_input="$dir"
 		return
 	fi
-	dirs=("$dir"*)
+	dirs=("$dir"/*)
 	random_dir="${dirs[RANDOM % ${#dirs[@]}]}"
 	rec_get_random "$random_dir"
-	exit 1
 }
 
 
@@ -168,7 +170,7 @@ logical_px() {
 	# get dpi value from xrdb
 	local DPI
 	DPI=$(grep -oP 'Xft.dpi:\s*\K\d+' ~/.Xresources | bc)
-	if [ -n "$DPI" ]; then
+	if [ -z "$DPI" ]; then
 		DPI=$(xdpyinfo | sed -En "s/\s*resolution:\s*([0-9]*)x([0-9]*)\s.*/\\$2/p" | head -n1)
 	fi
 
@@ -198,7 +200,9 @@ update() {
 	rectangles=" "
 	SR=$(xrandr --query | grep ' connected' | grep -o '[0-9][0-9]*x[0-9][0-9]*[^ ]*')
 	for RES in $SR; do
-		SRA=("${RES//[x+]/ }")
+		# shellcheck disable=SC2206
+		SRA=(${RES//[x+]/ })
+
 		CX=$((SRA[2] + $(logical_px 25 1)))
 		CY=$((SRA[1] - $(logical_px 30 2)))
 		rectangles+="rectangle $CX,$CY $((CX+$(logical_px 300 1))),$((CY-$(logical_px 80 2))) "
@@ -438,7 +442,7 @@ for arg in "$@"; do
 
 		-l | --lock)
 			runlock=true
-			[[ $runsuspend ]] || lockargs="$lockargs -n"
+
 			if [[ ${2:0:1} = '-' ]]; then
 				shift 1
 			else
