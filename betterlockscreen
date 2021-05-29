@@ -25,6 +25,8 @@ init_filenames() {
 	verifcolor=ffffffff
 	timecolor=ffffffff
 	datecolor=ffffffff
+	modifcolor=ffffffff
+	modifoutlinecolor=ff0000ff
 	loginbox=00000066
 	font="sans-serif"
 	locktext='Type password to unlock...'
@@ -87,6 +89,10 @@ prelock() {
 lock() {
 	#$1 image path
 
+	# Uncomment bellow line if you are using `i3lock-color` compiled from git directly.
+	# i3lock_git_options="--modif-color="$modifcolor" --modifoutline-color="$modifoutlinecolor" --modifieroutline-width=0.8"
+
+
 	i3lock \
 		-c 00000000 \
 		-t -i "$1" \
@@ -101,7 +107,7 @@ lock() {
 		--radius=20 --ring-width=4 --verif-text='' --wrong-text='' \
 		--verif-color="$verifcolor" --time-color="$timecolor" --date-color="$datecolor" \
 		--time-font="$font" --date-font="$font" --layout-font="$font" --verif-font="$font" --wrong-font="$font" \
-		--noinput-text='' --force-clock --pass-media-keys "$lockargs"
+		--noinput-text='' --force-clock --pass-media-keys $i3lock_git_options "$lockargs" 
 
 }
 
