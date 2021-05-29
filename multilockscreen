@@ -98,18 +98,18 @@ lock() {
 		-i "$image" \
 		-c "$bgcolor" \
 		--screen "$display_on" \
-		--timepos='ix-170:iy-0' \
-		--datepos='ix-240:iy+25' \
-		--layoutpos='ix-90:iy-0' --layout-align 1 --layoutcolor=$layoutcolor $keylayout \
-		--clock --date-align 1 --datestr "$locktext" \
-		--insidecolor=$insidecolor --ringcolor=$ringcolor --line-uses-inside \
-		--keyhlcolor=$keyhlcolor --bshlcolor=$bshlcolor --separatorcolor=$separatorcolor \
-		--insidevercolor=$insidevercolor --insidewrongcolor=$insidewrongcolor \
-		--ringvercolor=$ringvercolor --ringwrongcolor=$ringwrongcolor --indpos='x+280:y+h-70' \
-		--radius=20 --ring-width=4 --veriftext='' --wrongtext='' --wrongcolor="$nocolor" \
-		--verifcolor="$verifcolor" --timecolor="$timecolor" --datecolor="$datecolor" \
+		--time-pos='ix-170:iy-0' \
+		--date-pos='ix-240:iy+25' \
+		--layout-pos='ix-90:iy-0' --layout-align 1 --layout-color=$layoutcolor $keylayout \
+		--clock --date-align 1 --date-str "$locktext" \
+		--inside-color=$insidecolor --ring-color=$ringcolor --line-uses-inside \
+		--keyhl-color=$keyhlcolor --bshl-color=$bshlcolor --separator-color=$separatorcolor \
+		--insidever-color=$insidevercolor --insidewrong-color=$insidewrongcolor \
+		--ringver-color=$ringvercolor --ringwrong-color=$ringwrongcolor --ind-pos='x+280:y+h-70' \
+		--radius=20 --ring-width=4 --verif-text='' --wrong-text='' --wrong-color="$nocolor" \
+		--verif-color="$verifcolor" --time-color="$timecolor" --date-color="$datecolor" \
 		--time-font="$font" --date-font="$font" --layout-font="$font" --verif-font="$font" --wrong-font="$font" \
-		--noinputtext='' --force-clock --pass-media-keys --pass-screen-keys --pass-power-keys \
+		--noinput-text='' --force-clock --pass-media-keys --pass-screen-keys --pass-power-keys \
 		"${lockargs[@]}"
 }
 
@@ -125,14 +125,14 @@ failsafe() {
 	i3lock \
 		-c "$bgcolor" \
 		--screen "$display_on" \
-		--timepos='ix-170:iy-0' \
-		--datepos='ix-240:iy+25' \
-		--clock --date-align 1 --datestr "$locktext" \
-		--indpos='x+280:y+h-70' \
-		--radius=20 --ring-width=4 --veriftext='' --wrongtext='' --wrongcolor="$error" \
-		--verifcolor="$text" --timecolor="$text" --datecolor="$text" \
+		--time-pos='ix-170:iy-0' \
+		--date-pos='ix-240:iy+25' \
+		--clock --date-align 1 --date-str "$locktext" \
+		--ind-pos='x+280:y+h-70' \
+		--radius=20 --ring-width=4 --verif-text='' --wrong-text='' --wrong-color="$error" \
+		--verif-color="$text" --time-color="$text" --date-color="$text" \
 		--time-font="$font" --date-font="$font" --layout-font="$font" --verif-font="$font" --wrong-font="$font" \
-		--noinputtext='' --force-clock
+		--noinput-text='' --force-clock
 }
 
 
