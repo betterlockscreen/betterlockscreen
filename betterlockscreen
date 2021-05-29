@@ -90,9 +90,9 @@ lock() {
 	i3lock \
 		-c 00000000 \
 		-t -i "$1" \
-		--time-pos='x+110:h-70' \
+		--time-pos='x+43:h-70' \
 		--date-pos='x+43:h-45' \
-		--clock --date-align 1 --date-str "$locktext" --time-str "$time_format" \
+		--clock --date-align 1 --date-str "$locktext" --time-align 1 --time-str "$time_format" \
 		--inside-color=$insidecolor --ring-color=$ringcolor --line-uses-inside \
 		--keyhl-color=$keyhlcolor --bshl-color=$bshlcolor --separator-color=$separatorcolor \
 		--insidever-color=$insidevercolor --insidewrong-color=$insidewrongcolor \
