@@ -92,6 +92,7 @@ lock() {
 		-t -i "$1" \
 		--time-pos='x+43:h-70' \
 		--date-pos='x+43:h-45' \
+		--modif-pos='x+280:h-33' \
 		--clock --date-align 1 --date-str "$locktext" --time-align 1 --time-str "$time_format" \
 		--inside-color=$insidecolor --ring-color=$ringcolor --line-uses-inside \
 		--keyhl-color=$keyhlcolor --bshl-color=$bshlcolor --separator-color=$separatorcolor \
