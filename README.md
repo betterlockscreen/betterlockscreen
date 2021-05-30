@@ -14,7 +14,7 @@ betterlockscreen --lock blur
 
 ![scrot2](https://github.com/pavanjadhaw/betterlockscreen.demo/raw/master/scrots/scrot2.png 'scrot2.png')
 
-> [Watch some of the features of betterlockscreen in action](https://www.youtube.com/watch?v=9Ng5FZwnn6M&feature=youtu.be)
+> [Watch some of the features of betterlockscreen in action](https://youtu.be/9Ng5FZwnn6M)
 
 ## Table of Contents
 
@@ -46,7 +46,7 @@ images as lockscreen background depending on argument provided by user.
 
 > Note: Make sure your system has all dependencies satisfied
 
-- [i3lock-color](https://github.com/PandorasFox/i3lock-color) - i3lock fork with additional features( >= 2.11-c )
+- [i3lock-color](https://github.com/Raymo111/i3lock-color) - i3lock fork with additional features(`>= 2.13.c.3`)
 - [imagemagick](https://www.imagemagick.org/script/index.php) - To apply effects to images
 - [xdpyinfo](https://www.x.org/archive/X11R7.7/doc/man/man1/xdpyinfo.1.xhtml), [xrandr](https://www.x.org/wiki/Projects/XRandR/), [bc](https://www.gnu.org/software/bc/) and [feh](https://feh.finalrewind.org/) - To find screen resolution, set custom blur level and wallpaper handling.
 
@@ -96,73 +96,128 @@ export PATH="${PATH}:${HOME}/.local/bin/"
 
 UtkarshVerma was so kind to provide an installation script for debian based systems, ![check it out here](https://github.com/UtkarshVerma/installer-scripts).
 
+#### Void Linux
+
+##### xbps repository
+
+`betterlockscreen` is available in official Void's repository as `betterlockscreen`.
+
+Installing using `xbps` (will automatically install all required dependencies): `xbps-install -S betterlockscreen`
+
 ### Configuration
 
 You can customise various colors for betterlockscreen, copy config file from examples directory to `~/.config/betterlockscreenrc` and edit it accordingly.
 
 If configuration file is not found then default configurations will be used.
 
+```ini
+# default options
+display_on=0
+span_image=false
+lock_timeout=300
+fx_list=(dim blur dimblur pixel dimpixel color)
+dim_level=40
+blur_level=1
+pixel_scale=10,1000
+solid_color=333333
+
+# theme options
+loginbox=00000066
+loginshadow=00000000
+locktext="Type password to unlock..."
+font="sans-serif"
+ringcolor=ffffffff
+insidecolor=00000000
+separatorcolor=00000000
+ringvercolor=ffffffff
+insidevercolor=00000000
+ringwrongcolor=ffffffff
+insidewrongcolor=d23c3dff
+keyhlcolor=d23c3dff
+bshlcolor=d23c3dff
+verifcolor=ffffffff
+timecolor=ffffffff
+datecolor=ffffffff
+wallpaper_cmd="feh --bg-fill --no-fehbg"
+time_format="%H:%M:%S"
+```
 If you have installed betterlockscreen from AUR package, then you can copy default config from docs
 
 ```sh
 cp /usr/share/doc/betterlockscreen/examples/betterlockscreenrc ~/.config
 ```
 
-For multimonitor setups, now you can choose which monitor the clock is displayed on
-modify screennumber in betterlockscreenrc accordingly. Its zero based i.e 0 = screen 1
-
 ### Usage
 
 Run `betterlockscreen` and point it to either a directory (`betterlockscreen -u "path/to/dir"`) or an image (`betterlockscreen -u "/path/to/img.jpg"`) and that's all. `betterlockscreen` will change update its cache with image you provided.
 
 ```sh
-usage: betterlockscreen [-u "path/to/img.jpg"] [-l "dim, blur or dimblur"]
-           [-w "dim, blur, or dimblur"] [-t "custom text"] [-s "lockscreen and suspend"]
-           [-r "resolution"] [-b "factor"]
+Usage: betterlockscreen [-u <PATH>] [-l <EFFECT>] [-w <EFFECT>]
 
-betterlockscreen - faster and sweet looking lockscreen for linux systems.
+  -u --update <PATH>
+      Update lock screen image
 
-required:
-  -u, --update "path/to/img.jpg"  caches all required images
+  -l --lock <EFFECT>
+      Lock screen with cached image
 
-usage:
-  -l, --lock effect-name
-      locks with provided effect
-  -w, --wall effect-name
-      set desktop background with provided effect
-  -s, --suspend effect-name
-      lockscreen and suspend
+  -w --wall <EFFECT>
+      Set wallpaper with cached image
 
-      Available effects:
-        dim, blur or dimblur
+Additional arguments:
 
-  -t, --text "custom text"
-      set custom lockscreen text
-  -b, blur 0.0 - 1.0
-      set blur range
-  -d, --display 0-9
-      screen to display loginbox
-    --span
-            span multiple screens
+  --display <N>
+      Set display to draw loginbox
 
+  --span
+      Scale image to span multiple displays
 
-Usage examples:
-1. Updating image cache(required)
-betterlockscreen -u ~/Pictures/Forests.png # caches given image
-betterlockscreen -u ~/Pictures             # caches random image from ~/Pictures directory
+  --off <N>
+      Turn display off after N minutes
 
-2. Custom resolution and blur range
-betterlockscreen -u path/to/directory -r 1920x1080 -b 0.5
+  --fx <EFFECT,EFFECT,EFFECT>
+      List of effects to apply
 
-3. Lockscreen
-betterlockscreen -l dim                    # lockscreen with dim effect
+  -- <ARGS>
+      Pass following arguments to i3lock
 
-4. Lockscreen with custom text
-betterlockscreen -l dim -t "custom lockscreen text"
+Effects arguments:
 
-5. Set desktop background
-betterlockscreen -w blur                   # set desktop background with blur effect
+  --dim <N>
+      Dim image N percent (0-100)
+
+  --blur <N>
+      Blur image N amount (0.0-1.0)
+
+  --pixel <N,N>
+      Pixelate image with N shrink and N grow (unsupported)
+
+  --color <HEX>
+      Solid color background with HEX
 ```
+
+
+#### Usage examples:
+1. Update image cache with random image
+`betterlockscreen -u ~/Wallpapers`
+
+2. Update image cache with only dim and pixel effects
+`betterlockscreen -u ~/Wallpapers/image.png --fx dim,pixel`
+
+3. Update image cache with random image, multiple monitors, login on 1, spanning
+`betterlockscreen -u ~/Wallpapers/Dual/ --display 1 --span`
+
+4. Update image cache with solid background only (ignore errors)
+`betterlockscreen -u . --fx color --color 5833ff`
+
+5. Update image cache with different background images
+`betterlockscreen -u ~/Wallpapers/image1.png -u ~/Wallpapers/image2.png`
+
+6. Lock screen with blur effect
+`betterlockscreen --lock blur`
+
+7. Lock screen with multiple monitors, spanning
+`betterlockscreen -l dimblur --display 1 --span`
+
 
 ### Set desktop background on startup
 
@@ -211,10 +266,9 @@ alt + shift + x
 ```
 
 ### Lockscreen when suspended(systemd service)
-
 ```sh
 # move service file to proper dir (the aur package does this for you)
-cp betterlockscreen@.service /etc/systemd/system/
+cp betterlockscreen@.service /usr/lib/systemd/system/
 
 # enable systemd service
 systemctl enable betterlockscreen@$USER
@@ -222,11 +276,16 @@ systemctl enable betterlockscreen@$USER
 # disable systemd service
 systemctl disable betterlockscreen@$USER
 
-
 # Note: Now you can call systemctl suspend to suspend your system
 # and betterlockscreen service will be activated
 # so when your system wakes your screen will be locked.
 ```
+
+**Hint:** The systemd-unit expects betterlockscreen to be installed in "/usr/local/bin", so maybe you want to check or change this!
+
+Resources and more informations:
+ * https://gist.github.com/Raymo111/91ffd256b7aca6a85e8a99d6331d3b7b
+ * https://github.com/Raymo111/i3lock-color/issues/174#issuecomment-687149213
 
 ---
 
@@ -249,7 +308,7 @@ Betterlockscreen is under [MIT](https://github.com/pavanjadhaw/betterlockscreen/
 
 - Hat tip to anyone who's code was used
 - Thanks to those who contributed to make it better
-- Inspiration - r/unixporn
+- Inspiration - [r/unixporn](https://www.reddit.com/r/unixporn)
 
 [logo]: .github/hero.png
 [website]: https://mdxjs.com
