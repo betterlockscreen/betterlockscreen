@@ -37,6 +37,8 @@ init_config () {
     layoutcolor=ffffffff
     nocolor=00000000
     bgcolor=000000ff
+    wallpaper_cmd="feh --bg-fill --no-fehbg"
+    time_format="%H:%M:%S"
 
     # read user config
     USER_CONF="$HOME/.config/betterlockscreenrc"
@@ -98,18 +100,18 @@ lock() {
         -i "$image" \
         -c "$bgcolor" \
         --screen "$display_on" \
-        --time-pos='ix-170:iy-0' \
-        --date-pos='ix-240:iy+25' \
-        --layout-pos='ix-90:iy-0' --layout-align 1 --layout-color=$layoutcolor $keylayout \
+        --time-pos="ix-170:iy-0" --time-str "$time_format" \
+        --date-pos="ix-240:iy+25" \
+        --layout-pos="ix-90:iy-0" --layout-align 1 --layout-color="$layoutcolor" "$keylayout" \
         --clock --date-align 1 --date-str "$locktext" \
-        --inside-color=$insidecolor --ring-color=$ringcolor --line-uses-inside \
-        --keyhl-color=$keyhlcolor --bshl-color=$bshlcolor --separator-color=$separatorcolor \
-        --insidever-color=$insidevercolor --insidewrong-color=$insidewrongcolor \
-        --ringver-color=$ringvercolor --ringwrong-color=$ringwrongcolor --ind-pos='x+280:y+h-70' \
-        --radius=20 --ring-width=4 --verif-text='' --wrong-text='' --wrong-color="$nocolor" \
+        --inside-color="$insidecolor" --ring-color="$ringcolor" --line-uses-inside \
+        --keyhl-color="$keyhlcolor" --bshl-color="$bshlcolor" --separator-color=$separatorcolor \
+        --insidever-color="$insidevercolor" --insidewrong-color="$insidewrongcolor" \
+        --ringver-color="$ringvercolor" --ringwrong-color="$ringwrongcolor" --ind-pos="x+280:y+h-70" \
+        --radius=20 --ring-width=4 --verif-text="" --wrong-text="" --wrong-color="$nocolor" \
         --verif-color="$verifcolor" --time-color="$timecolor" --date-color="$datecolor" \
         --time-font="$font" --date-font="$font" --layout-font="$font" --verif-font="$font" --wrong-font="$font" \
-        --noinput-text='' --force-clock --pass-media-keys --pass-screen-keys --pass-power-keys \
+        --noinput-text="" --force-clock --pass-media-keys --pass-screen-keys --pass-power-keys \
         "${lockargs[@]}"
 }
 
@@ -606,19 +608,20 @@ wallpaper() {
     # make wallpaper span displays
     get_display_list
     if [ "$span_image" = true ] || [[ "${#DISPLAY_LIST[@]}" -gt 1 ]]; then
-        span="--no-xinerama"
+        wallpaper_cmd="$wallpaper_cmd --no-xinerama"
     fi
 
     # set wallpaper
     case "$effect" in
-        dim) feh --bg-fill "$span" "$CUR_W_DIM";;
-        blur) feh --bg-fill "$span" "$CUR_W_BLUR";;
-        dimblur) feh --bg-fill "$span" "$CUR_W_DIMBLUR";;
-        pixel) feh --bg-fill "$span" "$CUR_W_PIXEL";;
-        dimpixel) feh --bg-fill "$span" "$CUR_W_DIMPIXEL";;
-        color) feh --bg-fill "$span" "$CUR_W_COLOR";;
-        *) feh --bg-fill "$span" "$CUR_W_RESIZE";;
+        dim) wallpaper="$CUR_W_DIM";;
+        blur) wallpaper="$CUR_W_BLUR";;
+        dimblur) wallpaper="$CUR_W_DIMBLUR";;
+        pixel) wallpaper="$CUR_W_PIXEL";;
+        dimpixel) wallpaper="$CUR_W_DIMPIXEL";;
+        color) wallpaper="$CUR_W_COLOR";;
+        *) wallpaper="$CUR_W_RESIZE";;
     esac
+    eval "$wallpaper_cmd $wallpaper"
 }
 
 # wrap echo with fancy prefix
@@ -672,6 +675,12 @@ usage() {
     echo
     echo "  --show-layout"
     echo "      Show current keyboard layout"
+    echo
+    echo "  --wallpaper-cmd <command>"
+    echo "      to set your custom wallpaper setter"
+    echo
+    echo "  --time-format <format>"
+    echo "      to set the time format used by i3lock-color"
     echo
     echo "  -- <ARGS>"
     echo "      Pass additional arguments to i3lock"
@@ -727,6 +736,16 @@ for arg in "$@"; do
 
         -w | --wall)
             wallpaper "$2"
+            shift 2
+            ;;
+
+        --wallpaper-cmd)
+            wallpaper_cmd="$2"
+            shift 2
+            ;;
+
+        --time-format)
+            time_format="$2"
             shift 2
             ;;
 

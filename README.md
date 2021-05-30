@@ -138,6 +138,8 @@ bshlcolor=d23c3dff
 verifcolor=ffffffff
 timecolor=ffffffff
 datecolor=ffffffff
+wallpaper_cmd="feh --bg-fill --no-fehbg"
+time_format="%H:%M:%S"
 ```
 If you have installed betterlockscreen from AUR package, then you can copy default config from docs
 
