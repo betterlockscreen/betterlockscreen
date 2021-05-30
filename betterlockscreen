@@ -464,13 +464,15 @@ update () {
     echof info "Original image(s): ${WALL_LIST[*]##*/}"
 
     # Prepare description box to obtain width for positioning
+    local descwidth
+    local descheight
     if [ -z "$description" ]; then
-        local descwidth=0
-        local descheight=0
+        descwidth=0
+        descheight=0
     else
         create_description
-        local descwidth=$(identify -format "%[fx:w]" "$DESCRECT")
-        local descheight=$(identify -format "%[fx:h]" "$DESCRECT")
+        descwidth=$(identify -format "%[fx:w]" "$DESCRECT")
+        descheight=$(identify -format "%[fx:h]" "$DESCRECT")
     fi
 
     for ((i=0; i<${#DISPLAY_LIST[@]}; i++)); do
