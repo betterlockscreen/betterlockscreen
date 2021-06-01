@@ -90,7 +90,7 @@ lock() {
 	#$1 image path
 
 	# Uncomment bellow line if you are using `i3lock-color` compiled from git directly.
-	# i3lock_git_options="--modif-color="$modifcolor" --modifoutline-color="$modifoutlinecolor" --modifieroutline-width=0.8"
+	# i3lock_git_options="--modif-color=$modifcolor --modifoutline-color=$modifoutlinecolor --modifieroutline-width=0.8"
 
 
 	i3lock \
