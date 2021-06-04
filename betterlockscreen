@@ -184,24 +184,30 @@ logical_px() {
     # $2: 1 for width. 2 for height
     local pixels="$1"
     local direction="$2"
+    local dpi
 
-    # get dpi value from xdpyinfo
-    local DPI
-    DPI=$(xdpyinfo | sed -En "s/\s*resolution:\s*([0-9]*)x([0-9]*)\s.*/\\$direction/p" | head -n1)
+    # use DPI set by user in .Xresources
+    dpi=$(xrdb -q | grep -oP '^\s*Xft.dpi:\s*\K\d+' | bc)
 
-    # return the default value if no DPI is set
-    if [ -z "$DPI" ]; then
-        echo "$pixels"
-    else
-        local SCALE
-        SCALE=$(echo "scale=2; $DPI / 96.0" | bc)
+    # or get dpi value from xdpyinfo
+    if [ -z "$dpi" ]; then
+        dpi=$(xdpyinfo | sed -En "s/\s*resolution:\s*([0-9]*)x([0-9]*)\s.*/\\$direction/p" | head -n1)
+    fi
+
+    # adjust scaling
+    if [ -n "$dpi" ]; then
+        local scale
+        scale=$(echo "scale=2; $dpi / 96.0" | bc)
 
         # check if scaling the value is worthy
-        if [ "$(echo "$SCALE > 1.25" | bc -l)" -eq 0 ]; then
+        if [ "$(echo "$scale > 1.25" | bc -l)" -eq 0 ]; then
             echo "$pixels"
         else
-            echo "$SCALE * $pixels / 1" | bc
+            echo "$scale * $pixels / 1" | bc
         fi
+    else
+        # return the default value if no DPI is set
+        echo "$pixels"
     fi
 }
 
