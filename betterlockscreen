@@ -102,7 +102,7 @@ lock() {
 
     local image="$1"
 
-    i3lock --nofork \
+    i3lock \
         -i "$image" \
         -c "$bgcolor" \
         --screen "$display_on" \
@@ -130,7 +130,7 @@ failsafe() {
     local text="ffffffff"
     local error="ff0000"
 
-    i3lock --nofork \
+    i3lock \
         -c "$bgcolor" \
         --screen "$display_on" \
         --time-pos="ix-170:iy-0" \
@@ -164,7 +164,7 @@ postlock() {
 lockselect() {
 
     echof act "Running prelock..."
-    prelock &
+    prelock 
 
     case "$1" in
         dim) if [ -f "$CUR_L_DIM" ]; then lock "$CUR_L_DIM"; else failsafe; fi ;;
@@ -177,7 +177,7 @@ lockselect() {
     esac
 
     echof act "Running postlock..."
-    postlock &
+    postlock 
 }
 
 # calculate adjustments for hidpi displays
