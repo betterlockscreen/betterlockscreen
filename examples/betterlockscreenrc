@@ -27,3 +27,5 @@ bshlcolor=d23c3dff
 verifcolor=ffffffff
 timecolor=ffffffff
 datecolor=ffffffff
+modifcolor=ffffffff
+modifoutlinecolor=ff0000ff

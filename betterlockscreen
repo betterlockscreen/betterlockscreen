@@ -39,6 +39,8 @@ init_config () {
     bgcolor=000000ff
     wallpaper_cmd="feh --bg-fill --no-fehbg"
     time_format="%H:%M:%S"
+    modifcolor=ffffffff
+    modifoutlinecolor=ff0000ff
 
     # read user config
     USER_CONF="$HOME/.config/betterlockscreenrc"
@@ -115,6 +117,7 @@ lock() {
         --verif-color="$verifcolor" --time-color="$timecolor" --date-color="$datecolor" \
         --time-font="$font" --date-font="$font" --layout-font="$font" --verif-font="$font" --wrong-font="$font" \
         --noinput-text="" --force-clock --pass-media-keys --pass-screen-keys --pass-power-keys \
+        --modif-color="$modifcolor" --modifoutline-color="$modifoutlinecolor" --modifieroutline-width=0.8 \
         "${lockargs[@]}"
 }
 
