@@ -103,7 +103,7 @@ lock() {
         -i "$image" \
         -c "$bgcolor" \
         --screen "$display_on" \
-        --time-pos="ix-170:iy-0" --time-str "$time_format" \
+        --time-pos="ix-240:iy-0" --time-align 1 --time-str "$time_format" \
         --date-pos="ix-240:iy+25" \
         --layout-pos="ix-90:iy-0" --layout-align 1 --layout-color="$layoutcolor" "$keylayout" \
         --clock --date-align 1 --date-str "$locktext" \
