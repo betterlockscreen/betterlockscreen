@@ -40,6 +40,9 @@ init_config () {
     wallpaper_cmd="feh --bg-fill --no-fehbg"
     time_format="%H:%M:%S"
 
+    # Storing current state of dunst before locking
+    dunst_paused_state="$(dunstctl is-paused)"
+
     # read user config
     USER_CONF="$HOME/.config/betterlockscreenrc"
     if [ -e "$USER_CONF" ]; then
@@ -82,8 +85,8 @@ prelock() {
     if [ "$DEFAULT_DPMS" == "Enabled" ]; then
         xset dpms "$lock_timeout"
     fi
-    # pause dunst
-    if command -v dunstctl &>/dev/null
+    # If dusnt is already paused don't pause it again
+    if [[ -e "$(command -v dunstctl)" && "$dunst_paused_state" == "false" ]]
     then
         dunstctl set-paused true
     fi
@@ -149,8 +152,8 @@ postlock() {
         xset dpms "$DEFAULT_TIMEOUT"
     fi
 
-    # unpause dunst
-    if command -v dunstctl &>/dev/null
+    # If dunst already paused before locking don't unpause dunst
+    if [[ -e "$(command -v dunstctl)" && "$dunst_paused_state" == "false" ]]
     then
         dunstctl set-paused false
     fi
