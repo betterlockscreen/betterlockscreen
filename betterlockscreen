@@ -418,35 +418,35 @@ fx_color() {
     eval convert -size "$size" canvas:\#"$solid_color" "$RES_COLOR"
 }
 
-# create loginbox rectangle, set $RECTANGLE
+# create loginbox rectangle, set "$RECTANGLE"
 create_loginbox () {
     RECTANGLE="$CUR_DIR/rectangle.png"
     local shadow="$CUR_DIR/shadow.png"
     local width height
     width=$(logical_px 300 1)
     height=$(logical_px 80 2)
-    convert -size "$width"x"$height" xc:\#"$loginbox" -fill none $RECTANGLE
-    convert $RECTANGLE \
+    convert -size "$width"x"$height" xc:\#"$loginbox" -fill none "$RECTANGLE"
+    convert "$RECTANGLE" \
         \( -clone 0 -background \#"$loginshadow" -shadow 100x5+0+0 \) +swap \
-        -background none -layers merge +repage $shadow
+        -background none -layers merge +repage "$shadow"
     composite -compose Dst_Out -gravity center \
-        $RECTANGLE $shadow -alpha Set $shadow
-    convert $shadow $RECTANGLE -geometry +10+10 -composite $RECTANGLE
-    [[ $shadow ]] && rm $shadow
+        "$RECTANGLE" "$shadow" -alpha Set "$shadow"
+    convert "$shadow" "$RECTANGLE" -geometry +10+10 -composite "$RECTANGLE"
+    [[ "$shadow" ]] && rm "$shadow"
 }
 
-# create rectangle with description, set $DESCRECT
+# create rectangle with description, set "$DESCRECT"
 create_description () {
     DESCRECT="$CUR_DIR/description.png"
     local shadow="$CUR_DIR/shadow.png"
-    convert -background none -family "$(fc-match "$font" family)" -style Normal -pointsize 14 -fill \#"$datecolor" label:"\ $description\ " -bordercolor \#"$loginbox" -border 10 $DESCRECT
-    convert $DESCRECT \
+    convert -background none -family "$(fc-match "$font" family)" -style Normal -pointsize 14 -fill \#"$datecolor" label:"\ $description\ " -bordercolor \#"$loginbox" -border 10 "$DESCRECT"
+    convert "$DESCRECT" \
         \( -clone 0 -background \#"$loginshadow" -shadow 100x5+0+0 \) +swap \
-        -background none -layers merge +repage $shadow
+        -background none -layers merge +repage "$shadow"
     composite -compose Dst_Out -gravity center \
-        $DESCRECT $shadow -alpha Set $shadow
-    convert $shadow $DESCRECT -geometry +10+10 -composite $DESCRECT
-    [[ $shadow ]] && rm $shadow
+        "$DESCRECT" "$shadow" -alpha Set "$shadow"
+    convert "$shadow" "$DESCRECT" -geometry +10+10 -composite "$DESCRECT"
+    [[ "$shadow" ]] && rm "$shadow"
 }
 
 # delete and recreate directory
@@ -557,31 +557,31 @@ update () {
 
     if [ "$span_image" = true ] || [ ${#DISPLAY_LIST[@]} -lt 2 ]; then
         echof act "Rendering final wallpaper images..."
-        [[ -f "$RES_RESIZE" ]] && cp $RES_RESIZE $CUR_W_RESIZE
-        [[ -f "$RES_DIM" ]] && cp $RES_DIM $CUR_W_DIM
-        [[ -f "$RES_BLUR" ]] && cp $RES_BLUR $CUR_W_BLUR
-        [[ -f "$RES_DIMBLUR" ]] && cp $RES_DIMBLUR $CUR_W_DIMBLUR
-        [[ -f "$RES_PIXEL" ]] && cp $RES_PIXEL $CUR_W_PIXEL
-        [[ -f "$RES_DIMPIXEL" ]] && cp $RES_DIMPIXEL $CUR_W_DIMPIXEL
-        [[ -f "$RES_COLOR" ]] && cp $RES_COLOR $CUR_W_COLOR
+        [[ -f "$RES_RESIZE" ]] && cp "$RES_RESIZE" "$CUR_W_RESIZE"
+        [[ -f "$RES_DIM" ]] && cp "$RES_DIM" "$CUR_W_DIM"
+        [[ -f "$RES_BLUR" ]] && cp "$RES_BLUR" "$CUR_W_BLUR"
+        [[ -f "$RES_DIMBLUR" ]] && cp "$RES_DIMBLUR" "$CUR_W_DIMBLUR"
+        [[ -f "$RES_PIXEL" ]] && cp "$RES_PIXEL" "$CUR_W_PIXEL"
+        [[ -f "$RES_DIMPIXEL" ]] && cp "$RES_DIMPIXEL" "$CUR_W_DIMPIXEL"
+        [[ -f "$RES_COLOR" ]] && cp "$RES_COLOR" "$CUR_W_COLOR"
     else
         echof act "Creating canvas: $TOTAL_SIZE"
-        [[ -f "$RES_RESIZE" ]] && convert -size $TOTAL_SIZE 'xc:blue' $CUR_W_RESIZE
-        [[ -f "$RES_DIM" ]] && convert -size $TOTAL_SIZE 'xc:blue' $CUR_W_DIM
-        [[ -f "$RES_BLUR" ]] && convert -size $TOTAL_SIZE 'xc:blue' $CUR_W_BLUR
-        [[ -f "$RES_DIMBLUR" ]] && convert -size $TOTAL_SIZE 'xc:blue' $CUR_W_DIMBLUR
-        [[ -f "$RES_PIXEL" ]] && convert -size $TOTAL_SIZE 'xc:blue' $CUR_W_PIXEL
-        [[ -f "$RES_DIMPIXEL" ]] && convert -size $TOTAL_SIZE 'xc:blue' $CUR_W_DIMPIXEL
-        [[ -f "$RES_COLOR" ]] && convert -size $TOTAL_SIZE 'xc:blue' $CUR_W_COLOR
+        [[ -f "$RES_RESIZE" ]] && eval "convert -size $TOTAL_SIZE 'xc:blue' $CUR_W_RESIZE"
+        [[ -f "$RES_DIM" ]] && eval "convert -size $TOTAL_SIZE 'xc:blue' $CUR_W_DIM"
+        [[ -f "$RES_BLUR" ]] && eval "convert -size $TOTAL_SIZE 'xc:blue' $CUR_W_BLUR"
+        [[ -f "$RES_DIMBLUR" ]] && eval "convert -size $TOTAL_SIZE 'xc:blue' $CUR_W_DIMBLUR"
+        [[ -f "$RES_PIXEL" ]] && eval "convert -size $TOTAL_SIZE 'xc:blue' $CUR_W_PIXEL"
+        [[ -f "$RES_DIMPIXEL" ]] && eval "convert -size $TOTAL_SIZE 'xc:blue' $CUR_W_DIMPIXEL"
+        [[ -f "$RES_COLOR" ]] && eval "convert -size $TOTAL_SIZE 'xc:blue' $CUR_W_COLOR"
 
         echof act "Rendering final wallpaper images..."
-        [[ -f "$CUR_W_RESIZE" ]] && convert $CUR_W_RESIZE $PARAM_RESIZE $CUR_W_RESIZE
-        [[ -f "$CUR_W_DIM" ]] && convert $CUR_W_DIM $PARAM_DIM $CUR_W_DIM
-        [[ -f "$CUR_W_BLUR" ]] && convert $CUR_W_BLUR $PARAM_BLUR $CUR_W_BLUR
-        [[ -f "$CUR_W_DIMBLUR" ]] && convert $CUR_W_DIMBLUR $PARAM_DIMBLUR $CUR_W_DIMBLUR
-        [[ -f "$CUR_W_PIXEL" ]] && convert $CUR_W_PIXEL $PARAM_PIXEL $CUR_W_PIXEL
-        [[ -f "$CUR_W_DIMPIXEL" ]] && convert $CUR_W_DIMPIXEL $PARAM_DIMPIXEL $CUR_W_DIMPIXEL
-        [[ -f "$CUR_W_COLOR" ]] && convert $CUR_W_COLOR $PARAM_COLOR $CUR_W_COLOR
+        [[ -f "$CUR_W_RESIZE" ]] && convert "$CUR_W_RESIZE" "$PARAM_RESIZE" "$CUR_W_RESIZE"
+        [[ -f "$CUR_W_DIM" ]] && convert "$CUR_W_DIM" "$PARAM_DIM" "$CUR_W_DIM"
+        [[ -f "$CUR_W_BLUR" ]] && convert "$CUR_W_BLUR" "$PARAM_BLUR" "$CUR_W_BLUR"
+        [[ -f "$CUR_W_DIMBLUR" ]] && convert "$CUR_W_DIMBLUR" "$PARAM_DIMBLUR" "$CUR_W_DIMBLUR"
+        [[ -f "$CUR_W_PIXEL" ]] && convert "$CUR_W_PIXEL" "$PARAM_PIXEL" "$CUR_W_PIXEL"
+        [[ -f "$CUR_W_DIMPIXEL" ]] && convert "$CUR_W_DIMPIXEL" "$PARAM_DIMPIXEL" "$CUR_W_DIMPIXEL"
+        [[ -f "$CUR_W_COLOR" ]] && convert "$CUR_W_COLOR" "$PARAM_COLOR" "$CUR_W_COLOR"
     fi
 
     echof act "Rendering final lockscreen images..."
@@ -591,23 +591,23 @@ update () {
         PARAM_RECT="$PARAM_RECT $RECTANGLE -geometry $pos -composite "
     done
 
-    if [ ! -z "$description" ]; then
+    if [ -n "$description" ]; then
         create_description
         for descpos in "${positions_desc[@]}"; do
             PARAM_RECT="$PARAM_RECT $DESCRECT -geometry $descpos -composite "
         done
     fi
 
-    [[ -f "$CUR_W_RESIZE" ]] && convert $CUR_W_RESIZE $PARAM_RECT $CUR_L_RESIZE
-    [[ -f "$CUR_W_DIM" ]] && convert $CUR_W_DIM $PARAM_RECT $CUR_L_DIM
-    [[ -f "$CUR_W_BLUR" ]] && convert $CUR_W_BLUR $PARAM_RECT $CUR_L_BLUR
-    [[ -f "$CUR_W_DIMBLUR" ]] && convert $CUR_W_DIMBLUR $PARAM_RECT $CUR_L_DIMBLUR
-    [[ -f "$CUR_W_PIXEL" ]] && convert $CUR_W_PIXEL $PARAM_RECT $CUR_L_PIXEL
-    [[ -f "$CUR_W_DIMPIXEL" ]] && convert $CUR_W_DIMPIXEL $PARAM_RECT $CUR_L_DIMPIXEL
-    [[ -f "$CUR_W_COLOR" ]] && convert $CUR_W_COLOR $PARAM_RECT $CUR_L_COLOR
+    [[ -f "$CUR_W_RESIZE" ]] && convert "$CUR_W_RESIZE" "$PARAM_RECT" "$CUR_L_RESIZE"
+    [[ -f "$CUR_W_DIM" ]] && convert "$CUR_W_DIM" "$PARAM_RECT" "$CUR_L_DIM"
+    [[ -f "$CUR_W_BLUR" ]] && convert "$CUR_W_BLUR" "$PARAM_RECT" "$CUR_L_BLUR"
+    [[ -f "$CUR_W_DIMBLUR" ]] && convert "$CUR_W_DIMBLUR" "$PARAM_RECT" "$CUR_L_DIMBLUR"
+    [[ -f "$CUR_W_PIXEL" ]] && convert "$CUR_W_PIXEL" "$PARAM_RECT" "$CUR_L_PIXEL"
+    [[ -f "$CUR_W_DIMPIXEL" ]] && convert "$CUR_W_DIMPIXEL" "$PARAM_RECT" "$CUR_L_DIMPIXEL"
+    [[ -f "$CUR_W_COLOR" ]] && convert "$CUR_W_COLOR" "$PARAM_RECT" "$CUR_L_COLOR"
 
-    [[ $RECTANGLE ]] && rm "$RECTANGLE"
-    [[ $DESCRECT ]] && rm "$DESCRECT"
+    [[ "$RECTANGLE" ]] && rm "$RECTANGLE"
+    [[ "$DESCRECT" ]] && rm "$DESCRECT"
 
     echof ok "Done"
 
