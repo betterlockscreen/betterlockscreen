@@ -44,14 +44,14 @@ init_config () {
     dunst_paused_state="$(dunstctl is-paused)"
 
     # read user config
-    USER_CONF="$HOME/.config/betterlockscreenrc"
+    USER_CONF="${XDG_CONFIG_HOME:-$HOME/.config}/betterlockscreenrc"
     if [ -e "$USER_CONF" ]; then
         # shellcheck source=/dev/null
         source "$USER_CONF"
     fi
 
     # paths
-    CACHE_DIR="$HOME/.cache/i3lock"
+    CACHE_DIR="${XDG_CACHE_HOME:-$HOME/.cache}/betterlockscreen"
     CUR_DIR="$CACHE_DIR/current"
 
     # wallpaper
