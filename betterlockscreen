@@ -50,6 +50,9 @@ init_config () {
         source "$USER_CONF"
     fi
 
+    # Please make sure to adjust this before release!
+    VERSION="@VERSION@"
+
     # paths
     CACHE_DIR="${XDG_CACHE_HOME:-$HOME/.cache}/betterlockscreen"
     CUR_DIR="$CACHE_DIR/current"
@@ -815,6 +818,23 @@ for arg in "$@"; do
         --desc)
             description="$2"
             shift 2
+            ;;
+
+        -v | --version)
+            echo
+            echo "Version: $VERSION"
+            i3lock-color --version
+            convert --version
+
+            if [[ -x "$(command -v dunstctl)" ]]; then
+                dunstctl debug
+            fi
+
+            if [[ -x "$(command -v feh)" ]]; then
+                feh --version
+            fi
+
+            break
             ;;
 
         --)
