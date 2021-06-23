@@ -30,13 +30,15 @@ init_config () {
     insidevercolor=00000000
     ringwrongcolor=ffffffff
     insidewrongcolor=d23c3dff
+    timecolor=ffffffff
+    time_format="%H:%M:%S"
+    greetercolor=ffffffff
+    layoutcolor=ffffffff
     keyhlcolor=d23c3dff
     bshlcolor=d23c3dff
     verifcolor=ffffffff
-    timecolor=ffffffff
-    datecolor=ffffffff
-    layoutcolor=ffffffff
-    nocolor=00000000
+    wrongcolor=d23c3dff
+    modifcolor=d23c3dff
     bgcolor=000000ff
     wallpaper_cmd="feh --bg-fill"
     time_format="%H:%M:%S"
@@ -107,23 +109,69 @@ lock() {
     echof act "Locking screen..."
 
     local image="$1"
+    local fontlg=32
+    local fontmd=16
+    local fontsm=12
+
 
     $i3lockcolor_bin \
-        -i "$image" \
-        -c "$bgcolor" \
+        --image "$image" \
+        --color "$bgcolor" \
         --screen "$display_on" \
-        --time-pos="ix-240:iy-0" --time-align 1 --time-str "$time_format" \
-        --date-pos="ix-240:iy+25" \
-        --layout-pos="ix-90:iy-0" --layout-align 1 --layout-color="$layoutcolor" "$keylayout" \
-        --clock --date-align 1 --date-str "$locktext" \
-        --inside-color="$insidecolor" --ring-color="$ringcolor" --line-uses-inside \
-        --keyhl-color="$keyhlcolor" --bshl-color="$bshlcolor" --separator-color=$separatorcolor \
-        --insidever-color="$insidevercolor" --insidewrong-color="$insidewrongcolor" \
-        --ringver-color="$ringvercolor" --ringwrong-color="$ringwrongcolor" --ind-pos="x+280:y+h-70" \
-        --radius=20 --ring-width=4 --verif-text="" --wrong-text="" --wrong-color="$nocolor" \
-        --verif-color="$verifcolor" --time-color="$timecolor" --date-color="$datecolor" \
-        --time-font="$font" --date-font="$font" --layout-font="$font" --verif-font="$font" --wrong-font="$font" \
-        --noinput-text="" --force-clock --pass-media-keys --pass-screen-keys --pass-power-keys \
+        --ind-pos="x+310:y+h-80" \
+        --radius=25 \
+        --ring-width=5 \
+        --inside-color="$insidecolor" \
+        --ring-color="$ringcolor" \
+        --separator-color=$separatorcolor \
+        --insidever-color="$insidevercolor" \
+        --insidewrong-color="$insidewrongcolor" \
+        --ringver-color="$ringvercolor" \
+        --ringwrong-color="$ringwrongcolor" \
+        --line-uses-inside \
+        --keyhl-color="$keyhlcolor" \
+        --bshl-color="$bshlcolor" \
+        --clock --force-clock \
+        --time-pos="ix-265:iy-10" \
+        --time-align 1 \
+        --time-str "$time_format" \
+        --time-color="$timecolor" \
+        --time-font="$font" \
+        --time-size="$fontlg" \
+        --date-str "" \
+        --greeter-pos="ix-265:iy+12" \
+        --greeter-align 1 \
+        --greeter-text "$locktext" \
+        --greeter-color="$greetercolor" \
+        --greeter-font="$font" \
+        --greeter-size="$fontmd" \
+        --layout-pos="ix-265:iy+32" \
+        --layout-align 1 \
+        --layout-color="$layoutcolor" \
+        --layout-font="$font" \
+        --layout-size="$fontsm" \
+        --keylayout "${keylayout:-0}" \
+        --verif-pos="ix+45:iy-35" \
+        --verif-align 2 \
+        --verif-text="Verifying..." \
+        --verif-color="$verifcolor" \
+        --verif-font="$font" \
+        --verif-size="$fontsm" \
+        --wrong-pos="ix+45:iy-35" \
+        --wrong-align 2 \
+        --wrong-text="Failure!" \
+        --wrong-color="$wrongcolor" \
+        --wrong-font="$font" \
+        --wrong-size="$fontsm" \
+        --modif-pos="ix+45:iy+43" \
+        --modif-align 2 \
+        --modif-size="$fontsm" \
+        --modif-color="$modifcolor" \
+        --noinput-text="" \
+        --pass-media-keys \
+        --pass-screen-keys \
+        --pass-volume-keys \
+        --pass-power-keys \
         "${lockargs[@]}"
 }
 
@@ -132,21 +180,66 @@ failsafe() {
 
     echof act "Locking screen... (FAILSAFE MODE)"
 
-    local bgcolor="000000"
-    local text="ffffffff"
-    local error="ff0000"
+    local fontlg=32
+    local fontmd=16
+    local fontsm=12
 
     $i3lockcolor_bin \
-        -c "$bgcolor" \
-        --screen "$display_on" \
-        --time-pos="ix-170:iy-0" \
-        --date-pos="ix-240:iy+25" \
-        --clock --date-align 1 --date-str "$locktext" \
-        --ind-pos="x+280:y+h-70" \
-        --radius=20 --ring-width=4 --verif-text="" --wrong-text="" --wrong-color="$error" \
-        --verif-color="$text" --time-color="$text" --date-color="$text" \
-        --time-font="$font" --date-font="$font" --layout-font="$font" --verif-font="$font" --wrong-font="$font" \
-        --noinput-text="" --force-clock
+        --color "$bgcolor" \
+        --ind-pos="x+310:y+h-80" \
+        --radius=25 \
+        --ring-width=5 \
+        --inside-color="$insidecolor" \
+        --ring-color="$ringcolor" \
+        --separator-color=$separatorcolor \
+        --insidever-color="$insidevercolor" \
+        --insidewrong-color="$insidewrongcolor" \
+        --ringver-color="$ringvercolor" \
+        --ringwrong-color="$ringwrongcolor" \
+        --line-uses-inside \
+        --keyhl-color="$keyhlcolor" \
+        --bshl-color="$bshlcolor" \
+        --clock --force-clock \
+        --time-pos="ix-265:iy-10" \
+        --time-align 1 \
+        --time-str "$time_format" \
+        --time-color="$timecolor" \
+        --time-font="$font" \
+        --time-size="$fontlg" \
+        --date-str "" \
+        --greeter-pos="ix-265:iy+12" \
+        --greeter-align 1 \
+        --greeter-text "$locktext" \
+        --greeter-color="$greetercolor" \
+        --greeter-font="$font" \
+        --greeter-size="$fontmd" \
+        --layout-pos="ix-265:iy+32" \
+        --layout-align 1 \
+        --layout-color="$layoutcolor" \
+        --layout-font="$font" \
+        --layout-size="$fontsm" \
+        --keylayout "${keylayout:-0}" \
+        --verif-pos="ix+45:iy-35" \
+        --verif-align 2 \
+        --verif-text="Verifying..." \
+        --verif-color="$verifcolor" \
+        --verif-font="$font" \
+        --verif-size="$fontsm" \
+        --wrong-pos="ix+45:iy-35" \
+        --wrong-align 2 \
+        --wrong-text="Failure!" \
+        --wrong-color="$wrongcolor" \
+        --wrong-font="$font" \
+        --wrong-size="$fontsm" \
+        --modif-pos="ix+45:iy+43" \
+        --modif-align 2 \
+        --modif-size="$fontsm" \
+        --modif-color="$modifcolor" \
+        --noinput-text="" \
+        --pass-media-keys \
+        --pass-screen-keys \
+        --pass-volume-keys \
+        --pass-power-keys
 }
 
 
@@ -428,8 +521,8 @@ create_loginbox () {
     RECTANGLE="$CUR_DIR/rectangle.png"
     local shadow="$CUR_DIR/shadow.png"
     local width height
-    width=$(logical_px 300 1)
-    height=$(logical_px 80 2)
+    width=$(logical_px 340 1)
+    height=$(logical_px 100 2)
     convert -size "$width"x"$height" xc:\#"$loginbox" -fill none "$RECTANGLE"
     convert "$RECTANGLE" \
         \( -clone 0 -background \#"$loginshadow" -shadow 100x5+0+0 \) +swap \
@@ -444,7 +537,7 @@ create_loginbox () {
 create_description () {
     DESCRECT="$CUR_DIR/description.png"
     local shadow="$CUR_DIR/shadow.png"
-    convert -background none -family "$(fc-match "$font" family)" -style Normal -pointsize 14 -fill \#"$datecolor" label:"\ $description\ " -bordercolor \#"$loginbox" -border 10 "$DESCRECT"
+    convert -background none -family "$(fc-match "$font" family)" -style Normal -pointsize 14 -fill \#"$greetercolor" label:"\ $description\ " -bordercolor \#"$loginbox" -border 10 "$DESCRECT"
     convert "$DESCRECT" \
         \( -clone 0 -background \#"$loginshadow" -shadow 100x5+0+0 \) +swap \
         -background none -layers merge +repage "$shadow"
@@ -518,7 +611,7 @@ update () {
             pos_y="${sym[1]}${val[1]}"
 
             rect_x=$((pos_x + $(logical_px 15 1)))
-            rect_y=$((pos_y + res_y - $(logical_px 120 2)))
+            rect_y=$((pos_y + res_y - $(logical_px 140 2)))
             positions+=("+$((rect_x))+$((rect_y))")
 
             descrect_x=$((pos_x + res_x - descwidth - $(logical_px 15 1)))
@@ -788,8 +881,8 @@ for arg in "$@"; do
             ;;
 
         --show-layout)
-            keylayout="--keylayout 2";
-            shift 1
+            keylayout="$2";
+            shift 2
             ;;
 
         --fx)
