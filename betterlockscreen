@@ -6,6 +6,16 @@
 
 init_config () {
 
+    # resolve i3lock-color binary
+    i3lockcolor_bin="$(command -v i3lock-color)"
+
+    if [[ (! -e "$i3lockcolor_bin") && (-e "$(command -v i3lock)") ]]; then
+        i3lockcolor_bin="$(command -v i3lock)"
+    else
+        echo "Can not find locker-binary as 'i3lock' or 'i3lock-color', please make sure it is in your \$PATH!"
+        exit 1
+    fi
+
     # default options
     display_on=0
     span_image=false
@@ -105,7 +115,7 @@ lock() {
 
     local image="$1"
 
-    i3lock \
+    $i3lockcolor_bin \
         -i "$image" \
         -c "$bgcolor" \
         --screen "$display_on" \
@@ -133,7 +143,7 @@ failsafe() {
     local text="ffffffff"
     local error="ff0000"
 
-    i3lock \
+    $i3lockcolor_bin \
         -c "$bgcolor" \
         --screen "$display_on" \
         --time-pos="ix-170:iy-0" \
@@ -823,7 +833,7 @@ for arg in "$@"; do
         -v | --version)
             echo
             echo "Version: $VERSION"
-            i3lock-color --version
+            $i3lockcolor_bin --version
             convert --version
 
             if [[ -x "$(command -v dunstctl)" ]]; then
