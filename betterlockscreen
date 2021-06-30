@@ -109,9 +109,9 @@ lock() {
     echof act "Locking screen..."
 
     local image="$1"
-    local fontlg=32
-    local fontmd=16
-    local fontsm=12
+    local fontlg=28
+    local fontmd=14
+    local fontsm=14
 
 
     $i3lockcolor_bin \
@@ -119,7 +119,7 @@ lock() {
         --color "$bgcolor" \
         --screen "$display_on" \
         --ind-pos="x+310:y+h-80" \
-        --radius=25 \
+        --radius=20 \
         --ring-width=5 \
         --inside-color="$insidecolor" \
         --ring-color="$ringcolor" \
@@ -132,38 +132,38 @@ lock() {
         --keyhl-color="$keyhlcolor" \
         --bshl-color="$bshlcolor" \
         --clock --force-clock \
-        --time-pos="ix-265:iy-10" \
+        --time-pos="ix-275:iy-15" \
         --time-align 1 \
         --time-str "$time_format" \
         --time-color="$timecolor" \
         --time-font="$font" \
         --time-size="$fontlg" \
         --date-str "" \
-        --greeter-pos="ix-265:iy+12" \
+        --greeter-pos="ix-275:iy+5" \
         --greeter-align 1 \
         --greeter-text "$locktext" \
         --greeter-color="$greetercolor" \
         --greeter-font="$font" \
         --greeter-size="$fontmd" \
-        --layout-pos="ix-265:iy+32" \
+        --layout-pos="ix-275:iy+35" \
         --layout-align 1 \
         --layout-color="$layoutcolor" \
         --layout-font="$font" \
         --layout-size="$fontsm" \
         --keylayout "${keylayout:-0}" \
-        --verif-pos="ix+45:iy-35" \
+        --verif-pos="ix+39:iy-32" \
         --verif-align 2 \
         --verif-text="Verifying..." \
         --verif-color="$verifcolor" \
         --verif-font="$font" \
         --verif-size="$fontsm" \
-        --wrong-pos="ix+45:iy-35" \
+        --wrong-pos="ix+27:iy-32" \
         --wrong-align 2 \
         --wrong-text="Failure!" \
         --wrong-color="$wrongcolor" \
         --wrong-font="$font" \
         --wrong-size="$fontsm" \
-        --modif-pos="ix+45:iy+43" \
+        --modif-pos="ix+35:iy+40" \
         --modif-align 2 \
         --modif-size="$fontsm" \
         --modif-color="$modifcolor" \
