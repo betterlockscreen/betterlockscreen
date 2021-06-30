@@ -1,153 +1,131 @@
-# betterlockscreen
+# Betterlockscreen
+> fast and sweet looking lockscreen for linux systems with effects!
 
-> simple, minimal lockscreen
+<div align="center">
+  <a href="https://github.com/pavanjadhaw/betterlockscreen/releases"><img alt="GitHub release (latest by date including pre-releases)" src="https://img.shields.io/github/v/release/pavanjadhaw/betterlockscreen?include_prereleases&label=latest&style=for-the-badge"></a>
+  <a href="https://github.com/pavanjadhaw/betterlockscreen/releases"><img alt="GitHub release (latest by date)" src="https://img.shields.io/github/v/release/pavanjadhaw/betterlockscreen?label=Stable&style=for-the-badge"></a>
+  <a href="https://github.com/pavanjadhaw/betterlockscreen/actions/workflows/shellcheck.yml?query=branch%3Amaster"><img alt="GitHub Workflow Status (master)" src="https://img.shields.io/github/workflow/status/pavanjadhaw/betterlockscreen/ShellCheck/master?label=master&style=for-the-badge"></a>
+  <a href="https://github.com/pavanjadhaw/betterlockscreen/actions/workflows/shellcheck.yml?query=branch%3Amaster"><img alt="GitHub Workflow Status (multi-monitor)" src="https://img.shields.io/github/workflow/status/pavanjadhaw/betterlockscreen/ShellCheck/multi-monitor?label=next&style=for-the-badge"></a>
 
-Betterlockscreen allows you to cache images with different filters and lockscreen with blazing speed.
+  <a href="https://github.com/pavanjadhaw/betterlockscreen/milestone/1"><img alt="GitHub milestone" src="https://img.shields.io/github/milestones/progress/pavanjadhaw/betterlockscreen/1?style=for-the-badge"></a>
+  <a href="https://github.com/pavanjadhaw/betterlockscreen/compare/3.2.0...multi-monitor"><img alt="GitHub commits since latest release (by date) for a branch" src="https://img.shields.io/github/commits-since/pavanjadhaw/betterlockscreen/3.2.0/multi-monitor?style=for-the-badge"></a>
+  <a href="https://github.com/pavanjadhaw/betterlockscreen/blob/master/LICENSE"><img src="https://img.shields.io/github/license/pavanjadhaw/betterlockscreen.svg?style=for-the-badge"></a>
+</div>
 
-## Example
+<div align="center">
+  <h2>You want to support us?</h2>
 
-> lockscreen with blurred effect
-
-```sh
-betterlockscreen --lock blur
-```
+  <a href="https://github.com/pavanjadhaw/betterlockscreen/stargazers"><img alt="GitHub Repo stars" src="https://img.shields.io/github/stars/pavanjadhaw/betterlockscreen?style=social"></a>
+  <a href="https://github.com/pavanjadhaw/betterlockscreen/fork"><img alt="GitHub forks" src="https://img.shields.io/github/forks/pavanjadhaw/betterlockscreen?style=social"></a>
+  <a href="https://www.codetriage.com/pavanjadhaw/betterlockscreen"><img src="https://www.codetriage.com/pavanjadhaw/betterlockscreen/badges/users.svg"></a>
+</div>
+<br />
 
 ![scrot2](https://github.com/pavanjadhaw/betterlockscreen.demo/raw/master/scrots/scrot2.png 'scrot2.png')
-
-> [Watch some of the features of betterlockscreen in action](https://youtu.be/9Ng5FZwnn6M)
+<br />
 
 ## Table of Contents
 
-- [about](#about)
-- [how it works](#how-it-works)
-- [requirements](#requirements)
-- [installation](#installation)
-- [configuration](#configuration)
-- [usage](#usage)
-- [background](#set-desktop-background-on-startup)
-- [keybinding](#keybindings)
-- [lockscreen on suspend](#lockscreen-when-suspendedsystemd-service)
+- [About](#about)
+- [How it works](#how-it-works)
+- [System Requirements](#system-requirements)
+- [Installation](#installation)
+- [Configuration](#configuration)
+- [Usage](#usage)
+- [Background](#background)
+- [Keybinding](#keybindings)
+- [Lockscreen on sleep/suspend with systemd](#systemd)
 
-### About
+## About
 
-Most of i3lock wrapper scripts out there takes an image, adds some effect and locks the screen
-adding effects, overall experience doesn't feel natural given delay of 2-3 seconds.
-Who would like a delay of 2-3 seconds while locking screen?
+Most of i3lock wrapper-scripts out there take an image, add some effect(s) then lock with the modified image as locker-background. Overall experience doesn't feel natural given delay of 2-3 seconds.
 
-So betterlockscreen was my attempt to solve this problem, as we dont need to change lockscreen background frequently
-this script caches images with effect so overall experience is simple and as fast as native i3lock.
+> Who would like a delay of 2-3 seconds while locking screen?
 
-### How it works
+So Betterlockscreen was my attempt to solve this problem, as we dont need to change lockscreen background frequently this script caches images with effect so overall experience is simple and as fast as native i3lock.
 
-The script takes image adds various effects and caches those images in special directory and then uses those
-images as lockscreen background depending on argument provided by user.
+## How it works
 
-### Requirements
+The script takes a directory or image, adds various effects and caches the images in special directory. Those cached images will be used as locker-background depending on configuration provided by user.
+
+## System Requirements
+
+* [i3lock-color](https://github.com/Raymo111/i3lock-color) `>= 2.13.c.3`
+* [ImageMagick](https://imagemagick.org/)
+* xdpyinfo, xrandr, xrdb and xset from [X.Org](https://www.x.org/)
+* (Optional) [Dunst](https://dunst-project.org/)
+* (Optional) [feh](https://feh.finalrewind.org/) for wallpaper-functionality
 
 > Note: Make sure your system has all dependencies satisfied
 
-- [i3lock-color](https://github.com/Raymo111/i3lock-color) - i3lock fork with additional features(`>= 2.13.c.3`)
-- [imagemagick](https://www.imagemagick.org/script/index.php) - To apply effects to images
-- [xdpyinfo](https://www.x.org/archive/X11R7.7/doc/man/man1/xdpyinfo.1.xhtml), [xrandr](https://www.x.org/wiki/Projects/XRandR/), [bc](https://www.gnu.org/software/bc/) and [feh](https://feh.finalrewind.org/) - To find screen resolution, set custom blur level and wallpaper handling.
-
-### Installation
-
-> manual installation
-
-```sh
-git clone https://github.com/pavanjadhaw/betterlockscreen
-cd betterlockscreen
-cp betterlockscreen ~/.local/bin/
-```
-
-<p style="text-align: center">OR</p>
-
-```sh
-# or wget the script ~12KB
-wget -O betterlockscreen https://git.io/fASUJ
-chmod u+x betterlockscreen
-cp betterlockscreen ~/.local/bin/
-```
-
-```sh
-# Add betterlockscreen to PATH:
-# (In your .bashrc, .zshrc etc)
-export PATH="${PATH}:${HOME}/.local/bin/"
-```
-
+## Installation
 ### Package Manager
 
-#### Arch Linux
+<a href="https://repology.org/project/betterlockscreen">
+  <img src="https://repology.org/badge/vertical-allrepos/betterlockscreen.svg" alt="Packaging status" align="right">
+</a>
 
-###### Installing dependencies(not required if using betterlockscreen aur package)
+Betterlockscreen is available via package manager on some linux-distributions, if you miss your favorite one you can follow along with our [installation-script](#installation-script) or [manual-installation](#manual-installation).
 
-`pacman -S imagemagick feh xorg-xrandr xorg-xdpyinfo`
+If you are using **Arch Linux**, you can install the AUR package
+[betterlockscreen](https://aur.archlinux.org/packages/betterlockscreen/) to get the latest
+version, or [betterlockscreen-git](https://aur.archlinux.org/packages/betterlockscreen-git/) for the most up-to-date (unstable) changes.
 
-- i3lock-color - `trizen -S i3lock-color`
+If you are using **Void Linux**, you can install [betterlockscreen](https://github.com/void-linux/void-packages/blob/master/srcpkgs/betterlockscreen/template) using `xbps-install -S betterlockscreen`.
 
-#### Aur package
+If you are using **NixOS**, [betterlockscreen](https://search.nixos.org/packages?query=betterlockscreen) is available in both the [stable](https://github.com/NixOS/nixpkgs/blob/nixos-21.05/pkgs/misc/screensavers/betterlockscreen/default.nix) and [unstable](https://github.com/NixOS/nixpkgs/blob/nixos-unstable/pkgs/misc/screensavers/betterlockscreen/default.nix) channels and can be installed with the command `nix-env -iA nixos.betterlockscreen`.
 
-`betterlockscreen` is available in the Arch User repos as `betterlockscreen` and `betterlockscreen-git`.
+### Installation Script
 
-- betterlockscreen - `trizen -S betterlockscreen`
-- betterlockscreen-git - `trizen -S betterlockscreen-git`
+We have created an automatic [install-script](https://github.com/pavanjadhaw/betterlockscreen/blob/master/install.sh) for Betterlockscreen. The script is very simple and takes three parameters:
+  * `<install-mode>`: (string) 'user' installs to '~/.local/bin/', 'system' installs to '/usr/local/bin'
+  * `[<version>]`: (string) defaults to 'latest' which will determinate the latest tag from git or specified branch/tag
+  * `[<systemd-service>]`: (boolean) defaults to 'false' - Whether to copy and enable system-service.
 
-#### Debian and derivatives
-
-UtkarshVerma was so kind to provide an installation script for debian based systems, ![check it out here](https://github.com/UtkarshVerma/installer-scripts).
-
-#### Void Linux
-
-##### xbps repository
-
-`betterlockscreen` is available in official Void's repository as `betterlockscreen`.
-
-Installing using `xbps` (will automatically install all required dependencies): `xbps-install -S betterlockscreen`
-
-### Configuration
-
-You can customise various colors for betterlockscreen, copy config file from examples directory to `~/.config/betterlockscreenrc` and edit it accordingly.
-
-If configuration file is not found then default configurations will be used.
-
-```ini
-# default options
-display_on=0
-span_image=false
-lock_timeout=300
-fx_list=(dim blur dimblur pixel dimpixel color)
-dim_level=40
-blur_level=1
-pixel_scale=10,1000
-solid_color=333333
-
-# theme options
-loginbox=00000066
-loginshadow=00000000
-locktext="Type password to unlock..."
-font="sans-serif"
-ringcolor=ffffffff
-insidecolor=00000000
-separatorcolor=00000000
-ringvercolor=ffffffff
-insidevercolor=00000000
-ringwrongcolor=ffffffff
-insidewrongcolor=d23c3dff
-keyhlcolor=d23c3dff
-bshlcolor=d23c3dff
-verifcolor=ffffffff
-timecolor=ffffffff
-datecolor=ffffffff
-wallpaper_cmd="feh --bg-fill --no-fehbg"
-time_format="%H:%M:%S"
+For system-installation:
+```sh
+wget https://git.io/JZyxV -O - -q | bash -- system
 ```
+
+For user-installation:
+```sh
+wget https://git.io/JZyxV -O - -q | bash -- user
+```
+
+Please note: The [git.io](https://git.io/)-URL is just a short-url for the [master/install.sh](https://raw.githubusercontent.com/pavanjadhaw/betterlockscreen/master/install.sh).
+
+### Manual Installation
+
+Ỳou can download the latest release [here](https://github.com/pavanjadhaw/betterlockscreen/releases), please ensure to fullfill the [system-requirements](#system-requirements)!
+
+You will need to copy "betterlockscreen" to you desired binary-directory, if you want to use the systemd-service you will need to copy the service-file from "system/" to the desired location on your system.
+
+Example (Ubuntu):
+```sh
+wget https://github.com/pavanjadhaw/betterlockscreen/archive/refs/heads/master.zip
+unzip master.zip
+
+cd betterlockscreen-master/
+chmod u+x betterlockscreen
+cp betterlockscreen /usr/local/bin/
+
+cp system/betterlockscreen@.service /usr/lib/systemd/system/
+systemctl enable betterlockscreen@$USER
+```
+
+## Configuration
+
+You can customize betterlockscreen for your needs, copy the config file from the examples-directory to `~/.config/betterlockscreenrc` and edit it accordingly.
+
+If no configuration-file is found, then the default configurations (which is equal to the example but currently hardcoded) will be used.
+
 If you have installed betterlockscreen from AUR package, then you can copy default config from docs
 
 ```sh
 cp /usr/share/doc/betterlockscreen/examples/betterlockscreenrc ~/.config
 ```
 
-### Usage
+## Usage
 
 Run `betterlockscreen` and point it to either a directory (`betterlockscreen -u "path/to/dir"`) or an image (`betterlockscreen -u "/path/to/img.jpg"`) and that's all. `betterlockscreen` will change update its cache with image you provided.
 
@@ -196,7 +174,7 @@ Effects arguments:
 ```
 
 
-#### Usage examples:
+#### Examples
 1. Update image cache with random image
 `betterlockscreen -u ~/Wallpapers`
 
@@ -219,7 +197,7 @@ Effects arguments:
 `betterlockscreen -l dimblur --display 1 --span`
 
 
-### Set desktop background on startup
+## Background
 
 Add this line to `.xinitrc`.
 
@@ -231,7 +209,7 @@ betterlockscreen -w dim
 source ~/.fehbg
 ```
 
-#### i3wm
+### i3wm
 
 Add this line to `~/.config/i3/config`
 
@@ -243,11 +221,11 @@ exec --no-startup-id betterlockscreen -w dim
 exec --no-startup-id source ~/.fehbg
 ```
 
-### Keybindings
+## Keybindings
 
 To lockscreen using keyboard shortcut
 
-#### i3wm
+### i3wm
 
 Add this line to your `~/.config/i3/config`
 
@@ -255,7 +233,7 @@ Add this line to your `~/.config/i3/config`
 bindsym $mod+shift+x exec betterlockscreen -l dim
 ```
 
-#### bspwm
+### bspwm
 
 Add this line to your `~/.config/sxhkd/sxhkdrc`
 
@@ -265,7 +243,8 @@ alt + shift + x
     betterlockscreen -l dim
 ```
 
-### Lockscreen when suspended(systemd service)
+<h2 id="systemd">Systemd-Service: Lockscreen after sleep/suspend</h2>
+
 ```sh
 # move service file to proper dir (the aur package does this for you)
 cp betterlockscreen@.service /usr/lib/systemd/system/
@@ -289,13 +268,11 @@ Resources and more informations:
 
 ---
 
-### Countributing
+## Countributing
 
 Thanks to all the amazing people for all your wonderful PRs, issues and ideas!
 
-[![](https://sourcerer.io/fame/pavanjadhaw/pavanjadhaw/betterlockscreen/images/0)](https://sourcerer.io/fame/pavanjadhaw/pavanjadhaw/betterlockscreen/links/0)[![](https://sourcerer.io/fame/pavanjadhaw/pavanjadhaw/betterlockscreen/images/1)](https://sourcerer.io/fame/pavanjadhaw/pavanjadhaw/betterlockscreen/links/1)[![](https://sourcerer.io/fame/pavanjadhaw/pavanjadhaw/betterlockscreen/images/2)](https://sourcerer.io/fame/pavanjadhaw/pavanjadhaw/betterlockscreen/links/2)[![](https://sourcerer.io/fame/pavanjadhaw/pavanjadhaw/betterlockscreen/images/3)](https://sourcerer.io/fame/pavanjadhaw/pavanjadhaw/betterlockscreen/links/3)[![](https://sourcerer.io/fame/pavanjadhaw/pavanjadhaw/betterlockscreen/images/4)](https://sourcerer.io/fame/pavanjadhaw/pavanjadhaw/betterlockscreen/links/4)[![](https://sourcerer.io/fame/pavanjadhaw/pavanjadhaw/betterlockscreen/images/5)](https://sourcerer.io/fame/pavanjadhaw/pavanjadhaw/betterlockscreen/links/5)[![](https://sourcerer.io/fame/pavanjadhaw/pavanjadhaw/betterlockscreen/images/6)](https://sourcerer.io/fame/pavanjadhaw/pavanjadhaw/betterlockscreen/links/6)[![](https://sourcerer.io/fame/pavanjadhaw/pavanjadhaw/betterlockscreen/images/7)](https://sourcerer.io/fame/pavanjadhaw/pavanjadhaw/betterlockscreen/links/7)
-
-## How can I support developers?
+How can I support developers?
 
 - Star our GitHub repo :star:
 - Create pull requests, submit bugs, suggest new features or documentation updates :wrench:
@@ -304,11 +281,8 @@ Thanks to all the amazing people for all your wonderful PRs, issues and ideas!
 
 Betterlockscreen is under [MIT](https://github.com/pavanjadhaw/betterlockscreen/blob/master/LICENSE) license.
 
-## Feel free to use and distribute
+### Feel free to use and distribute
 
 - Hat tip to anyone who's code was used
 - Thanks to those who contributed to make it better
 - Inspiration - [r/unixporn](https://www.reddit.com/r/unixporn)
-
-[logo]: .github/hero.png
-[website]: https://mdxjs.com
