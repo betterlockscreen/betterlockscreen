@@ -51,7 +51,7 @@ init_config () {
     fi
 
     # Please make sure to adjust this before release!
-    VERSION="@VERSION@"
+    VERSION="4.0.0"
 
     # paths
     CACHE_DIR="${XDG_CACHE_HOME:-$HOME/.cache}/betterlockscreen"
@@ -83,6 +83,9 @@ init_config () {
     # Dunst
     DUNST_INSTALLED=false && [[ -e "$(command -v dunstctl)" ]] && DUNST_INSTALLED=true
     DUNST_IS_PAUSED=false && [[ "$DUNST_INSTALLED" == "true" ]] && DUNST_IS_PAUSED=$(dunstctl is-paused)
+
+    # Feh
+    FEH_INSTALLED=false && [[ -e "$(command -v feh)" ]] && FEH_INSTALLED=true
 }
 
 # called before screen is locked
@@ -916,15 +919,15 @@ for arg in "$@"; do
 
         -v | --version)
             echo
-            echo "Version: $VERSION"
+            echo "Betterlockscreen: version: $VERSION (dunst: $DUNST_INSTALLED, feh: $FEH_INSTALLED)"
             $i3lockcolor_bin --version
             convert --version
 
-            if [[ -x "$(command -v dunstctl)" ]]; then
+            if [[ "$DUNST_INSTALLED" == "true" ]]; then
                 dunstctl debug
             fi
 
-            if [[ -x "$(command -v feh)" ]]; then
+            if [[ "$FEH_INSTALLED" == "true" ]]; then
                 feh --version
             fi
 
