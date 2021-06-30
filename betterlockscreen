@@ -16,6 +16,7 @@ init_config () {
     pixel_scale=10,1000
     solid_color=333333
     description=""
+    i3lockcolor_bin="i3lock-color"
 
     # default theme
     loginbox=00000066
@@ -45,10 +46,6 @@ init_config () {
     if [ -e "$USER_CONF" ]; then
         # shellcheck source=/dev/null
         source "$USER_CONF"
-    fi
-
-    if [[ ! -v $i3lockcolor_bin ]]; then
-        i3lockcolor_bin="i3lock-color"
     fi
 
     # Please make sure to adjust this before release!
