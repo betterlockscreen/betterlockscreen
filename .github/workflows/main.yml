@@ -1,4 +1,4 @@
-name: ShellCheck
+name: Main
 
 on: [push, pull_request]
 
