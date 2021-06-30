@@ -9,6 +9,7 @@ dim_level=40
 blur_level=1
 pixel_scale=10,1000
 solid_color=333333
+# i3lockcolor_bin="" # (manually set full path to i3lock-color)
 
 # default theme
 loginbox=00000066
