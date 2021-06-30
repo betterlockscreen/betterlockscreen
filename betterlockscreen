@@ -37,7 +37,7 @@ init_config () {
     layoutcolor=ffffffff
     nocolor=00000000
     bgcolor=000000ff
-    wallpaper_cmd="feh --bg-fill --no-fehbg"
+    wallpaper_cmd="feh --bg-fill"
     time_format="%H:%M:%S"
 
     # read user config
