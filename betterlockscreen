@@ -40,9 +40,6 @@ init_config () {
     wallpaper_cmd="feh --bg-fill --no-fehbg"
     time_format="%H:%M:%S"
 
-    # Storing current state of dunst before locking
-    dunst_paused_state="$(dunstctl is-paused)"
-
     # read user config
     USER_CONF="${XDG_CONFIG_HOME:-$HOME/.config}/betterlockscreenrc"
     if [ -e "$USER_CONF" ]; then
@@ -79,6 +76,10 @@ init_config () {
     DEFAULT_TIMEOUT=$(cut -d ' ' -f4 <<< "$(xset q | sed -n '25p')")
     # Original DPMS status
     DEFAULT_DPMS=$(xset q | awk '/^[[:blank:]]*DPMS is/ {print $(NF)}')
+
+    # Dunst
+    DUNST_INSTALLED=false && [[ -e "$(command -v dunstctl)" ]] && DUNST_INSTALLED=true
+    DUNST_IS_PAUSED=false && [[ "$DUNST_INSTALLED" == "true" ]] && DUNST_IS_PAUSED=$(dunstctl is-paused)
 }
 
 # called before screen is locked
@@ -88,11 +89,12 @@ prelock() {
     if [ "$DEFAULT_DPMS" == "Enabled" ]; then
         xset dpms "$lock_timeout"
     fi
+
     # If dusnt is already paused don't pause it again
-    if [[ -e "$(command -v dunstctl)" && "$dunst_paused_state" == "false" ]]
-    then
+    if [[ "$DUNST_INSTALLED" == "true" && "$DUNST_IS_PAUSED" == "false" ]]; then
         dunstctl set-paused true
     fi
+
     if [[ "$runsuspend" = "true" ]]; then
         lockargs="$lockargs -n"
     fi
@@ -156,8 +158,7 @@ postlock() {
     fi
 
     # If dunst already paused before locking don't unpause dunst
-    if [[ -e "$(command -v dunstctl)" && "$dunst_paused_state" == "false" ]]
-    then
+    if [[ "$DUNST_INSTALLED" == "true" && "$DUNST_IS_PAUSED" == "false" ]]; then
         dunstctl set-paused false
     fi
 }
