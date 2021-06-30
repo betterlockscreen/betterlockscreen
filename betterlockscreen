@@ -6,16 +6,6 @@
 
 init_config () {
 
-    # resolve i3lock-color binary
-    i3lockcolor_bin="$(command -v i3lock-color)"
-
-    if [[ (! -e "$i3lockcolor_bin") && (-e "$(command -v i3lock)") ]]; then
-        i3lockcolor_bin="$(command -v i3lock)"
-    else
-        echo "Can not find locker-binary as 'i3lock' or 'i3lock-color', please make sure it is in your \$PATH!"
-        exit 1
-    fi
-
     # default options
     display_on=0
     span_image=false
@@ -55,6 +45,10 @@ init_config () {
     if [ -e "$USER_CONF" ]; then
         # shellcheck source=/dev/null
         source "$USER_CONF"
+    fi
+
+    if [[ ! -v $i3lockcolor_bin ]]; then
+        i3lockcolor_bin="i3lock-color"
     fi
 
     # Please make sure to adjust this before release!
