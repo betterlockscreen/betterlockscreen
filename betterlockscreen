@@ -150,13 +150,13 @@ lock() {
         --layout-font="$font" \
         --layout-size="$fontsm" \
         --keylayout "${keylayout:-0}" \
-        --verif-pos="ix+45:iy-35" \
+        --verif-pos="ix+35:iy-34" \
         --verif-align 2 \
         --verif-text="Verifying..." \
         --verif-color="$verifcolor" \
         --verif-font="$font" \
         --verif-size="$fontsm" \
-        --wrong-pos="ix+45:iy-35" \
+        --wrong-pos="ix+24:iy-34" \
         --wrong-align 2 \
         --wrong-text="Failure!" \
         --wrong-color="$wrongcolor" \
