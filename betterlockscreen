@@ -729,7 +729,7 @@ usage() {
     exit 1
 }
 
-echof header "betterlockscreen"
+echof header "Betterlockscreen"
 
 init_config
 
