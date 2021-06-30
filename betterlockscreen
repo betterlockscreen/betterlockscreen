@@ -422,6 +422,12 @@ usage() {
 	echo '		to set the time format used by i3lock-color'
 	echo '		see the i3lock or strftime man pages for more details.'
 	echo '		E.g: betterlockscreen -l dim -tf "%I:%M %p"'
+	echo
+	echo
+	echo '	-xf --xresources_file <path_to_xresources>'
+	echo '		to set the xresources file path when updating.'
+	echo '		see the i3lock or strftime man pages for more details.'
+	echo '		E.g: betterlockscreen -xf ~/.config/X11/Xresources -u image.png'
 }
 
 
