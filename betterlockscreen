@@ -30,6 +30,7 @@ init_filenames() {
 	locktext='Type password to unlock...'
 	wallpaper_cmd='feh --bg-fill --no-fehbg'
 	time_format='%H:%M:%S'
+	xresources_file="$HOME/.Xresources"
 
 	# override defaults with config
 	theme_rc="$HOME/.config/betterlockscreenrc"
@@ -169,7 +170,7 @@ lockselect() {
 logical_px() {
 	# get dpi value from xrdb
 	local DPI
-	DPI=$(grep -oP 'Xft.dpi:\s*\K\d+' ~/.Xresources | bc)
+	DPI=$(grep -osP 'Xft.dpi:\s*\K\d+' "$xresources_file" | bc)
 	if [ -z "$DPI" ]; then
 		DPI=$(xdpyinfo | sed -En "s/\s*resolution:\s*([0-9]*)x([0-9]*)\s.*/\\$2/p" | head -n1)
 	fi
@@ -489,6 +490,11 @@ for arg in "$@"; do
 
 		-tf | --time_format)
 			time_format="$2"
+			shift 2
+			;;
+
+		-xf | --xresources_file)
+			xresources_file="$2"
 			shift 2
 			;;
 
