@@ -51,7 +51,7 @@ init_config () {
     fi
 
     # Please make sure to adjust this before release!
-    VERSION="4.0.0"
+    VERSION="4.0.0-beta1"
 
     # paths
     CACHE_DIR="${XDG_CACHE_HOME:-$HOME/.cache}/betterlockscreen"
@@ -919,7 +919,7 @@ for arg in "$@"; do
 
         -v | --version)
             echo
-            echo "Betterlockscreen: version: $VERSION (dunst: $DUNST_INSTALLED, feh: $FEH_INSTALLED)"
+            echo "Betterlockscreen: version: v$VERSION (dunst: $DUNST_INSTALLED, feh: $FEH_INSTALLED)"
             $i3lockcolor_bin --version
             convert --version
 
