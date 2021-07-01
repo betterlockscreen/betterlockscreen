@@ -1,20 +1,25 @@
-# betterlockscreen
+# Betterlockscreen
+> fast and sweet looking lockscreen for linux systems with effects!
 
-> simple, minimal lockscreen
+<div align="center">
+  <a href="https://github.com/pavanjadhaw/betterlockscreen/releases"><img alt="GitHub release (latest by date including pre-releases)" src="https://img.shields.io/github/v/release/pavanjadhaw/betterlockscreen?include_prereleases&label=latest&style=for-the-badge"></a>
+  <a href="https://github.com/pavanjadhaw/betterlockscreen/releases"><img alt="GitHub release (latest by date)" src="https://img.shields.io/github/v/release/pavanjadhaw/betterlockscreen?label=Stable&style=for-the-badge"></a>
+  <a href="https://github.com/pavanjadhaw/betterlockscreen/actions/workflows/main.yml?query=branch%3Amaster"><img alt="GitHub Workflow Status (master)" src="https://img.shields.io/github/workflow/status/pavanjadhaw/betterlockscreen/Main/master?label=master&style=for-the-badge"></a>
+  <a href="https://github.com/pavanjadhaw/betterlockscreen/actions/workflows/main.yml?query=branch%3Anext"><img alt="GitHub Workflow Status (next)" src="https://img.shields.io/github/workflow/status/pavanjadhaw/betterlockscreen/Main/next?label=next&style=for-the-badge"></a>
+  <a href="https://github.com/pavanjadhaw/betterlockscreen/blob/master/LICENSE"><img src="https://img.shields.io/github/license/pavanjadhaw/betterlockscreen.svg?style=for-the-badge"></a>
+</div>
 
-Betterlockscreen allows you to cache images with different filters and lockscreen with blazing speed.
+<div align="center">
+  <h2>You want to support us?</h2>
 
-## Example
-
-> lockscreen with blurred effect
-
-```sh
-betterlockscreen --lock blur
-```
+  <a href="https://github.com/pavanjadhaw/betterlockscreen/stargazers"><img alt="GitHub Repo stars" src="https://img.shields.io/github/stars/pavanjadhaw/betterlockscreen?style=social"></a>
+  <a href="https://github.com/pavanjadhaw/betterlockscreen/fork"><img alt="GitHub forks" src="https://img.shields.io/github/forks/pavanjadhaw/betterlockscreen?style=social"></a>
+  <a href="https://www.codetriage.com/pavanjadhaw/betterlockscreen"><img src="https://www.codetriage.com/pavanjadhaw/betterlockscreen/badges/users.svg"></a>
+</div>
+<br />
 
 ![scrot2](https://github.com/pavanjadhaw/betterlockscreen.demo/raw/master/scrots/scrot2.png 'scrot2.png')
-
-> [Watch some of the features of betterlockscreen in action](https://youtu.be/9Ng5FZwnn6M)
+<br />
 
 ## Table of Contents
 
