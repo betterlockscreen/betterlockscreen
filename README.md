@@ -109,6 +109,23 @@ UtkarshVerma was so kind to provide an installation script for debian based syst
 
 Installing using `xbps` (will automatically install all required dependencies): `xbps-install -S betterlockscreen`
 
+#### Gentoo Linux
+
+##### GURU
+
+Install `betterlockscreen` from Gentoo's [GURU overlay](https://wiki.gentoo.org/wiki/Project:GURU):
+
+If not already, enable (e.g. with app-eselect/eselect-repository) and sync (with emaint) GURU
+```sh
+eselect repository enable guru
+emaint sync -r guru
+```
+
+then install
+```sh
+emerge x11-misc/betterlockscreen
+```
+
 ### Configuration
 
 You can customise various colors for betterlockscreen, copy config file from examples directory to `~/.config/betterlockscreenrc` and edit it accordingly.
