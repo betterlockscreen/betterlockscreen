@@ -12,7 +12,7 @@ default_dpms=$(xset q | awk '/^[[:blank:]]*DPMS is/ {print $(NF)}')
 init_filenames() {
 	#$1 resolution
 
-	# copy this block to ~/.config/betterlockscreenrc" to customize
+	# copy this block to $XDG_CONFIG_HOME/betterlockscreenrc or ~/.config/betterlockscreenrc to customize
 	insidecolor=00000000
 	ringcolor=ffffffff
 	keyhlcolor=d23c3dff
@@ -32,15 +32,17 @@ init_filenames() {
 	time_format='%H:%M:%S'
 
 	# override defaults with config
-	theme_rc="$HOME/.config/betterlockscreenrc"
+	user_config_dir="${XDG_CONFIG_HOME:-$HOME/.config}"
+	theme_rc="$user_config_dir/betterlockscreenrc"
 	if [ -e "$theme_rc" ]; then
 		# shellcheck disable=SC1090
 		source "$theme_rc"
 	fi
 
-	# create folder in ~/.cache/i3lock directory
-	res_folder="$HOME/.cache/i3lock/$1"
-	folder="$HOME/.cache/i3lock/current"
+	# create folder in $XDG_CACHE_HOME/i3lock or ~/.cache/i3lock directory
+	user_cache_dir="${XDG_CACHE_HOME:-$HOME/.cache}"
+	res_folder="$user_cache_dir/i3lock/$1"
+	folder="$user_cache_dir/i3lock/current"
 	echo "Got" "$@" "$res_folder"
 	if [ ! -d "$folder" ] || [ -n "$2" ]; then
 		rm -rf "$folder"
