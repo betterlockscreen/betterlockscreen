@@ -271,12 +271,7 @@ Resources and more informations:
 
 ## Countributing
 
-Thanks to all the amazing people for all your wonderful PRs, issues and ideas!
-
-How can I support developers?
-
-- Star our GitHub repo :star:
-- Create pull requests, submit bugs, suggest new features or documentation updates :wrench:
+Please see [CONTRIBUTING.md](CONTRIBUTING.md).
 
 ## License
 
