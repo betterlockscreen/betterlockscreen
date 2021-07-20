@@ -70,9 +70,11 @@ If you are using **Arch Linux**, you can install the AUR package
 [betterlockscreen](https://aur.archlinux.org/packages/betterlockscreen/) to get the latest
 version, or [betterlockscreen-git](https://aur.archlinux.org/packages/betterlockscreen-git/) for the most up-to-date (unstable) changes.
 
-If you are using **Void Linux**, you can install [betterlockscreen](https://github.com/void-linux/void-packages/blob/master/srcpkgs/betterlockscreen/template) using `xbps-install -S betterlockscreen`.
+If you are using **Gentoo Linux**, you can install `betterlockscreen` from Gentoo's [GURU overlay](https://wiki.gentoo.org/wiki/Project:GURU) using `emerge x11-misc/betterlockscreen`.
 
-If you are using **NixOS**, [betterlockscreen](https://search.nixos.org/packages?query=betterlockscreen) is available in both the [stable](https://github.com/NixOS/nixpkgs/blob/nixos-21.05/pkgs/misc/screensavers/betterlockscreen/default.nix) and [unstable](https://github.com/NixOS/nixpkgs/blob/nixos-unstable/pkgs/misc/screensavers/betterlockscreen/default.nix) channels and can be installed with the command `nix-env -iA nixos.betterlockscreen`.
+If you are using **NixOS**, [betterlockscreen](https://search.nixos.org/packages?query=betterlockscreen) is available in both the [stable](https://github.com/NixOS/nixpkgs/blob/nixos-21.05/pkgs/misc/screensavers/betterlockscreen/default.nix) and [unstable](https://github.com/NixOS/nixpkgs/blob/nixos-unstable/pkgs/misc/screensavers/betterlockscreen/default.nix) channels and can be installed using `nix-env -iA nixos.betterlockscreen`.
+
+If you are using **Void Linux**, you can install [betterlockscreen](https://github.com/void-linux/void-packages/blob/master/srcpkgs/betterlockscreen/template) using `xbps-install -S betterlockscreen`.
 
 ### Installation Script
 
