@@ -1,8 +1,12 @@
 #!/usr/bin/env bash
 
-# Author : Pavan Jadhaw
+# Author : Copyright (c) 2017-2021 Pavan Jadhaw, and others (https://github.com/pavanjadhaw/betterlockscreen/graphs/contributors)
 # Github Profile : https://github.com/pavanjadhaw
 # Project Repository : https://github.com/pavanjadhaw/betterlockscreen
+
+cmd_exists () {
+    command -v "$1" >/dev/null
+}
 
 init_config () {
 
@@ -17,6 +21,10 @@ init_config () {
     solid_color=333333
     description=""
     i3lockcolor_bin="i3lock-color"
+
+    if ! cmd_exists "i3lockcolor_bin" && cmd_exists "i3lock"; then
+        i3lockcolor_bin="i3lock"
+    fi
 
     # default theme
     loginbox=00000066
@@ -48,6 +56,11 @@ init_config () {
     if [ -e "$USER_CONF" ]; then
         # shellcheck source=/dev/null
         source "$USER_CONF"
+    fi
+
+    if ! cmd_exists "$i3lockcolor_bin"; then
+        echof error "Unable to find i3lock-color binary under detected/configured name: '$i3lockcolor_bin'!"
+        exit
     fi
 
     # Please make sure to adjust this before release!
