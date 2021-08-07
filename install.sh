@@ -1,5 +1,9 @@
 #!/usr/bin/env bash
 
+cmd_exists () {
+    command -v "$1" >/dev/null
+}
+
 echof() {
     local colorReset="\033[0m"
     local prefix="$1"
@@ -55,8 +59,12 @@ DEPS["xdpyinfo"]="xdpyinfo"
 DEPS["xrdb"]="xrdb"
 DEPS["xset"]="xset"
 
+if ! cmd_exists DEPS["i3lock-color"] && cmd_exists "i3lock"; then
+	DEPS["i3lock-color"]="i3lock"
+fi
+
 for key in "${!DEPS[@]}"; do
-	[[ ! -e "$(command -v ${DEPS[$key]})" ]] && echof error "Missing '$key'!" && exit 1
+	[[ ! -e "$(command -v ${DEPS[$key]})" ]] && echof error "Missing '$key' under binary named '${DEPS[$key]}'!" && exit 1
 done
 
 echof ok "done!"
