@@ -1,514 +1,970 @@
 #!/usr/bin/env bash
 
-# Author : Pavan Jadhaw
+# Author : Copyright (c) 2017-2021 Pavan Jadhaw, and others (https://github.com/pavanjadhaw/betterlockscreen/graphs/contributors)
 # Github Profile : https://github.com/pavanjadhaw
 # Project Repository : https://github.com/pavanjadhaw/betterlockscreen
 
-# find your resolution so images can be resized to match your screen resolution
-res=$(xdpyinfo | grep dimensions | sed -r 's/^[^0-9]*([0-9]+x[0-9]+).*$/\1/')
-default_timeout="$(cut -d ' ' -f4 <<< "$(xset q | sed -n '25p')")"
-default_dpms=$(xset q | awk '/^[[:blank:]]*DPMS is/ {print $(NF)}')
-
-init_filenames() {
-	#$1 resolution
-
-	# copy this block to ~/.config/betterlockscreenrc" to customize
-	insidecolor=00000000
-	ringcolor=ffffffff
-	keyhlcolor=d23c3dff
-	bshlcolor=d23c3dff
-	separatorcolor=00000000
-	insidevercolor=00000000
-	insidewrongcolor=d23c3dff
-	ringvercolor=ffffffff
-	ringwrongcolor=ffffffff
-	verifcolor=ffffffff
-	timecolor=ffffffff
-	datecolor=ffffffff
-	loginbox=00000066
-	font="sans-serif"
-	locktext='Type password to unlock...'
-	wallpaper_cmd='feh --bg-fill --no-fehbg'
-	time_format='%H:%M:%S'
-
-	# override defaults with config
-	theme_rc="$HOME/.config/betterlockscreenrc"
-	if [ -e "$theme_rc" ]; then
-		# shellcheck disable=SC1090
-		source "$theme_rc"
-	fi
-
-	# create folder in ~/.cache/i3lock directory
-	res_folder="$HOME/.cache/i3lock/$1"
-	folder="$HOME/.cache/i3lock/current"
-	echo "Got" "$@" "$res_folder"
-	if [ ! -d "$folder" ] || [ -n "$2" ]; then
-		rm -rf "$folder"
-		mkdir -p "$res_folder"
-		ln -s "$res_folder" "$folder"
-	fi
-
-	# ratio for rectangle to be drawn for time background on lockscreen
-	# Original Image
-	orig_wall="$folder/wall.png"
-
-	# Versions (from here)
-	# You can use these images to set different versions as wallpaper
-	# lockscreen background.
-	resized="$folder/resized.png" # resized image for your resolution
-
-	# images to be used as wallpaper
-	dim="$folder/dim.png" # image with subtle overlay of black
-	blur="$folder/blur.png" # blurred version
-	dimblur="$folder/dimblur.png"
-	pixel="$folder/pixel.png" # pixelated image
-
-	# lockscreen images (images to be used as lockscreen background)
-	l_resized="$folder/l_resized.png"
-	l_dim="$folder/l_dim.png"
-	l_blur="$folder/l_blur.png"
-	l_dimblur="$folder/l_dimblur.png"
-	l_pixel="$folder/l_pixel.png"
+cmd_exists () {
+    command -v "$1" >/dev/null
 }
 
-init_filenames "$res"
+init_config () {
 
+    # default options
+    display_on=0
+    span_image=false
+    lock_timeout=300
+    fx_list=(dim blur dimblur pixel dimpixel color)
+    dim_level=40
+    blur_level=1
+    pixel_scale=10,1000
+    solid_color=333333
+    description=""
+    i3lockcolor_bin="i3lock-color"
 
+    if ! cmd_exists "i3lockcolor_bin" && cmd_exists "i3lock"; then
+        i3lockcolor_bin="i3lock"
+    fi
+
+    # default theme
+    loginbox=00000066
+    loginshadow=00000000
+    locktext="Type password to unlock..."
+    font="sans-serif"
+    ringcolor=ffffffff
+    insidecolor=00000000
+    separatorcolor=00000000
+    ringvercolor=ffffffff
+    insidevercolor=00000000
+    ringwrongcolor=ffffffff
+    insidewrongcolor=d23c3dff
+    timecolor=ffffffff
+    time_format="%H:%M:%S"
+    greetercolor=ffffffff
+    layoutcolor=ffffffff
+    keyhlcolor=d23c3dff
+    bshlcolor=d23c3dff
+    verifcolor=ffffffff
+    wrongcolor=d23c3dff
+    modifcolor=d23c3dff
+    bgcolor=000000ff
+    wallpaper_cmd="feh --bg-fill"
+    time_format="%H:%M:%S"
+
+    # read user config
+    USER_CONF="${XDG_CONFIG_HOME:-$HOME/.config}/betterlockscreenrc"
+    if [ -e "$USER_CONF" ]; then
+        # shellcheck source=/dev/null
+        source "$USER_CONF"
+    fi
+
+    if ! cmd_exists "$i3lockcolor_bin"; then
+        echof error "Unable to find i3lock-color binary under detected/configured name: '$i3lockcolor_bin'!"
+        exit
+    fi
+
+    # Please make sure to adjust this before release!
+    VERSION="4.0.0"
+
+    # paths
+    CACHE_DIR="${XDG_CACHE_HOME:-$HOME/.cache}/betterlockscreen"
+    CUR_DIR="$CACHE_DIR/current"
+
+    # wallpaper
+    CUR_W_RESIZE="$CUR_DIR/wall_resize.png"
+    CUR_W_DIM="$CUR_DIR/wall_dim.png"
+    CUR_W_BLUR="$CUR_DIR/wall_blur.png"
+    CUR_W_DIMBLUR="$CUR_DIR/wall_dimblur.png"
+    CUR_W_PIXEL="$CUR_DIR/wall_pixel.png"
+    CUR_W_DIMPIXEL="$CUR_DIR/wall_dimpixel.png"
+    CUR_W_COLOR="$CUR_DIR/wall_color.png"
+
+    # lockscreen
+    CUR_L_RESIZE="$CUR_DIR/lock_resize.png"
+    CUR_L_DIM="$CUR_DIR/lock_dim.png"
+    CUR_L_BLUR="$CUR_DIR/lock_blur.png"
+    CUR_L_DIMBLUR="$CUR_DIR/lock_dimblur.png"
+    CUR_L_PIXEL="$CUR_DIR/lock_pixel.png"
+    CUR_L_DIMPIXEL="$CUR_DIR/lock_dimpixel.png"
+    CUR_L_COLOR="$CUR_DIR/lock_color.png"
+
+    # Original DPMS timeout
+    DEFAULT_TIMEOUT=$(cut -d ' ' -f4 <<< "$(xset q | sed -n '25p')")
+    # Original DPMS status
+    DEFAULT_DPMS=$(xset q | awk '/^[[:blank:]]*DPMS is/ {print $(NF)}')
+
+    # Dunst
+    DUNST_INSTALLED=false && [[ -e "$(command -v dunstctl)" ]] && DUNST_INSTALLED=true
+    DUNST_IS_PAUSED=false && [[ "$DUNST_INSTALLED" == "true" ]] && DUNST_IS_PAUSED=$(dunstctl is-paused)
+
+    # Feh
+    FEH_INSTALLED=false && [[ -e "$(command -v feh)" ]] && FEH_INSTALLED=true
+}
+
+# called before screen is locked
 prelock() {
-	if [ -n "$lock_timeout" ]; then
-		xset dpms "$lock_timeout"
-	fi
-	if [ -n "$(pidof dunst)" ]; then
-		pkill -u "$USER" -USR1 dunst
-	fi
-	if [[ "$runsuspend" = "true" ]]; then
-		lockargs="$lockargs -n"
-	fi
+
+    # set dpms timeout
+    if [ "$DEFAULT_DPMS" == "Enabled" ]; then
+        xset dpms "$lock_timeout"
+    fi
+
+    # If dusnt is already paused don't pause it again
+    if [[ "$DUNST_INSTALLED" == "true" && "$DUNST_IS_PAUSED" == "false" ]]; then
+        dunstctl set-paused true
+    fi
+
+    if [[ "$runsuspend" = "true" ]]; then
+        lockargs="$lockargs -n"
+    fi
 }
 
-
+# lock screen with specified image
 lock() {
-	#$1 image path
 
-	i3lock \
-		-c 00000000 \
-		-t -i "$1" \
-		--time-pos='x+110:h-70' \
-		--date-pos='x+43:h-45' \
-		--clock --date-align 1 --date-str "$locktext" --time-str "$time_format" \
-		--inside-color=$insidecolor --ring-color=$ringcolor --line-uses-inside \
-		--keyhl-color=$keyhlcolor --bshl-color=$bshlcolor --separator-color=$separatorcolor \
-		--insidever-color=$insidevercolor --insidewrong-color=$insidewrongcolor \
-		--ringver-color=$ringvercolor --ringwrong-color=$ringwrongcolor --ind-pos='x+280:h-70' \
-		--radius=20 --ring-width=4 --verif-text='' --wrong-text='' \
-		--verif-color="$verifcolor" --time-color="$timecolor" --date-color="$datecolor" \
-		--time-font="$font" --date-font="$font" --layout-font="$font" --verif-font="$font" --wrong-font="$font" \
-		--noinput-text='' --force-clock --pass-media-keys "$lockargs"
+    echof act "Locking screen..."
 
+    local image="$1"
+    local fontlg=32
+    local fontmd=16
+    local fontsm=12
+
+    $i3lockcolor_bin \
+        --image "$image" \
+        --color "$bgcolor" \
+        --screen "$display_on" \
+        --ind-pos="x+310:y+h-80" \
+        --radius=25 \
+        --ring-width=5 \
+        --inside-color="$insidecolor" \
+        --ring-color="$ringcolor" \
+        --separator-color=$separatorcolor \
+        --insidever-color="$insidevercolor" \
+        --insidewrong-color="$insidewrongcolor" \
+        --ringver-color="$ringvercolor" \
+        --ringwrong-color="$ringwrongcolor" \
+        --line-uses-inside \
+        --keyhl-color="$keyhlcolor" \
+        --bshl-color="$bshlcolor" \
+        --clock --force-clock \
+        --time-pos="ix-265:iy-10" \
+        --time-align 1 \
+        --time-str "$time_format" \
+        --time-color="$timecolor" \
+        --time-font="$font" \
+        --time-size="$fontlg" \
+        --date-str "" \
+        --greeter-pos="ix-265:iy+12" \
+        --greeter-align 1 \
+        --greeter-text "$locktext" \
+        --greeter-color="$greetercolor" \
+        --greeter-font="$font" \
+        --greeter-size="$fontmd" \
+        --layout-pos="ix-265:iy+32" \
+        --layout-align 1 \
+        --layout-color="$layoutcolor" \
+        --layout-font="$font" \
+        --layout-size="$fontsm" \
+        --keylayout "${keylayout:-0}" \
+        --verif-pos="ix+35:iy-34" \
+        --verif-align 2 \
+        --verif-text="Verifying..." \
+        --verif-color="$verifcolor" \
+        --verif-font="$font" \
+        --verif-size="$fontsm" \
+        --wrong-pos="ix+24:iy-34" \
+        --wrong-align 2 \
+        --wrong-text="Failure!" \
+        --wrong-color="$wrongcolor" \
+        --wrong-font="$font" \
+        --wrong-size="$fontsm" \
+        --modif-pos="ix+45:iy+43" \
+        --modif-align 2 \
+        --modif-size="$fontsm" \
+        --modif-color="$modifcolor" \
+        --noinput-text="" \
+        --pass-media-keys \
+        --pass-screen-keys \
+        --pass-volume-keys \
+        --pass-power-keys \
+        "${lockargs[@]}"
+}
+
+# in case image isn't found
+failsafe() {
+
+    echof act "Locking screen... (FAILSAFE MODE)"
+
+    local fontlg=32
+    local fontmd=16
+    local fontsm=12
+
+    $i3lockcolor_bin \
+        --color "$bgcolor" \
+        --ind-pos="x+310:y+h-80" \
+        --radius=25 \
+        --ring-width=5 \
+        --inside-color="$insidecolor" \
+        --ring-color="$ringcolor" \
+        --separator-color=$separatorcolor \
+        --insidever-color="$insidevercolor" \
+        --insidewrong-color="$insidewrongcolor" \
+        --ringver-color="$ringvercolor" \
+        --ringwrong-color="$ringwrongcolor" \
+        --line-uses-inside \
+        --keyhl-color="$keyhlcolor" \
+        --bshl-color="$bshlcolor" \
+        --clock --force-clock \
+        --time-pos="ix-265:iy-10" \
+        --time-align 1 \
+        --time-str "$time_format" \
+        --time-color="$timecolor" \
+        --time-font="$font" \
+        --time-size="$fontlg" \
+        --date-str "" \
+        --greeter-pos="ix-265:iy+12" \
+        --greeter-align 1 \
+        --greeter-text "$locktext" \
+        --greeter-color="$greetercolor" \
+        --greeter-font="$font" \
+        --greeter-size="$fontmd" \
+        --layout-pos="ix-265:iy+32" \
+        --layout-align 1 \
+        --layout-color="$layoutcolor" \
+        --layout-font="$font" \
+        --layout-size="$fontsm" \
+        --keylayout "${keylayout:-0}" \
+        --verif-pos="ix+45:iy-35" \
+        --verif-align 2 \
+        --verif-text="Verifying..." \
+        --verif-color="$verifcolor" \
+        --verif-font="$font" \
+        --verif-size="$fontsm" \
+        --wrong-pos="ix+45:iy-35" \
+        --wrong-align 2 \
+        --wrong-text="Failure!" \
+        --wrong-color="$wrongcolor" \
+        --wrong-font="$font" \
+        --wrong-size="$fontsm" \
+        --modif-pos="ix+45:iy+43" \
+        --modif-align 2 \
+        --modif-size="$fontsm" \
+        --modif-color="$modifcolor" \
+        --noinput-text="" \
+        --pass-media-keys \
+        --pass-screen-keys \
+        --pass-volume-keys \
+        --pass-power-keys
 }
 
 
+# called after screen is unlocked
 postlock() {
-	if [ -n "$lock_timeout" ]; then
-		xset dpms "$default_timeout"
-		if [ "$default_dpms" = "Disabled" ]; then
-			xset -dpms
-		fi
-	fi
-	if [ -n "$(pidof dunst)" ] ; then
-		pkill -u "$USER" -USR2 dunst
-	fi
+
+    # restore default dpms timeout
+    if [ "$DEFAULT_DPMS" == "Enabled" ]; then
+        xset dpms "$DEFAULT_TIMEOUT"
+    fi
+
+    # If dunst already paused before locking don't unpause dunst
+    if [[ "$DUNST_INSTALLED" == "true" && "$DUNST_IS_PAUSED" == "false" ]]; then
+        dunstctl set-paused false
+    fi
 }
 
 
-rec_get_random() {
-	dir="$1"
-	if [ ! -d "$dir" ]; then
-		user_input="$dir"
-		return
-	fi
-	dirs=("$dir"/*)
-	random_dir="${dirs[RANDOM % ${#dirs[@]}]}"
-	rec_get_random "$random_dir"
-}
-
-
+# select effect and lock screen
 lockselect() {
-	prelock
-	case "$1" in
-		dim)
-			# lockscreen with dimmed background
-			lock "$l_dim"
-			;;
 
-		blur)
-			# set lockscreen with blurred background
-			lock "$l_blur"
-			;;
+    echof act "Running prelock..."
+    prelock &
 
-		dimblur)
-			# set lockscreen with dimmed + blurred background
-			lock "$l_dimblur"
-			;;
+    case "$1" in
+        dim) if [ -f "$CUR_L_DIM" ]; then lock "$CUR_L_DIM"; else failsafe; fi ;;
+        blur) if [ -f "$CUR_L_BLUR" ]; then lock "$CUR_L_BLUR"; else failsafe; fi ;;
+        dimblur) if [ -f "$CUR_L_DIMBLUR" ]; then lock "$CUR_L_DIMBLUR"; else failsafe; fi ;;
+        pixel) if [ -f "$CUR_L_PIXEL" ]; then lock "$CUR_L_PIXEL"; else failsafe; fi ;;
+        dimpixel) if [ -f "$CUR_L_DIMPIXEL" ]; then lock "$CUR_L_DIMPIXEL"; else failsafe; fi ;;
+        color) if [ -f "$CUR_L_COLOR" ]; then lock "$CUR_L_COLOR"; else failsafe; fi ;;
+        *) if [ -f "$CUR_L_RESIZE" ]; then lock "$CUR_L_RESIZE"; else failsafe; fi ;;
+    esac
 
-		pixel)
-			# set lockscreen with pixelated background
-			lock "$l_pixel"
-			;;
-
-		*)
-			# default lockscreen
-			lock "$l_resized"
-			;;
-	esac
-	postlock
+    echof act "Running postlock..."
+    postlock &
 }
 
-# $1: number of pixels to convert
-# $2: 1 for width. 2 for height
+# calculate adjustments for hidpi displays
 logical_px() {
-	# get dpi value from xrdb
-	local DPI
-	DPI=$(grep -oP 'Xft.dpi:\s*\K\d+' ~/.Xresources | bc)
-	if [ -z "$DPI" ]; then
-		DPI=$(xdpyinfo | sed -En "s/\s*resolution:\s*([0-9]*)x([0-9]*)\s.*/\\$2/p" | head -n1)
-	fi
 
-	# return the default value if no DPI is set
-	if [ -z "$DPI" ]; then
-		echo "$1"
-	else
-		local SCALE
-		SCALE=$(echo "scale=2; $DPI / 96.0" | bc)
+    # $1: number of pixels to convert
+    # $2: 1 for width. 2 for height
+    local pixels="$1"
+    local direction="$2"
+    local dpi
 
-		# check if scaling the value is worthy
-		if [ "$(echo "$SCALE > 1.25" | bc -l)" -eq 0 ]; then
-			echo "$1"
-		else
-			echo "$SCALE * $1 / 1" | bc
-		fi
-	fi
+    # use DPI set by user in .Xresources
+    dpi=$(xrdb -q | grep -oP '^\s*Xft.dpi:\s*\K\d+' | bc)
+
+    # or get dpi value from xdpyinfo
+    if [ -z "$dpi" ]; then
+        dpi=$(xdpyinfo | sed -En "s/\s*resolution:\s*([0-9]*)x([0-9]*)\s.*/\\$direction/p" | head -n1)
+    fi
+
+    # adjust scaling
+    if [ -n "$dpi" ]; then
+        local scale
+        scale=$(echo "scale=2; $dpi / 96.0" | bc)
+
+        # check if scaling the value is worthy
+        if [ "$(echo "$scale > 1.25" | bc -l)" -eq 0 ]; then
+            echo "$pixels"
+        else
+            echo "$scale * $pixels / 1" | bc
+        fi
+    else
+        # return the default value if no DPI is set
+        echo "$pixels"
+    fi
 }
 
-update() {
-	# use
-	background="$1"
-
-	# default blur level; fallback to 1
-	[[ $blur_level ]] || blur_level=1
-
-	rectangles=" "
-	SR=$(xrandr --query | grep ' connected' | grep -o '[0-9][0-9]*x[0-9][0-9]*[^ ]*')
-	for RES in $SR; do
-		# shellcheck disable=SC2206
-		SRA=(${RES//[x+]/ })
-
-		CX=$((SRA[2] + $(logical_px 25 1)))
-		CY=$((SRA[1] - $(logical_px 30 2)))
-		rectangles+="rectangle $CX,$CY $((CX+$(logical_px 300 1))),$((CY-$(logical_px 80 2))) "
-	done
-
-	# User supplied Image
-	user_image="$folder/user_image.png"
-
-	# create folder
-	if [ ! -d "$folder" ]; then
-		echo "Creating '$folder' directory to cache processed images."
-		mkdir -p "$folder"
-	fi
-
-	# get random file in dir if passed argument is a dir
-	rec_get_random "$background"
-
-	# get user image
-	cp "$user_input" "$user_image"
-	if [ ! -f "$user_image" ]; then
-		echo 'Please specify the path to the image you would like to use'
-		exit 1
-	fi
-
-	# replace orignal with user image
-	cp "$user_image" "$orig_wall"
-	rm "$user_image"
-
-	echo 'Generating alternate images based on the image you specified,'
-	echo 'please wait this might take few seconds...'
-
-	# wallpapers
-
-	echo
-	echo 'Converting provided image to match your resolution...'
-	# resize image
-	convert "$orig_wall" -resize "$res""^" -gravity center -extent "$res" "$resized"
-
-	echo
-	echo 'Applying dim, blur, and pixelation effect to resized image'
-	# dim
-	convert "$resized" -fill black -colorize 40% "$dim"
-
-	# pixel
-	convert -scale 10% -scale 1000% "$resized" "$pixel"
-
-	# blur
-	blur_shrink=$(echo "scale=2; 20 / $blur_level" | bc)
-	blur_sigma=$(echo "scale=2; 0.6 * $blur_level" | bc)
-	convert "$resized" \
-		-filter Gaussian \
-		-resize "$blur_shrink%" \
-		-define "filter:sigma=$blur_sigma" \
-		-resize "$res^" -gravity center -extent "$res" \
-		"$blur"
-
-	# dimblur
-	convert "$dim" \
-		-filter Gaussian \
-		-resize "$blur_shrink%" \
-		-define "filter:sigma=$blur_sigma" \
-		-resize "$res^" -gravity center -extent "$res" \
-		"$dimblur"
-
-	# lockscreen backgrounds
-
-	echo
-	echo 'Caching images for faster screen locking'
-	# resized
-	convert "$resized" -draw "fill #$loginbox $rectangles" "$l_resized"
-
-	# dim
-	convert "$dim" -draw "fill #$loginbox $rectangles" "$l_dim"
-
-	# blur
-	convert "$blur" -draw "fill #$loginbox $rectangles" "$l_blur"
-
-	# dimblur
-	convert "$dimblur" -draw "fill #$loginbox $rectangles" "$l_dimblur"
-
-	# pixel
-	convert "$pixel" -draw "fill #$loginbox $rectangles" "$l_pixel"
-	echo
-	echo 'All required changes have been applied'
+# get total resolution, sets $TOTAL_SIZE
+get_total_size () {
+    TOTAL_SIZE=$(xdpyinfo | grep -w "dimensions" | sed -r 's/^[^0-9]*([0-9]+x[0-9]+).*$/\1/')
 }
 
+# get list of displays, sets $DISPLAY_LIST
+get_display_list () {
+    local count=0
+    mapfile -t displays < <(xrandr --listactivemonitors)
+    for display in "${displays[@]:1}"; do
+        ((count++))
+        display="$(echo "$display" | sed -r 's/\/[0-9]*//g')"
+        IFS=' ' read -r -a info  <<< "$display"
+        DISPLAY_LIST+=("$count ${info[3]} ${info[2]}")
+    done
+}
 
+# populate $WALL_LIST depending on number of displays and images passed
+get_wall_list() {
+
+    local paths=("$@")
+    declare -ga WALL_LIST
+
+    # multiple images and spanning conflict, bail out
+    if [ "${#paths[@]}" -gt 1 ] && [ "$span_image" = true ]; then
+        echof err "Can't use --span with multiple images!"
+        exit 1
+    fi
+
+    # if spanning return 1 image
+    if [ "$span_image" = true ]; then
+        get_image "${paths[0]}"
+
+    # if # paths is 1
+    elif [ "${#paths[@]}" -eq 1 ]; then
+        for ((i=0; i<${#DISPLAY_LIST[@]}; i++)); do
+            # add same image to $WALL_LIST for each display
+            get_image "${paths[0]}"
+        done
+
+    # if # of paths equals # of displays
+    elif [ ${#paths[@]} -eq "${#DISPLAY_LIST[@]}" ]; then
+        for ((i=0; i<${#DISPLAY_LIST[@]}; i++)); do
+            # add each image to $WALL_LIST
+            get_image "${paths[$i]}"
+        done
+
+    # if # of paths differ from # of display, bail out
+    else
+        echof err "${#paths[@]} images provided for ${#DISPLAY_LIST[@]} displays!"
+        exit 1
+    fi
+}
+
+# get image path, append to $WALL_LIST
+get_image() {
+
+    local path="$1"
+
+    # we have a file
+    if [ -f "$path" ]; then
+        WALL_LIST+=("$path")
+        return
+    # we have a directory
+    elif [ -d "$path" ]; then
+        dir=("$path"/*)
+        rdir="${dir[RANDOM % ${#dir[@]}]}"
+        get_image "$rdir" # <-- calls itself
+    # not file or directory, bail out
+    else
+        echof err "invalid path: $path"
+        exit 1
+    fi
+
+}
+
+# scale base image and generate effects
+resize_and_render () {
+
+    local base="$1"
+    local path="$2"
+    local resolution="$3"
+
+    # resource paths
+    RES_RESIZE="$path/resize.png"
+    RES_DIM="$path/dim.png"
+    RES_BLUR="$path/blur.png"
+    RES_DIMBLUR="$path/dimblur.png"
+    RES_PIXEL="$path/pixel.png"
+    RES_DIMPIXEL="$path/dimpixel.png"
+    RES_COLOR="$path/color.png"
+
+    # resize
+    base_resize "$base" "$RES_RESIZE" "$resolution"
+
+    # effects
+    for effect in "${fx_list[@]}"; do
+        case $effect in
+            dim) fx_dim "$RES_RESIZE" "$RES_DIM";;
+            blur) fx_blur "$RES_RESIZE" "$RES_BLUR" "$resolution";;
+            dimblur) fx_dimblur "$RES_RESIZE" "$RES_DIMBLUR" "$resolution";;
+            pixel) fx_pixel "$RES_RESIZE" "$RES_PIXEL";;
+            dimpixel) fx_dimpixel "$RES_RESIZE" "$RES_DIMPIXEL";;
+            color) fx_color "$RES_COLOR" "$resolution";;
+        esac
+    done
+
+}
+
+# apply resize
+base_resize() {
+
+    local input="$1"
+    local output="$2"
+    local size="$3"
+
+    echof act "Resizing base image..."
+    eval convert "$input" \
+        -resize "$size""^" \
+        -gravity center \
+        -extent "$size" \
+        "$output"
+}
+
+# apply dim
+fx_dim() {
+    local input="$1"
+    local output="$2"
+
+    echof act "Rendering 'dim' effect..."
+    eval convert "$input" \
+        -fill black -colorize "$dim_level"% \
+        "$output"
+}
+
+# apply blur
+fx_blur() {
+    local input="$1"
+    local output="$2"
+    local size="$3"
+
+    echof act "Rendering 'blur' effect..."
+    blur_shrink=$(echo "scale=2; 20 / $blur_level" | bc)
+    blur_sigma=$(echo "scale=2; 0.6 * $blur_level" | bc)
+    eval convert "$input" \
+        -filter Gaussian \
+        -resize "$blur_shrink%" \
+        -define "filter:sigma=$blur_sigma" \
+        -resize "$size^" -gravity center -extent "$size" \
+        "$output"
+}
+
+# apply dimblur
+fx_dimblur() {
+    local input="$1"
+    local output="$2"
+    local size="$3"
+
+    echof act "Rendering 'dimblur' effect..."
+    blur_shrink=$(echo "scale=2; 20 / $blur_level" | bc)
+    blur_sigma=$(echo "scale=2; 0.6 * $blur_level" | bc)
+    eval convert "$input" \
+        -fill black -colorize "$dim_level"% \
+        -filter Gaussian \
+        -resize "$blur_shrink%" \
+        -define "filter:sigma=$blur_sigma" \
+        -resize "$size^" -gravity center -extent "$size" \
+        "$output"
+}
+
+# pixelate
+fx_pixel() {
+    local input="$1"
+    local output="$2"
+
+    echof act "Rendering 'pixel' effect..."
+    IFS=',' read -ra range <<< "$pixel_scale"
+    eval convert "$input" \
+        -scale "${range[0]}"% -scale "${range[1]}"% \
+        "$output"
+}
+
+# apply dimpixel
+fx_dimpixel() {
+    local input="$1"
+    local output="$2"
+
+    echof act "Rendering 'dimpixel' effect..."
+    IFS=',' read -ra range <<< "$pixel_scale"
+    eval convert "$input" \
+        -fill black -colorize "$dim_level"% \
+        -scale "${range[0]}"% -scale "${range[1]}"% \
+        "$output"
+}
+
+# create solid color
+fx_color() {
+    local output="$1"
+    local size="$2"
+
+    echof act "Rendering 'color' effect..."
+    eval convert -size "$size" canvas:\#"$solid_color" "$RES_COLOR"
+}
+
+# create loginbox rectangle, set "$RECTANGLE"
+create_loginbox () {
+    RECTANGLE="$CUR_DIR/rectangle.png"
+    local shadow="$CUR_DIR/shadow.png"
+    local width height
+    width=$(logical_px 340 1)
+    height=$(logical_px 100 2)
+    convert -size "$width"x"$height" xc:\#"$loginbox" -fill none "$RECTANGLE"
+    convert "$RECTANGLE" \
+        \( -clone 0 -background \#"$loginshadow" -shadow 100x5+0+0 \) +swap \
+        -background none -layers merge +repage "$shadow"
+    composite -compose Dst_Out -gravity center \
+        "$RECTANGLE" "$shadow" -alpha Set "$shadow"
+    convert "$shadow" "$RECTANGLE" -geometry +10+10 -composite "$RECTANGLE"
+    [[ "$shadow" ]] && rm "$shadow"
+}
+
+# create rectangle with description, set "$DESCRECT"
+create_description () {
+    DESCRECT="$CUR_DIR/description.png"
+    local shadow="$CUR_DIR/shadow.png"
+    convert -background none -family "$(fc-match "$font" family)" -style Normal -pointsize 14 -fill \#"$greetercolor" label:"\ $description\ " -bordercolor \#"$loginbox" -border 10 "$DESCRECT"
+    convert "$DESCRECT" \
+        \( -clone 0 -background \#"$loginshadow" -shadow 100x5+0+0 \) +swap \
+        -background none -layers merge +repage "$shadow"
+    composite -compose Dst_Out -gravity center \
+        "$DESCRECT" "$shadow" -alpha Set "$shadow"
+    convert "$shadow" "$DESCRECT" -geometry +10+10 -composite "$DESCRECT"
+    [[ "$shadow" ]] && rm "$shadow"
+}
+
+# delete and recreate directory
+purge_cache () {
+    if [[ -d "$1" ]]; then
+        rm -r "$1"
+    fi
+    mkdir -p "$1"
+}
+
+# update lockscreen and wallpaper images
+update () {
+
+    local images=("$@")
+
+    echof act "Updating image cache..."
+    mkdir -p "$CACHE_DIR" &>/dev/null
+
+    get_display_list # DISPLAY_LIST
+    get_total_size # TOTAL_SIZE
+    echof info "Detected ${#DISPLAY_LIST[@]} display(s) @ $TOTAL_SIZE total resolution"
+
+    get_wall_list "${images[@]}" # WALL_LIST
+    echof info "Original image(s): ${WALL_LIST[*]##*/}"
+
+    # Prepare description box to obtain width for positioning
+    local descwidth
+    local descheight
+    if [ -z "$description" ]; then
+        descwidth=0
+        descheight=0
+    else
+        create_description
+        descwidth=$(identify -format "%[fx:w]" "$DESCRECT")
+        descheight=$(identify -format "%[fx:h]" "$DESCRECT")
+    fi
+
+    for ((i=0; i<${#DISPLAY_LIST[@]}; i++)); do
+        display="${DISPLAY_LIST[$i]}"
+        USER_WALL="${WALL_LIST[$i]}"
+
+        # escape spaces for IM
+        if echo "$USER_WALL" | grep -E -q "[[:space:]]"; then
+            USER_WALL="${USER_WALL// /\\ }"
+        fi
+
+        IFS=' ' read -r -a dinfo  <<< "$display"
+        local id="${dinfo[0]}"
+        local device="${dinfo[1]}"
+        local geometry="${dinfo[2]}"
+
+        read -r -a cols <<< "${geometry//[x+-]/ }"
+        local position="${geometry#*${cols[1]}}"
+        local resolution="${geometry%${position}*}"
+
+        if [[ $id -eq "$display_on" ]] || [[ "$display_on" -eq 0 ]]; then
+
+            IFS='x' read -r -a dimension <<< "$resolution"
+            res_x="${dimension[0]}"
+            res_y="${dimension[1]}"
+            read -r -a val <<< "${position//[+-]/ }"
+            read -r -a sym <<< "${position//[0-9]/ }"
+            pos_x="${sym[0]}${val[0]}"
+            pos_y="${sym[1]}${val[1]}"
+
+            rect_x=$((pos_x + $(logical_px 15 1)))
+            rect_y=$((pos_y + res_y - $(logical_px 140 2)))
+            positions+=("+$((rect_x))+$((rect_y))")
+
+            descrect_x=$((pos_x + res_x - descwidth - $(logical_px 15 1)))
+            descrect_y=$((pos_y + res_y - descheight - $(logical_px 20 2)))
+            positions_desc+=("+$((descrect_x))+$((descrect_y))")
+        fi
+
+        local path="$CACHE_DIR/$id-$device"
+        purge_cache "$path"
+
+        if [ "$span_image" = true ]; then
+            if [ "$id" -gt 1 ]; then
+                continue
+            else
+                device="[span]"
+                id="*"
+                resolution="$TOTAL_SIZE"
+            fi
+        fi
+
+        echof info "Processing display: $device ($id)"
+        echof info "Resolution: $resolution"
+
+        if [ "$span_image" = true ]; then
+            resize_and_render "$USER_WALL" "$path" "$resolution"
+        else
+            resize_and_render "$USER_WALL" "$path" "$resolution"
+
+            PARAM_RESIZE="$PARAM_RESIZE $RES_RESIZE -geometry $position -composite "
+            PARAM_DIM="$PARAM_DIM $RES_DIM -geometry $position -composite "
+            PARAM_BLUR="$PARAM_BLUR $RES_BLUR -geometry $position -composite "
+            PARAM_DIMBLUR="$PARAM_DIMBLUR $RES_DIMBLUR -geometry $position -composite "
+            PARAM_PIXEL="$PARAM_PIXEL $RES_PIXEL -geometry $position -composite "
+            PARAM_DIMPIXEL="$PARAM_DIMPIXEL $RES_DIMPIXEL -geometry $position -composite "
+            PARAM_COLOR="$PARAM_COLOR $RES_COLOR -geometry $position -composite "
+        fi
+
+    done
+
+    purge_cache "$CUR_DIR"
+
+    if [ "$span_image" = true ] || [ ${#DISPLAY_LIST[@]} -lt 2 ]; then
+        echof act "Rendering final wallpaper images..."
+        [[ -f "$RES_RESIZE" ]] && eval "cp $RES_RESIZE $CUR_W_RESIZE"
+        [[ -f "$RES_DIM" ]] && eval "cp $RES_DIM $CUR_W_DIM"
+        [[ -f "$RES_BLUR" ]] && eval "cp $RES_BLUR $CUR_W_BLUR"
+        [[ -f "$RES_DIMBLUR" ]] && eval "cp $RES_DIMBLUR $CUR_W_DIMBLUR"
+        [[ -f "$RES_PIXEL" ]] && eval "cp $RES_PIXEL $CUR_W_PIXEL"
+        [[ -f "$RES_DIMPIXEL" ]] && eval "cp $RES_DIMPIXEL $CUR_W_DIMPIXEL"
+        [[ -f "$RES_COLOR" ]] && eval "cp $RES_COLOR $CUR_W_COLOR"
+    else
+        echof act "Creating canvas: $TOTAL_SIZE"
+        [[ -f "$RES_RESIZE" ]] && eval "convert -size $TOTAL_SIZE 'xc:blue' $CUR_W_RESIZE"
+        [[ -f "$RES_DIM" ]] && eval "convert -size $TOTAL_SIZE 'xc:blue' $CUR_W_DIM"
+        [[ -f "$RES_BLUR" ]] && eval "convert -size $TOTAL_SIZE 'xc:blue' $CUR_W_BLUR"
+        [[ -f "$RES_DIMBLUR" ]] && eval "convert -size $TOTAL_SIZE 'xc:blue' $CUR_W_DIMBLUR"
+        [[ -f "$RES_PIXEL" ]] && eval "convert -size $TOTAL_SIZE 'xc:blue' $CUR_W_PIXEL"
+        [[ -f "$RES_DIMPIXEL" ]] && eval "convert -size $TOTAL_SIZE 'xc:blue' $CUR_W_DIMPIXEL"
+        [[ -f "$RES_COLOR" ]] && eval "convert -size $TOTAL_SIZE 'xc:blue' $CUR_W_COLOR"
+
+        echof act "Rendering final wallpaper images..."
+        [[ -f "$CUR_W_RESIZE" ]] && eval "convert $CUR_W_RESIZE $PARAM_RESIZE $CUR_W_RESIZE"
+        [[ -f "$CUR_W_DIM" ]] && eval "convert $CUR_W_DIM $PARAM_DIM $CUR_W_DIM"
+        [[ -f "$CUR_W_BLUR" ]] && eval "convert $CUR_W_BLUR $PARAM_BLUR $CUR_W_BLUR"
+        [[ -f "$CUR_W_DIMBLUR" ]] && eval "convert $CUR_W_DIMBLUR $PARAM_DIMBLUR $CUR_W_DIMBLUR"
+        [[ -f "$CUR_W_PIXEL" ]] && eval "convert $CUR_W_PIXEL $PARAM_PIXEL $CUR_W_PIXEL"
+        [[ -f "$CUR_W_DIMPIXEL" ]] && eval "convert $CUR_W_DIMPIXEL $PARAM_DIMPIXEL $CUR_W_DIMPIXEL"
+        [[ -f "$CUR_W_COLOR" ]] && eval "convert $CUR_W_COLOR $PARAM_COLOR $CUR_W_COLOR"
+    fi
+
+    echof act "Rendering final lockscreen images..."
+
+    create_loginbox
+    for pos in "${positions[@]}"; do
+        PARAM_RECT="$PARAM_RECT $RECTANGLE -geometry $pos -composite "
+    done
+
+    if [ -n "$description" ]; then
+        create_description
+        for descpos in "${positions_desc[@]}"; do
+            PARAM_RECT="$PARAM_RECT $DESCRECT -geometry $descpos -composite "
+        done
+    fi
+
+    [[ -f "$CUR_W_RESIZE" ]] && eval "convert $CUR_W_RESIZE $PARAM_RECT $CUR_L_RESIZE"
+    [[ -f "$CUR_W_DIM" ]] && eval "convert $CUR_W_DIM $PARAM_RECT $CUR_L_DIM"
+    [[ -f "$CUR_W_BLUR" ]] && eval "convert $CUR_W_BLUR $PARAM_RECT $CUR_L_BLUR"
+    [[ -f "$CUR_W_DIMBLUR" ]] && eval "convert $CUR_W_DIMBLUR $PARAM_RECT $CUR_L_DIMBLUR"
+    [[ -f "$CUR_W_PIXEL" ]] && eval "convert $CUR_W_PIXEL $PARAM_RECT $CUR_L_PIXEL"
+    [[ -f "$CUR_W_DIMPIXEL" ]] && eval "convert $CUR_W_DIMPIXEL $PARAM_RECT $CUR_L_DIMPIXEL"
+    [[ -f "$CUR_W_COLOR" ]] && eval "convert $CUR_W_COLOR $PARAM_RECT $CUR_L_COLOR"
+
+    [[ "$RECTANGLE" ]] && rm "$RECTANGLE"
+    [[ "$DESCRECT" ]] && rm "$DESCRECT"
+
+    echof ok "Done"
+
+}
+
+# set wallpaper with effect
 wallpaper() {
-	case "$1" in
-		'')
-			# set resized image as wallpaper if no argument is supplied by user
-			wallpaper="$resized"
-			;;
 
-		dim)
-			# set dimmed image as wallpaper
-			wallpaper="$dim"
-			;;
+    local effect="$1"
 
-		blur)
-			# set blurred image as wallpaper
-			wallpaper="$blur"
-			;;
+    # make wallpaper span displays
+    get_display_list
+    if [ "$span_image" = true ] || [[ "${#DISPLAY_LIST[@]}" -gt 1 ]]; then
+        wallpaper_cmd="$wallpaper_cmd --no-xinerama"
+    fi
 
-		dimblur)
-			# set dimmed + blurred image as wallpaper
-			wallpaper="$dimblur"
-			;;
-
-		pixel)
-			# set pixelated image as wallpaper
-			wallpaper="$pixel"
-			;;
-	esac
-	eval "$wallpaper_cmd $wallpaper"
+    # set wallpaper
+    case "$effect" in
+        dim) wallpaper="$CUR_W_DIM";;
+        blur) wallpaper="$CUR_W_BLUR";;
+        dimblur) wallpaper="$CUR_W_DIMBLUR";;
+        pixel) wallpaper="$CUR_W_PIXEL";;
+        dimpixel) wallpaper="$CUR_W_DIMPIXEL";;
+        color) wallpaper="$CUR_W_COLOR";;
+        *) wallpaper="$CUR_W_RESIZE";;
+    esac
+    eval "$wallpaper_cmd $wallpaper"
 }
 
+# wrap echo with fancy prefix
+echof() {
 
-empty() {
-	if [ -f "$l_dim" ]; then
-		echo -e "\nSeems you haven't provided any arguments. See below for usage details."
-	else
-		echo 'Important: Update the image cache (e.g. betterlockscreen -u path/to/image.jpg).'
-		echo
-		echo '		Image cache must be updated to initially configure or update the wallpaper used.'
-	fi
+    local prefix="$1"
+    local message="$2"
 
-	echo
-	echo 'For other sets of options and help, use the help command.'
-	echo 'e.g. betterlockscreen -h or betterlockscreen --help'
-	echo
-	echo 'See: https://github.com/pavanjadhaw/betterlockscreen for additional info...'
-	exit 1
+    case "$prefix" in
+        header) msgpfx="[\e[1;95mB\e[m]";;
+        info) msgpfx="[\e[1;97m=\e[m]";;
+        act) msgpfx="[\e[1;92m*\e[m]";;
+        ok) msgpfx="[\e[1;93m+\e[m]";;
+        error) msgpfx="[\e[1;91m!\e[m]";;
+        *) msgpfx="";;
+    esac
+    echo -e "$msgpfx $message"
 }
 
-
+# help message
 usage() {
-	echo 'Important: Update the image cache (e.g. betterlockscreen -u path/to/image.jpg).'
-	echo '	Image cache must be updated to initially configure or update wallpaper used'
-	echo
-	echo
-	echo 'See: https://github.com/pavanjadhaw/betterlockscreen for additional info...'
-	echo
-	echo
-	echo 'Options:'
-	echo
-	echo '	-h --help'
-	echo '		For help (e.g. betterlockscreen -h or betterlockscreen --help).'
-	echo
-	echo
-	echo '	-u --update'
-	echo '		to update image cache, you should do this before using any other options'
-	echo '		E.g: betterlockscreen -u path/to/image.png when image.png is custom background'
-	echo '		Or you can use betterlockscreen -u path/to/imagedir and a random file will be selected.'
-	echo
-	echo
-	echo '	-l --lock'
-	echo '		to lock screen (e.g. betterlockscreen -l)'
-	echo '		you can also use dimmed or blurred background for lockscreen.'
-	echo '		E.g: betterlockscreen -l dim (for dimmed background)'
-	echo '		E.g: betterlockscreen -l blur (for blurred background)'
-	echo '		E.g: betterlockscreen -l dimblur (for dimmed + blurred background)'
-	echo
-	echo
-	echo '	-s --suspend'
-	echo '		to suspend system and lock screen (e.g. betterlockscreen -s)'
-	echo '		you can also use dimmed or blurred background for lockscreen.'
-	echo '		E.g: betterlockscreen -s dim (for dimmed background)'
-	echo '		E.g: betterlockscreen -s blur (for blurred background)'
-	echo '		E.g: betterlockscreen -s dimblur (for dimmed + blurred background)'
-	echo
-	echo
-	echo '	-w --wall'
-	echo '		you can also set lockscreen background as wallpaper'
-	echo '		to set wallpaper (e.g. betterlockscreen -w or betterlockscreen --wall)'
-	echo '		(The default wallpaper setter is feh, to set your own use the -wc command)'
-	echo '		you can also use dimmed or blurred variants.'
-	echo '		E.g: betterlockscreen -w dim (for dimmed wallpaper)'
-	echo '		E.g: betterlockscreen -w blur (for blurred wallpaper)'
-	echo '		E.g: betterlockscreen -w dimblur (for dimmed + blurred wallpaper)'
-	echo
-	echo
-	echo '	-r --resolution'
-	echo '		to be used after -u'
-	echo '		used to set a custom resolution for the image cache.'
-	echo '		E.g: betterlockscreen -u path/to/image.png -r 1920x1080'
-	echo '		E.g: betterlockscreen -u path/to/image.png --resolution 3840x1080'
-	echo
-	echo
-	echo '	-b --blur'
-	echo '		to be used after -u'
-	echo '		used to set blur intensity. Default to 1.'
-	echo '		E.g: betterlockscreen -u path/to/image.png -b 3'
-	echo '		E.g: betterlockscreen -u path/to/image.png --blur 0.5'
-	echo
-	echo
-	echo '	-t --text'
-	echo '		to set custom lockscreen text (max 31 chars)'
-	echo "		E.g: betterlockscreen -l dim -t \"Don't touch my machine!\""
-	echo '		E.g: betterlockscreen --text "Hi, user!" -s blur'
-	echo
-	echo
-	echo '	--off <timeout>'
-	echo '		to set custom monitor turn off timeout for lockscreen'
-	echo '		timeout is in seconds'
-	echo '		E.g: betterlockscreen -l dim --off 5'
-	echo
-	echo
-	echo '	-wc --wallpaper_cmd <command>'
-	echo '		to set your custom wallpaper setter'
-	echo '		the default is "feh --bg-fill --no-fehbg"'
-	echo '		E.g: betterlockscreen -wc "xwallpaper --zoom" -w'
-	echo
-	echo
-	echo '	-tf --time_format <format>'
-	echo '		to set the time format used by i3lock-color'
-	echo '		see the i3lock or strftime man pages for more details.'
-	echo '		E.g: betterlockscreen -l dim -tf "%I:%M %p"'
+    echo
+    echo "Usage: betterlockscreen [-u <PATH>] [-l <EFFECT>] [-w <EFFECT>]"
+    echo
+    echo "  -u --update <PATH>"
+    echo "      Update lock screen image"
+    echo
+    echo "  -l --lock <EFFECT>"
+    echo "      Lock screen with cached image"
+    echo
+    echo "  -w --wall <EFFECT>"
+    echo "      Set wallpaper with cached image"
+    echo
+    echo "Additional arguments:"
+    echo
+    echo "  --display <N>"
+    echo "      Set display to draw loginbox"
+    echo
+    echo "  --span"
+    echo "      Scale image to span multiple displays"
+    echo
+    echo "  --off <N>"
+    echo "      Turn display off after N minutes"
+    echo
+    echo "  --fx <EFFECT,EFFECT,EFFECT>"
+    echo "      List of effects to generate"
+    echo
+    echo "  --desc <DESCRIPTION>"
+    echo "      Set a description for the new lock screen image"
+    echo "      (Only has an effect in combination with --update)"
+    echo
+    echo "  --show-layout"
+    echo "      Show current keyboard layout"
+    echo
+    echo "  --wallpaper-cmd <command>"
+    echo "      to set your custom wallpaper setter"
+    echo
+    echo "  --time-format <format>"
+    echo "      to set the time format used by i3lock-color"
+    echo
+    echo "  -- <ARGS>"
+    echo "      Pass additional arguments to i3lock"
+    echo
+    echo "Effects arguments:"
+    echo
+    echo "  --dim <N>"
+    echo "      Dim image N percent (0-100)"
+    echo
+    echo "  --blur <N>"
+    echo "      Blur image N amount (0.0-1.0)"
+    echo
+    echo "  --pixel <N,N>"
+    echo "      Pixelate image with N shrink and N grow (unsupported)"
+    echo
+    echo "  --color <HEX>"
+    echo "      Solid color background with HEX"
+    echo
+    exit 1
 }
 
+echof header "Betterlockscreen"
 
-# Options
-[[ "$1" = '' ]] && empty
+init_config
 
+# show usage when no arguments passed
+[[ "$1" = "" ]] && usage
+
+# process arguments
+lockargs=()
 for arg in "$@"; do
-	[[ "${arg:0:1}" = '-' ]] || continue
+    [[ "${arg:0:1}" = '-' ]] || continue
 
-	case "$1" in
-		-h | --help)
-			usage
-			break
-			;;
+    case "$1" in
+        -u | --update)
+            runupdate=true
+            imagepaths+=("$2")
+            shift 2
+            ;;
 
-		-s | --suspend)
-			runsuspend=true
-			;&
+        -s | --suspend)
+            runsuspend=true
+            ;&
 
-		-l | --lock)
-			runlock=true
+        -l | --lock)
+            runlock=true
+            if [[ ${2:0:1} = '-' ]]; then
+                shift 1
+            else
+                lockstyle="$2"; shift 2
+            fi
+            ;;
 
-			if [[ ${2:0:1} = '-' ]]; then
-				shift 1
-			else
-				lockstyle="$2"; shift 2
-			fi
-			;;
+        -w | --wall)
+            wallpaper "$2"
+            shift 2
+            ;;
 
-		-w | --wall | --wallpaper)
-			wallpaper "$2"
-			shift 2
-			;;
+        --wallpaper-cmd)
+            wallpaper_cmd="$2"
+            shift 2
+            ;;
 
-		-u | --update)
-			runupdate=true
-			imagepath="$2"
-			shift 2
-			;;
+        --time-format)
+            time_format="$2"
+            shift 2
+            ;;
 
-		-t | --text)
-			locktext="$2"
-			shift 2
-			;;
+        --display)
+            display_on="$2"
+            shift 2
+            ;;
 
-		--off)
-			lock_timeout="$2"
-			shift 2
-			;;
+        --span)
+            span_image=true
+            shift 1
+            ;;
 
-		-r | --resolution)
-			res="$2"
-			init_filenames "$res" force
-			shift 2
-			;;
+        --off)
+            lock_timeout="$2"
+            shift 2
+            ;;
 
-		-b | --blur)
-			blur_level="$2"
-			shift 2
-			;;
+        --text)
+            locktext="$2"
+            shift 2
+            ;;
 
-		-wc | --wallpaper_cmd)
-			wallpaper_cmd="$2"
-			shift 2
-			;;
+        --show-layout)
+            keylayout="$2";
+            shift 2
+            ;;
 
-		-tf | --time_format)
-			time_format="$2"
-			shift 2
-			;;
+        --fx)
+            IFS=',' read -ra fx_list <<< "$2"
+            shift 2
+            ;;
 
-		--)
-			lockargs="$lockargs ${*:2}"
-			break
-			;;
+        --dim)
+            dim_level="$2"
+            shift 2
+            ;;
 
-		*)
-			echo "invalid argument: $1"
-			break
-			;;
-	esac
+        --blur)
+            blur_level="$2"
+            shift 2
+            ;;
+
+        --pixel)
+            pixel_scale="$2"
+            shift 2
+            ;;
+
+        --color)
+            solid_color="${2//\#/}"
+            shift 2
+            ;;
+
+        --desc)
+            description="$2"
+            shift 2
+            ;;
+
+        -v | --version)
+            echo
+            echo "Betterlockscreen: version: v$VERSION (dunst: $DUNST_INSTALLED, feh: $FEH_INSTALLED)"
+            $i3lockcolor_bin --version
+            convert --version
+
+            if [[ "$DUNST_INSTALLED" == "true" ]]; then
+                dunstctl debug
+            fi
+
+            if [[ "$FEH_INSTALLED" == "true" ]]; then
+                feh --version
+            fi
+
+            break
+            ;;
+
+        --)
+            lockargs+=("${@:2}")
+            break
+            ;;
+
+        -h | --help | *)
+            usage
+            break
+            ;;
+    esac
 done
 
 # Run image generation
-[[ $runupdate ]] && update "$imagepath"
+[[ $runupdate ]] && update "${imagepaths[@]}"
 
 # Activate lockscreen
+[[ $runsuspend ]] || lockargs+=(-n)
 [[ $runlock ]] && lockselect "$lockstyle" && \
-	{ [[ $runsuspend ]] && systemctl suspend; }
+    { [[ $runsuspend ]] && systemctl suspend; }
 
 exit 0
