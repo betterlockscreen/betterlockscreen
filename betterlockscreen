@@ -22,7 +22,7 @@ init_config () {
     description=""
     i3lockcolor_bin="i3lock-color"
 
-    if ! cmd_exists "i3lockcolor_bin" && cmd_exists "i3lock"; then
+    if ! cmd_exists "$i3lockcolor_bin" && cmd_exists "i3lock"; then
         i3lockcolor_bin="i3lock"
     fi
 
