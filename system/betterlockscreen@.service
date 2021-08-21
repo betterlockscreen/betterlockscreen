@@ -5,7 +5,7 @@ Before=suspend.target
 
 [Service]
 User=%I
-Type=forking
+Type=simple
 Environment=DISPLAY=:0
 ExecStart=/usr/local/bin/betterlockscreen --lock
 TimeoutSec=infinity
