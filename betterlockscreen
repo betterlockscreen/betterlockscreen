@@ -64,7 +64,7 @@ init_config () {
     fi
 
     # Please make sure to adjust this before release!
-    VERSION="4.0.0"
+    VERSION="4.0.3-beta1"
 
     # paths
     CACHE_DIR="${XDG_CACHE_HOME:-$HOME/.cache}/betterlockscreen"
