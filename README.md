@@ -151,7 +151,7 @@ Additional arguments:
       Scale image to span multiple displays
 
   --off <N>
-      Turn display off after N minutes
+      Turn display off after N seconds
 
   --fx <EFFECT,EFFECT,EFFECT>
       List of effects to apply
