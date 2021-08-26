@@ -10,6 +10,7 @@ blur_level=1
 pixel_scale=10,1000
 solid_color=333333
 wallpaper_cmd="feh --bg-fill"
+quiet=false
 # i3lockcolor_bin="i3lock-color" # Manually set command for i3lock-color
 
 # default theme
