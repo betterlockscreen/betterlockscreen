@@ -3,12 +3,13 @@
 # Author : Copyright (c) 2017-2022 Pavan Jadhaw, and others (https://github.com/betterlockscreen/betterlockscreen/graphs/contributors)
 # Project Repository : https://github.com/betterlockscreen/betterlockscreen
 
+lockargs=(-n)
+
 cmd_exists () {
     command -v "$1" >/dev/null
 }
 
 init_config () {
-
     # default options
     display_on=0
     span_image=false
@@ -21,6 +22,8 @@ init_config () {
     description=""
     quiet=false
     i3lockcolor_bin="i3lock-color"
+    dunst_enabled=true
+    suspend_command="systemctl suspend"
 
     if ! cmd_exists "$i3lockcolor_bin" && cmd_exists "i3lock"; then
         i3lockcolor_bin="i3lock"
@@ -51,11 +54,19 @@ init_config () {
     wallpaper_cmd="feh --bg-fill"
     time_format="%H:%M:%S"
 
-    # read user config
-    USER_CONF="${XDG_CONFIG_HOME:-$HOME/.config}/betterlockscreenrc"
+    CONF_DIR="${XDG_CONFIG_HOME:-$HOME/.config}"
+    USER_CONF="$CONF_DIR/betterlockscreenrc"
+    SYS_CONF="/etc/betterlockscreenrc"
     if [ -e "$USER_CONF" ]; then
         # shellcheck source=/dev/null
         source "$USER_CONF"
+    elif [ -e "$SYS_CONF" ]; then
+        # shellcheck source=/dev/null
+        source "$SYS_CONF"
+    fi
+
+    if ! cmd_exists "$i3lockcolor_bin" && cmd_exists "i3lock"; then
+        i3lockcolor_bin="i3lock"
     fi
 
     if ! cmd_exists "$i3lockcolor_bin"; then
@@ -94,7 +105,7 @@ init_config () {
     DEFAULT_DPMS=$(xset q | awk '/^[[:blank:]]*DPMS is/ {print $(NF)}')
 
     # Dunst
-    DUNST_INSTALLED=false && [[ -e "$(command -v dunstctl)" ]] && DUNST_INSTALLED=true
+    DUNST_INSTALLED=false && [[ -e "$(command -v dunstctl)" && "$dunst_enabled" == "true" ]] && DUNST_INSTALLED=true
     DUNST_IS_PAUSED=false && [[ "$DUNST_INSTALLED" == "true" ]] && DUNST_IS_PAUSED=$(dunstctl is-paused)
 
     # Feh
@@ -114,8 +125,9 @@ prelock() {
         dunstctl set-paused true
     fi
 
-    if [[ "$runsuspend" = "true" ]]; then
-        lockargs="$lockargs -n"
+    if [ -e "$CONF_DIR/betterlockscreen-pre.sh" ]; then
+        # shellcheck source=/dev/null
+        source "$CONF_DIR/betterlockscreen-pre.sh"
     fi
 }
 
@@ -165,7 +177,6 @@ lock() {
         --layout-color="$layoutcolor" \
         --layout-font="$font" \
         --layout-size="$fontsm" \
-        --keylayout "${keylayout:-0}" \
         --verif-pos="ix+35:iy-34" \
         --verif-align 2 \
         --verif-text="Verifying..." \
@@ -233,7 +244,6 @@ failsafe() {
         --layout-color="$layoutcolor" \
         --layout-font="$font" \
         --layout-size="$fontsm" \
-        --keylayout "${keylayout:-0}" \
         --verif-pos="ix+45:iy-35" \
         --verif-align 2 \
         --verif-text="Verifying..." \
@@ -269,6 +279,11 @@ postlock() {
     # If dunst already paused before locking don't unpause dunst
     if [[ "$DUNST_INSTALLED" == "true" && "$DUNST_IS_PAUSED" == "false" ]]; then
         dunstctl set-paused false
+    fi
+
+    if [ -e "$CONF_DIR/betterlockscreen-post.sh" ]; then
+        # shellcheck source=/dev/null
+        source "$CONF_DIR/betterlockscreen-post.sh"
     fi
 }
 
@@ -831,7 +846,6 @@ init_config
 [[ "$1" = "" ]] && usage
 
 # process arguments
-lockargs=()
 for arg in "$@"; do
     [[ "${arg:0:1}" = '-' ]] || continue
 
@@ -897,7 +911,8 @@ for arg in "$@"; do
             ;;
 
         --show-layout)
-            keylayout="$2";
+            keylayout="$2"
+            lockargs+=(--keylayout "${keylayout:-0}")
             shift 2
             ;;
 
@@ -962,12 +977,8 @@ done
 
 echof header "Betterlockscreen"
 
-# Run image generation
 [[ $runupdate ]] && update "${imagepaths[@]}"
-
-# Activate lockscreen
-[[ $runsuspend ]] || lockargs+=(-n)
 [[ $runlock ]] && lockselect "$lockstyle" && \
-    { [[ $runsuspend ]] && systemctl suspend; }
+    { [[ $runsuspend ]] && $suspend_command; }
 
 exit 0

@@ -1,6 +1,6 @@
 # ~/.config/betterlockscreenrc
 
-# default options
+# general options
 display_on=0
 span_image=false
 lock_timeout=300
@@ -11,7 +11,6 @@ pixel_scale=10,1000
 solid_color=333333
 wallpaper_cmd="feh --bg-fill"
 quiet=false
-# i3lockcolor_bin="i3lock-color" # Manually set command for i3lock-color
 
 # default theme
 loginbox=00000066
@@ -35,3 +34,20 @@ verifcolor=ffffffff
 wrongcolor=d23c3dff
 modifcolor=d23c3dff
 bgcolor=000000ff
+time_format="%H:%M:%S"
+
+# update options (only used during -u)
+description=""
+
+#
+# expert options (change at own risk!)
+#
+dunst_enabled=true
+i3lockcolor_bin="i3lock-color"
+suspend_command="systemctl suspend"
+
+# i3lock-color - custom arguments
+# example (overwriting the default "(-n)")
+# lockargs=()
+# example (appending new argument)
+# lockargs+=(--ignore-empty-password)
