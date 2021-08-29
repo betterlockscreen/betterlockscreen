@@ -20,7 +20,7 @@ init_config () {
     pixel_scale=10,1000
     solid_color=333333
     description=""
-    quiet="false"
+    quiet=false
     i3lockcolor_bin="i3lock-color"
 
     if ! cmd_exists "$i3lockcolor_bin" && cmd_exists "i3lock"; then
