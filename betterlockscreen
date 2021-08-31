@@ -20,6 +20,7 @@ init_config () {
     pixel_scale=10,1000
     solid_color=333333
     description=""
+    quiet=false
     i3lockcolor_bin="i3lock-color"
 
     if ! cmd_exists "$i3lockcolor_bin" && cmd_exists "i3lock"; then
@@ -764,13 +765,16 @@ echof() {
         error) msgpfx="[\e[1;91m!\e[m]";;
         *) msgpfx="";;
     esac
-    echo -e "$msgpfx $message"
+    [ "$quiet" != true ] && echo -e "$msgpfx $message"
 }
 
 # help message
 usage() {
     echo
     echo "Usage: betterlockscreen [-u <PATH>] [-l <EFFECT>] [-w <EFFECT>]"
+    echo
+    echo "  -q --quiet"
+    echo "      Do not produce any text output on locking"
     echo
     echo "  -u --update <PATH>"
     echo "      Update lock screen image"
@@ -828,8 +832,6 @@ usage() {
     exit 1
 }
 
-echof header "Betterlockscreen"
-
 init_config
 
 # show usage when no arguments passed
@@ -841,6 +843,12 @@ for arg in "$@"; do
     [[ "${arg:0:1}" = '-' ]] || continue
 
     case "$1" in
+
+        -q | --quiet)
+            quiet=true
+            shift
+            ;;
+
         -u | --update)
             runupdate=true
             imagepaths+=("$2")
@@ -958,6 +966,8 @@ for arg in "$@"; do
             ;;
     esac
 done
+
+echof header "Betterlockscreen"
 
 # Run image generation
 [[ $runupdate ]] && update "${imagepaths[@]}"
