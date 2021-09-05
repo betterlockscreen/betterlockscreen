@@ -315,13 +315,7 @@ logical_px() {
     if [ -n "$dpi" ]; then
         local scale
         scale=$(echo "scale=2; $dpi / 96.0" | bc)
-
-        # check if scaling the value is worthy
-        if [ "$(echo "$scale > 1.25" | bc -l)" -eq 0 ]; then
-            echo "$pixels"
-        else
-            echo "$scale * $pixels / 1" | bc
-        fi
+        echo "$scale * $pixels / 1" | bc
     else
         # return the default value if no DPI is set
         echo "$pixels"
