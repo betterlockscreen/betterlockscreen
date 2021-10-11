@@ -1,0 +1,28 @@
+name: Feature Request
+description: You have an idea for extending?
+labels: ["feature-request"]
+body:
+  - type: markdown
+    attributes:
+      value: Thank you for taking the time to share your idea's with us!
+  - type: textarea
+    id: feature-request
+    attributes:
+      label: Feature Request
+      description: Whats your idea?
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: Implementation
+      description: Can you give us your vision, how you would implement it? (if possible)
+  - type: dropdown
+    id: contribute
+    attributes:
+      label: Have you planned working on this feature?
+      options:
+        - "Yes"
+        - "No"
+    validations:
+      required: true
