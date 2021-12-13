@@ -52,7 +52,6 @@ init_config () {
     modifcolor=d23c3dff
     bgcolor=000000ff
     wallpaper_cmd="feh --bg-fill"
-    time_format="%H:%M:%S"
 
     # read user config
     USER_CONF="${XDG_CONFIG_HOME:-$HOME/.config}/betterlockscreenrc"
@@ -229,7 +228,10 @@ failsafe() {
         --time-color="$timecolor" \
         --time-font="$font" \
         --time-size="$fontlg" \
-        --date-str "" \
+        --date-color="$datecolor" \
+        --date-font="$font" \
+        --date-size="$fontlg" \
+        --date-str="$date_format" \
         --greeter-pos="ix-265:iy+12" \
         --greeter-align 1 \
         --greeter-text "$locktext" \
