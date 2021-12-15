@@ -815,6 +815,9 @@ usage() {
     echo "  --time-format <format>"
     echo "      to set the time format used by i3lock-color"
     echo
+    echo "  --date-format <format>"
+    echo "      to set the date format used by i3lock-color"
+    echo
     echo "  -- <ARGS>"
     echo "      Pass additional arguments to i3lock"
     echo
@@ -883,6 +886,11 @@ for arg in "$@"; do
 
         --time-format)
             time_format="$2"
+            shift 2
+            ;;
+
+        --date-format)
+            date_format="$2"
             shift 2
             ;;
 
