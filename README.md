@@ -156,6 +156,9 @@ Additional arguments:
   --fx <EFFECT,EFFECT,EFFECT>
       List of effects to apply
 
+  --date-format <format>"
+      to set the date format used by i3lock-color"
+
   -- <ARGS>
       Pass following arguments to i3lock
 
