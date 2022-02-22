@@ -1,8 +1,7 @@
 #!/usr/bin/env bash
 
-# Author : Copyright (c) 2017-2021 Pavan Jadhaw, and others (https://github.com/pavanjadhaw/betterlockscreen/graphs/contributors)
-# Github Profile : https://github.com/pavanjadhaw
-# Project Repository : https://github.com/pavanjadhaw/betterlockscreen
+# Author : Copyright (c) 2017-2022 Pavan Jadhaw, and others (https://github.com/betterlockscreen/betterlockscreen/graphs/contributors)
+# Project Repository : https://github.com/betterlockscreen/betterlockscreen
 
 cmd_exists () {
     command -v "$1" >/dev/null

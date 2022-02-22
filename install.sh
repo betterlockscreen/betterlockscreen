@@ -78,7 +78,7 @@ fi
 
 BLI_TEMP_DIR=$(mktemp -d)
 
-git clone -b "$VERSION" https://github.com/pavanjadhaw/betterlockscreen "$BLI_TEMP_DIR" &>/dev/null
+git clone -b "$VERSION" https://github.com/betterlockscreen/betterlockscreen "$BLI_TEMP_DIR" &>/dev/null
 cd "$BLI_TEMP_DIR" || exit 1
 
 echof info "Installing Betterlockscreen to '$BL_INSTALL_DIR'... "
