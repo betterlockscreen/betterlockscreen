@@ -606,8 +606,8 @@ update () {
         local geometry="${dinfo[2]}"
 
         read -r -a cols <<< "${geometry//[x+-]/ }"
-        local position="${geometry#*${cols[1]}}"
-        local resolution="${geometry%${position}*}"
+        local position="${geometry#*"${cols[1]}"}"
+        local resolution="${geometry%"${position}"*}"
 
         if [[ $id -eq "$display_on" ]] || [[ "$display_on" -eq 0 ]]; then
 
