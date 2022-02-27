@@ -787,7 +787,7 @@ usage() {
     echo "      Scale image to span multiple displays"
     echo
     echo "  --off <N>"
-    echo "      Turn display off after N minutes"
+    echo "      Turn display off after N seconds"
     echo
     echo "  --fx <EFFECT,EFFECT,EFFECT>"
     echo "      List of effects to generate"
