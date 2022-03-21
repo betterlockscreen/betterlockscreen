@@ -269,7 +269,7 @@ Resources and more informations:
 
 ---
 
-## Countributing
+## Contributing
 
 Please see [CONTRIBUTING.md](CONTRIBUTING.md).
 
