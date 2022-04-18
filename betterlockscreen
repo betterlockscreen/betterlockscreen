@@ -12,6 +12,7 @@ init_config () {
     # default options
     display_on=0
     span_image=false
+    prefer_closest_resolution=false
     lock_timeout=300
     fx_list=(dim blur dimblur pixel dimpixel color)
     dim_level=40
@@ -358,14 +359,14 @@ get_wall_list() {
     elif [ "${#paths[@]}" -eq 1 ]; then
         for ((i=0; i<${#DISPLAY_LIST[@]}; i++)); do
             # add same image to $WALL_LIST for each display
-            get_image "${paths[0]}"
+            get_image "${paths[0]}" "${DISPLAY_LIST[$i]}"
         done
 
     # if # of paths equals # of displays
     elif [ ${#paths[@]} -eq "${#DISPLAY_LIST[@]}" ]; then
         for ((i=0; i<${#DISPLAY_LIST[@]}; i++)); do
             # add each image to $WALL_LIST
-            get_image "${paths[$i]}"
+            get_image "${paths[0]}" "${DISPLAY_LIST[$i]}"
         done
 
     # if # of paths differ from # of display, bail out
@@ -379,6 +380,7 @@ get_wall_list() {
 get_image() {
 
     local path="$1"
+    local display="$2"
 
     # we have a file
     if [ -f "$path" ]; then
@@ -386,9 +388,51 @@ get_image() {
         return
     # we have a directory
     elif [ -d "$path" ]; then
-        dir=("$path"/*)
-        rdir="${dir[RANDOM % ${#dir[@]}]}"
-        get_image "$rdir" # <-- calls itself
+        # prefer closest scale
+        if [ "$prefer_closest_resolution" = true ] && [ -n "$display" ]; then
+            local width height rimg stage images
+
+            IFS=' ' read -r -a info  <<< "$display"
+            IFS='x' read -r width height <<< "${info[2]//+*/''}"
+
+            # there might be non images in path -> push errors to nul
+            images=$(identify -format "%w %h %d/%f\n" "$path"/* 2>/dev/null)
+
+            # if possible, use exact resolution
+            stage=exact
+            rimg=$(awk -vwidth="$width" -vheight="$height" '$1==width && $2==height { print $3 }' <<< "$images")
+
+            # second best is same ratio
+            if [ -z "$rimg" ]; then
+                stage=ratio
+                rimg=$(awk -vwidth="$width" -vheight="$height" '$1/$2==width/height { print $3 }' <<< "$images")
+            fi
+
+            # third best is same orientation
+            if [ -z "$rimg" ]; then
+                stage=orientation
+                # landscape
+                if [ "$width" -ge "$height" ]; then
+                    rimg=$(awk '$1 >= $2 { print $3 }' <<< "$images")
+                # portrait
+                else
+                    rimg=$(awk '$1 < $2 < 1 { print $3 }' <<< "$images")
+                fi
+            fi
+
+            if [ -n "$rimg" ]; then
+                echof info "Prefer closest resolution: $stage"
+                get_image "$(echo "$rimg" | shuf -n 1)" # <-- calls itself
+            else
+                echof info "Prefer closest resolution: failed"
+                get_image "$path" # <-- calls itself with path if we don't have close resolution
+            fi
+        # traditional random image and scaling
+        else
+            dir=("$path"/*)
+            rdir="${dir[RANDOM % ${#dir[@]}]}"
+            get_image "$rdir" # <-- calls itself
+        fi
     # not file or directory, bail out
     else
         echof err "invalid path: $path"
@@ -786,6 +830,10 @@ usage() {
     echo "  --span"
     echo "      Scale image to span multiple displays"
     echo
+    echo "  --prefer-closest-resolution"
+    echo "      Try to use images with exact resolution, same ratio"
+    echo "      or at least same orientation."
+    echo
     echo "  --off <N>"
     echo "      Turn display off after N seconds"
     echo
@@ -883,6 +931,11 @@ for arg in "$@"; do
 
         --span)
             span_image=true
+            shift 1
+            ;;
+
+        --prefer-closest-resolution)
+            prefer_closest_resolution=true
             shift 1
             ;;
 

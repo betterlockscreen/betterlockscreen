@@ -150,6 +150,10 @@ Additional arguments:
   --span
       Scale image to span multiple displays
 
+  --prefer-closest-resolution
+      Try to use images with exact resolution, same ratio
+      or at least same orientation.
+
   --off <N>
       Turn display off after N seconds
 
@@ -190,6 +194,9 @@ Effects arguments:
 
 5. Update image cache with different background images
 `betterlockscreen -u ~/Wallpapers/image1.png -u ~/Wallpapers/image2.png`
+
+6. Update image cache with random image and prefer closest resolution/orientation
+`betterlockscreen -u ~/Wallpapers/ --prefer-closest-resolution`
 
 6. Lock screen with blur effect
 `betterlockscreen --lock blur`
