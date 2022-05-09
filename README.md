@@ -6,8 +6,8 @@
   <a href="https://github.com/pavanjadhaw/betterlockscreen/releases"><img alt="GitHub release (latest by date)" src="https://img.shields.io/github/v/release/pavanjadhaw/betterlockscreen?label=Stable&style=for-the-badge"></a>
   <a href="https://github.com/pavanjadhaw/betterlockscreen/actions/workflows/main.yml?query=branch%3Amain"><img alt="GitHub Workflow Status (main)" src="https://img.shields.io/github/workflow/status/pavanjadhaw/betterlockscreen/Main/main?label=main&style=for-the-badge"></a>
   <a href="https://github.com/pavanjadhaw/betterlockscreen/actions/workflows/main.yml?query=branch%3Anext"><img alt="GitHub Workflow Status (next)" src="https://img.shields.io/github/workflow/status/pavanjadhaw/betterlockscreen/Main/next?label=next&style=for-the-badge"></a>
-  <a href="https://github.com/pavanjadhaw/betterlockscreen/milestone/²"><img alt="GitHub milestone" src="https://img.shields.io/github/milestones/progress/pavanjadhaw/betterlockscreen/2?style=for-the-badge"></a>
-  <a href="https://github.com/pavanjadhaw/betterlockscreen/compare/v4.0.3...next"><img alt="GitHub commits since latest release (by date) for a branch" src="https://img.shields.io/github/commits-since/pavanjadhaw/betterlockscreen/v4.0.3/next?style=for-the-badge"></a>
+  <a href="https://github.com/pavanjadhaw/betterlockscreen/milestone/2"><img alt="GitHub milestone" src="https://img.shields.io/github/milestones/progress/pavanjadhaw/betterlockscreen/2?style=for-the-badge"></a>
+  <a href="https://github.com/pavanjadhaw/betterlockscreen/compare/v4.0.4...next"><img alt="GitHub commits since latest release (by date) for a branch" src="https://img.shields.io/github/commits-since/pavanjadhaw/betterlockscreen/v4.0.4/next?style=for-the-badge"></a>
   <a href="https://github.com/pavanjadhaw/betterlockscreen/blob/main/LICENSE"><img src="https://img.shields.io/github/license/pavanjadhaw/betterlockscreen.svg?style=for-the-badge"></a>
 </div>
 
@@ -269,7 +269,7 @@ Resources and more informations:
 
 ---
 
-## Countributing
+## Contributing
 
 Please see [CONTRIBUTING.md](CONTRIBUTING.md).
 

@@ -1,8 +1,7 @@
 #!/usr/bin/env bash
 
-# Author : Copyright (c) 2017-2021 Pavan Jadhaw, and others (https://github.com/pavanjadhaw/betterlockscreen/graphs/contributors)
-# Github Profile : https://github.com/pavanjadhaw
-# Project Repository : https://github.com/pavanjadhaw/betterlockscreen
+# Author : Copyright (c) 2017-2022 Pavan Jadhaw, and others (https://github.com/betterlockscreen/betterlockscreen/graphs/contributors)
+# Project Repository : https://github.com/betterlockscreen/betterlockscreen
 
 cmd_exists () {
     command -v "$1" >/dev/null
@@ -20,6 +19,7 @@ init_config () {
     pixel_scale=10,1000
     solid_color=333333
     description=""
+    quiet=false
     i3lockcolor_bin="i3lock-color"
 
     if ! cmd_exists "$i3lockcolor_bin" && cmd_exists "i3lock"; then
@@ -64,7 +64,7 @@ init_config () {
     fi
 
     # Please make sure to adjust this before release!
-    VERSION="4.0.3"
+    VERSION="4.0.4"
 
     # paths
     CACHE_DIR="${XDG_CACHE_HOME:-$HOME/.cache}/betterlockscreen"
@@ -277,7 +277,7 @@ postlock() {
 lockselect() {
 
     echof act "Running prelock..."
-    prelock &
+    prelock
 
     case "$1" in
         dim) if [ -f "$CUR_L_DIM" ]; then lock "$CUR_L_DIM"; else failsafe; fi ;;
@@ -290,7 +290,7 @@ lockselect() {
     esac
 
     echof act "Running postlock..."
-    postlock &
+    postlock
 }
 
 # calculate adjustments for hidpi displays
@@ -313,14 +313,8 @@ logical_px() {
     # adjust scaling
     if [ -n "$dpi" ]; then
         local scale
-        scale=$(echo "scale=2; $dpi / 96.0" | bc)
-
-        # check if scaling the value is worthy
-        if [ "$(echo "$scale > 1.25" | bc -l)" -eq 0 ]; then
-            echo "$pixels"
-        else
-            echo "$scale * $pixels / 1" | bc
-        fi
+        scale=$(echo "scale=3; $dpi / 96.0" | bc)
+        echo "$scale * $pixels / 1" | bc
     else
         # return the default value if no DPI is set
         echo "$pixels"
@@ -612,8 +606,8 @@ update () {
         local geometry="${dinfo[2]}"
 
         read -r -a cols <<< "${geometry//[x+-]/ }"
-        local position="${geometry#*${cols[1]}}"
-        local resolution="${geometry%${position}*}"
+        local position="${geometry#*"${cols[1]}"}"
+        local resolution="${geometry%"${position}"*}"
 
         if [[ $id -eq "$display_on" ]] || [[ "$display_on" -eq 0 ]]; then
 
@@ -764,13 +758,16 @@ echof() {
         error) msgpfx="[\e[1;91m!\e[m]";;
         *) msgpfx="";;
     esac
-    echo -e "$msgpfx $message"
+    [ "$quiet" != true ] && echo -e "$msgpfx $message"
 }
 
 # help message
 usage() {
     echo
     echo "Usage: betterlockscreen [-u <PATH>] [-l <EFFECT>] [-w <EFFECT>]"
+    echo
+    echo "  -q --quiet"
+    echo "      Do not produce any text output on locking"
     echo
     echo "  -u --update <PATH>"
     echo "      Update lock screen image"
@@ -790,7 +787,7 @@ usage() {
     echo "      Scale image to span multiple displays"
     echo
     echo "  --off <N>"
-    echo "      Turn display off after N minutes"
+    echo "      Turn display off after N seconds"
     echo
     echo "  --fx <EFFECT,EFFECT,EFFECT>"
     echo "      List of effects to generate"
@@ -828,8 +825,6 @@ usage() {
     exit 1
 }
 
-echof header "Betterlockscreen"
-
 init_config
 
 # show usage when no arguments passed
@@ -841,6 +836,12 @@ for arg in "$@"; do
     [[ "${arg:0:1}" = '-' ]] || continue
 
     case "$1" in
+
+        -q | --quiet)
+            quiet=true
+            shift
+            ;;
+
         -u | --update)
             runupdate=true
             imagepaths+=("$2")
@@ -958,6 +959,8 @@ for arg in "$@"; do
             ;;
     esac
 done
+
+echof header "Betterlockscreen"
 
 # Run image generation
 [[ $runupdate ]] && update "${imagepaths[@]}"
