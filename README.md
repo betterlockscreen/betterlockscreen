@@ -85,12 +85,12 @@ We have created an automatic [install-script](https://github.com/pavanjadhaw/bet
 
 For system-installation:
 ```sh
-wget https://git.io/JZyxV -O - -q | bash -- system
+wget https://raw.githubusercontent.com/betterlockscreen/betterlockscreen/next/install.sh -O - -q | sudo bash -s system
 ```
 
 For user-installation:
 ```sh
-wget https://git.io/JZyxV -O - -q | bash -- user
+wget https://raw.githubusercontent.com/betterlockscreen/betterlockscreen/next/install.sh -O - -q | bash -s user
 ```
 
 Please note: The [git.io](https://git.io/)-URL is just a short-url for the [main/install.sh](https://raw.githubusercontent.com/pavanjadhaw/betterlockscreen/main/install.sh).
