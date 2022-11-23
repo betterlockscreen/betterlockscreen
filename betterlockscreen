@@ -113,10 +113,6 @@ prelock() {
     if [[ "$DUNST_INSTALLED" == "true" && "$DUNST_IS_PAUSED" == "false" ]]; then
         dunstctl set-paused true
     fi
-
-    if [[ "$runsuspend" = "true" ]]; then
-        lockargs="$lockargs -n"
-    fi
 }
 
 # lock screen with specified image
@@ -274,11 +270,23 @@ postlock() {
 
 
 # select effect and lock screen
-lockselect() {
-
+lockinit() {
     echof act "Running prelock..."
     prelock
 
+    if [[ $runsuspend ]]; then 
+        lockselect "$@" &
+        systemctl suspend
+        wait $!
+    else
+        lockselect "$@"
+    fi
+
+    echof act "Running postlock..."
+    postlock
+}
+
+lockselect() {
     case "$1" in
         dim) if [ -f "$CUR_L_DIM" ]; then lock "$CUR_L_DIM"; else failsafe; fi ;;
         blur) if [ -f "$CUR_L_BLUR" ]; then lock "$CUR_L_BLUR"; else failsafe; fi ;;
@@ -288,9 +296,6 @@ lockselect() {
         color) if [ -f "$CUR_L_COLOR" ]; then lock "$CUR_L_COLOR"; else failsafe; fi ;;
         *) if [ -f "$CUR_L_RESIZE" ]; then lock "$CUR_L_RESIZE"; else failsafe; fi ;;
     esac
-
-    echof act "Running postlock..."
-    postlock
 }
 
 # calculate adjustments for hidpi displays
@@ -966,8 +971,7 @@ echof header "Betterlockscreen"
 [[ $runupdate ]] && update "${imagepaths[@]}"
 
 # Activate lockscreen
-[[ $runsuspend ]] || lockargs+=(-n)
-[[ $runlock ]] && lockselect "$lockstyle" && \
-    { [[ $runsuspend ]] && systemctl suspend; }
+lockargs+=(-n)
+[[ $runlock ]] && lockinit "$lockstyle" 
 
 exit 0
