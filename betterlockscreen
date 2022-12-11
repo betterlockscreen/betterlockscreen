@@ -53,9 +53,13 @@ init_config () {
 
     # read user config
     USER_CONF="${XDG_CONFIG_HOME:-$HOME/.config}/betterlockscreenrc"
+    XDG_USER_CONF="${XDG_CONFIG_HOME:-$HOME/.config}/betterlockscreen/betterlockscreenrc"
     if [ -e "$USER_CONF" ]; then
         # shellcheck source=/dev/null
         source "$USER_CONF"
+    elif [ -e "$XDG_USER_CONF" ]; then
+        # shellcheck source=/dev/null
+        source "$XDG_USER_CONF"
     fi
 
     if ! cmd_exists "$i3lockcolor_bin"; then
