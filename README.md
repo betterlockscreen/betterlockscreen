@@ -2,21 +2,21 @@
 > fast and sweet looking lockscreen for linux systems with effects!
 
 <div align="center">
-  <a href="https://github.com/pavanjadhaw/betterlockscreen/releases"><img alt="GitHub release (latest by date including pre-releases)" src="https://img.shields.io/github/v/release/pavanjadhaw/betterlockscreen?include_prereleases&label=latest&style=for-the-badge"></a>
-  <a href="https://github.com/pavanjadhaw/betterlockscreen/releases"><img alt="GitHub release (latest by date)" src="https://img.shields.io/github/v/release/pavanjadhaw/betterlockscreen?label=Stable&style=for-the-badge"></a>
-  <a href="https://github.com/pavanjadhaw/betterlockscreen/actions/workflows/main.yml?query=branch%3Amain"><img alt="GitHub Workflow Status (main)" src="https://img.shields.io/github/workflow/status/pavanjadhaw/betterlockscreen/Main/main?label=main&style=for-the-badge"></a>
-  <a href="https://github.com/pavanjadhaw/betterlockscreen/actions/workflows/main.yml?query=branch%3Anext"><img alt="GitHub Workflow Status (next)" src="https://img.shields.io/github/workflow/status/pavanjadhaw/betterlockscreen/Main/next?label=next&style=for-the-badge"></a>
-  <a href="https://github.com/pavanjadhaw/betterlockscreen/milestone/²"><img alt="GitHub milestone" src="https://img.shields.io/github/milestones/progress/pavanjadhaw/betterlockscreen/2?style=for-the-badge"></a>
-  <a href="https://github.com/pavanjadhaw/betterlockscreen/compare/v4.0.3...next"><img alt="GitHub commits since latest release (by date) for a branch" src="https://img.shields.io/github/commits-since/pavanjadhaw/betterlockscreen/v4.0.3/next?style=for-the-badge"></a>
-  <a href="https://github.com/pavanjadhaw/betterlockscreen/blob/main/LICENSE"><img src="https://img.shields.io/github/license/pavanjadhaw/betterlockscreen.svg?style=for-the-badge"></a>
+  <a href="https://github.com/betterlockscreen/betterlockscreen/releases"><img alt="GitHub release (latest by date including pre-releases)" src="https://img.shields.io/github/v/release/betterlockscreen/betterlockscreen?include_prereleases&label=latest&style=for-the-badge"></a>
+  <a href="https://github.com/betterlockscreen/betterlockscreen/releases"><img alt="GitHub release (latest by date)" src="https://img.shields.io/github/v/release/betterlockscreen/betterlockscreen?label=Stable&style=for-the-badge"></a>
+  <a href="https://github.com/betterlockscreen/betterlockscreen/actions/workflows/main.yml?query=branch%3Amain"><img alt="GitHub Workflow Status (main)" src="https://img.shields.io/github/workflow/status/betterlockscreen/betterlockscreen/Main/main?label=main&style=for-the-badge"></a>
+  <a href="https://github.com/betterlockscreen/betterlockscreen/actions/workflows/main.yml?query=branch%3Anext"><img alt="GitHub Workflow Status (next)" src="https://img.shields.io/github/workflow/status/betterlockscreen/betterlockscreen/Main/next?label=next&style=for-the-badge"></a>
+  <a href="https://github.com/betterlockscreen/betterlockscreen/milestone/2"><img alt="GitHub milestone" src="https://img.shields.io/github/milestones/progress/betterlockscreen/betterlockscreen/2?style=for-the-badge"></a>
+  <a href="https://github.com/betterlockscreen/betterlockscreen/compare/v4.0.4...next"><img alt="GitHub commits since latest release (by date) for a branch" src="https://img.shields.io/github/commits-since/betterlockscreen/betterlockscreen/v4.0.4/next?style=for-the-badge"></a>
+  <a href="https://github.com/betterlockscreen/betterlockscreen/blob/main/LICENSE"><img src="https://img.shields.io/github/license/betterlockscreen/betterlockscreen.svg?style=for-the-badge"></a>
 </div>
 
 <div align="center">
   <h2>You want to support us?</h2>
 
-  <a href="https://github.com/pavanjadhaw/betterlockscreen/stargazers"><img alt="GitHub Repo stars" src="https://img.shields.io/github/stars/pavanjadhaw/betterlockscreen?style=social"></a>
-  <a href="https://github.com/pavanjadhaw/betterlockscreen/fork"><img alt="GitHub forks" src="https://img.shields.io/github/forks/pavanjadhaw/betterlockscreen?style=social"></a>
-  <a href="https://www.codetriage.com/pavanjadhaw/betterlockscreen"><img src="https://www.codetriage.com/pavanjadhaw/betterlockscreen/badges/users.svg"></a>
+  <a href="https://github.com/betterlockscreen/betterlockscreen/stargazers"><img alt="GitHub Repo stars" src="https://img.shields.io/github/stars/betterlockscreen/betterlockscreen?style=social"></a>
+  <a href="https://github.com/betterlockscreen/betterlockscreen/fork"><img alt="GitHub forks" src="https://img.shields.io/github/forks/betterlockscreen/betterlockscreen?style=social"></a>
+  <a href="https://www.codetriage.com/betterlockscreen/betterlockscreen"><img src="https://www.codetriage.com/betterlockscreen/betterlockscreen/badges/users.svg"></a>
 </div>
 <br />
 
@@ -78,32 +78,30 @@ If you are using **Void Linux**, you can install [betterlockscreen](https://gith
 
 ### Installation Script
 
-We have created an automatic [install-script](https://github.com/pavanjadhaw/betterlockscreen/blob/main/install.sh) for Betterlockscreen. The script is very simple and takes three parameters:
+We have created an automatic [install-script](https://github.com/betterlockscreen/betterlockscreen/blob/main/install.sh) for Betterlockscreen. The script is very simple and takes three parameters:
   * `<install-mode>`: (string) 'user' installs to '~/.local/bin/', 'system' installs to '/usr/local/bin'
   * `[<version>]`: (string) defaults to 'latest' which will determinate the latest tag from git or specified branch/tag
   * `[<systemd-service>]`: (boolean) defaults to 'false' - Whether to copy and enable system-service.
 
 For system-installation:
 ```sh
-wget https://git.io/JZyxV -O - -q | bash -- system
+wget https://raw.githubusercontent.com/betterlockscreen/betterlockscreen/main/install.sh -O - -q | sudo bash -s system
 ```
 
 For user-installation:
 ```sh
-wget https://git.io/JZyxV -O - -q | bash -- user
+wget https://raw.githubusercontent.com/betterlockscreen/betterlockscreen/main/install.sh -O - -q | bash -s user
 ```
-
-Please note: The [git.io](https://git.io/)-URL is just a short-url for the [main/install.sh](https://raw.githubusercontent.com/pavanjadhaw/betterlockscreen/main/install.sh).
 
 ### Manual Installation
 
-Ỳou can download the latest release [here](https://github.com/pavanjadhaw/betterlockscreen/releases), please ensure to fullfill the [system-requirements](#system-requirements)!
+Ỳou can download the latest release [here](https://github.com/betterlockscreen/betterlockscreen/releases), please ensure to fullfill the [system-requirements](#system-requirements)!
 
 You will need to copy "betterlockscreen" to you desired binary-directory, if you want to use the systemd-service you will need to copy the service-file from "system/" to the desired location on your system.
 
 Example (Ubuntu):
 ```sh
-wget https://github.com/pavanjadhaw/betterlockscreen/archive/refs/heads/main.zip
+wget https://github.com/betterlockscreen/betterlockscreen/archive/refs/heads/main.zip
 unzip main.zip
 
 cd betterlockscreen-main/
@@ -282,7 +280,7 @@ Please see [CONTRIBUTING.md](CONTRIBUTING.md).
 
 ## License
 
-Betterlockscreen is under [MIT](https://github.com/pavanjadhaw/betterlockscreen/blob/main/LICENSE) license.
+Betterlockscreen is under [MIT](https://github.com/betterlockscreen/betterlockscreen/blob/main/LICENSE) license.
 
 ### Feel free to use and distribute
 
