@@ -69,6 +69,11 @@ done
 
 echof ok "done!"
 
+BLI_TEMP_DIR=$(mktemp -d)
+
+git clone https://github.com/betterlockscreen/betterlockscreen "$BLI_TEMP_DIR" &>/dev/null
+cd "$BLI_TEMP_DIR" || exit 1
+
 VERSION=$2
 if [[ $VERSION == "" ]] || [[ $VERSION == "latest" ]]; then
 	echof info "Determinate latest release... "
@@ -76,10 +81,7 @@ if [[ $VERSION == "" ]] || [[ $VERSION == "latest" ]]; then
 	echof ok "done! ($VERSION)"
 fi
 
-BLI_TEMP_DIR=$(mktemp -d)
-
-git clone -b "$VERSION" https://github.com/pavanjadhaw/betterlockscreen "$BLI_TEMP_DIR" &>/dev/null
-cd "$BLI_TEMP_DIR" || exit 1
+git checkout "$VERSION" &>/dev/null
 
 echof info "Installing Betterlockscreen to '$BL_INSTALL_DIR'... "
 cp betterlockscreen "$BL_INSTALL_DIR"
