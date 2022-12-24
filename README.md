@@ -14,6 +14,12 @@
 <div align="center">
   <h2>You want to support us?</h2>
 
+  <div>
+    <a href="https://github.com/betterlockscreen/betterlockscreen/discussions/366">We are searching a new Maintainer!</a>
+  </div>
+
+  <br />
+  
   <a href="https://github.com/betterlockscreen/betterlockscreen/stargazers"><img alt="GitHub Repo stars" src="https://img.shields.io/github/stars/betterlockscreen/betterlockscreen?style=social"></a>
   <a href="https://github.com/betterlockscreen/betterlockscreen/fork"><img alt="GitHub forks" src="https://img.shields.io/github/forks/betterlockscreen/betterlockscreen?style=social"></a>
   <a href="https://www.codetriage.com/betterlockscreen/betterlockscreen"><img src="https://www.codetriage.com/betterlockscreen/betterlockscreen/badges/users.svg"></a>
