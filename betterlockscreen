@@ -57,6 +57,7 @@ init_config () {
     if [ -e "$USER_CONF" ]; then
         # shellcheck source=/dev/null
         source "$USER_CONF"
+        echof error "Please, move your config to ~/.config/betterlockscreen/betterlockscreenrc. Old location will soon be deprecated."
     elif [ -e "$XDG_USER_CONF" ]; then
         # shellcheck source=/dev/null
         source "$XDG_USER_CONF"
