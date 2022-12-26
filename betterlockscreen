@@ -249,7 +249,6 @@ failsafe() {
         --pass-power-keys
 }
 
-
 # called after screen is unlocked
 postlock() {
     # restore default dpms timeout
@@ -262,7 +261,6 @@ postlock() {
         dunstctl set-paused false
     fi
 }
-
 
 # select effect and lock screen
 lockinit() {
