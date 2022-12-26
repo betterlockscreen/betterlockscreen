@@ -960,7 +960,6 @@ for arg in "$@"; do
 
         -h | --help | *)
             usage
-            break
             ;;
     esac
 done
