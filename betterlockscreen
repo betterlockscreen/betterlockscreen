@@ -158,7 +158,6 @@ lock() {
         --layout-color="$layoutcolor" \
         --layout-font="$font" \
         --layout-size="$fontsm" \
-        --keylayout "${keylayout:-0}" \
         --verif-pos="ix+35:iy-34" \
         --verif-align 2 \
         --verif-text="Verifying..." \
@@ -225,7 +224,6 @@ failsafe() {
         --layout-color="$layoutcolor" \
         --layout-font="$font" \
         --layout-size="$fontsm" \
-        --keylayout "${keylayout:-0}" \
         --verif-pos="ix+45:iy-35" \
         --verif-align 2 \
         --verif-text="Verifying..." \
@@ -888,6 +886,7 @@ for arg in "$@"; do
 
         --show-layout)
             keylayout="$2";
+            lockargs+=(--keylayout "${keylayout:-0}")
             shift 2
             ;;
 
