@@ -120,7 +120,7 @@ systemctl enable betterlockscreen@$USER
 
 ## Configuration
 
-You can customize betterlockscreen for your needs, copy the config file from the examples-directory to `~/.config/betterlockscreenrc` and edit it accordingly.
+You can customize Betterlockscreen for your needs, copy the config file from the examples-directory to `~/.config/betterlockscreenrc` and edit it accordingly.
 
 If no configuration-file is found, then the default configurations (which is equal to the example but currently hardcoded) will be used.
 
@@ -178,7 +178,6 @@ Effects arguments:
       Solid color background with HEX
 ```
 
-
 #### Examples
 1. Update image cache with random image
 `betterlockscreen -u ~/Wallpapers`
@@ -201,6 +200,17 @@ Effects arguments:
 7. Lock screen with multiple monitors, spanning
 `betterlockscreen -l dimblur --display 1 --span`
 
+#### AwesomeWM - naughty
+It has been discovered that the integrated notification-system "naughty" which is included and enabled by default, causes issue with dunst when running parallel.
+
+If dunst is not installed, there should be no issue, if dunst is installed (even not running) our integration will try to pause dunst on lock/resume on unlock, which lead to a DBus reply timeout.
+
+To fix this, please add the following line to your `rc.lua`:
+```
+package.loaded["naughty.dbus"] = {}
+```
+
+Source: #284 (thanks to @nullbyto), https://github.com/awesomeWM/awesome/issues/1285
 
 ## Background
 
@@ -270,8 +280,6 @@ systemctl disable betterlockscreen@$USER
 Resources and more informations:
  * https://gist.github.com/Raymo111/91ffd256b7aca6a85e8a99d6331d3b7b
  * https://github.com/Raymo111/i3lock-color/issues/174#issuecomment-687149213
-
----
 
 ## Contributing
 
