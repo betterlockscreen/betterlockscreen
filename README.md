@@ -131,6 +131,9 @@ cp /usr/share/doc/betterlockscreen/examples/betterlockscreenrc ~/.config/betterl
 
 If no configuration-file is found, then the default configurations (which is equal to the example but hardcoded) will be used.
 
+### Custom script's on pre/post-lock
+If present in user-configuration directory (see above) the "custom-(pre|post).sh" gets sourced at the appropriate time. This can be used to pause notification (not needed for dunst!), switch keyboard-layout on pre/post-lock etc.
+
 ## Usage
 
 Run `betterlockscreen` and point it to either a directory (`betterlockscreen -u "path/to/dir"`) or an image (`betterlockscreen -u "/path/to/img.jpg"`) and that's all. `betterlockscreen` will change update its cache with image you provided.
