@@ -64,7 +64,7 @@ if ! cmd_exists DEPS["i3lock-color"] && cmd_exists "i3lock"; then
 fi
 
 for key in "${!DEPS[@]}"; do
-	[[ ! -e "$(command -v ${DEPS[$key]})" ]] && echof error "Missing '$key' under binary named '${DEPS[$key]}'!" && exit 1
+	[[ ! -e $(command -v "${DEPS[$key]}") ]] && echof error "Missing '$key' under binary named '${DEPS[$key]}'!" && exit 1
 done
 
 echof ok "done!"
