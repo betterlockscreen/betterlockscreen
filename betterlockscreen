@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-# Author : Copyright (c) 2017-2022 Pavan Jadhaw, and others (https://github.com/betterlockscreen/betterlockscreen/graphs/contributors)
+# Author : Copyright (c) 2017-2023 Pavan Jadhaw, and others (https://github.com/betterlockscreen/betterlockscreen/graphs/contributors)
 # Project Repository : https://github.com/betterlockscreen/betterlockscreen
 
 cmd_exists () {
@@ -8,7 +8,6 @@ cmd_exists () {
 }
 
 init_config () {
-
     # default options
     display_on=0
     span_image=false
@@ -103,7 +102,6 @@ init_config () {
 
 # called before screen is locked
 prelock() {
-
     # set dpms timeout
     if [ "$DEFAULT_DPMS" == "Enabled" ]; then
         xset dpms "$lock_timeout"
@@ -117,7 +115,6 @@ prelock() {
 
 # lock screen with specified image
 lock() {
-
     echof act "Locking screen..."
 
     local image="$1"
@@ -188,7 +185,6 @@ lock() {
 
 # in case image isn't found
 failsafe() {
-
     echof act "Locking screen... (FAILSAFE MODE)"
 
     local fontlg=32
@@ -256,7 +252,6 @@ failsafe() {
 
 # called after screen is unlocked
 postlock() {
-
     # restore default dpms timeout
     if [ "$DEFAULT_DPMS" == "Enabled" ]; then
         xset dpms "$DEFAULT_TIMEOUT"
@@ -300,7 +295,6 @@ lockselect() {
 
 # calculate adjustments for hidpi displays
 logical_px() {
-
     # $1: number of pixels to convert
     # $2: 1 for width. 2 for height
     local pixels="$1"
@@ -345,7 +339,6 @@ get_display_list () {
 
 # populate $WALL_LIST depending on number of displays and images passed
 get_wall_list() {
-
     local paths=("$@")
     declare -ga WALL_LIST
 
@@ -382,7 +375,6 @@ get_wall_list() {
 
 # get image path, append to $WALL_LIST
 get_image() {
-
     local path="$1"
 
     # we have a file
@@ -404,7 +396,6 @@ get_image() {
 
 # scale base image and generate effects
 resize_and_render () {
-
     local base="$1"
     local path="$2"
     local resolution="$3"
@@ -437,7 +428,6 @@ resize_and_render () {
 
 # apply resize
 base_resize() {
-
     local input="$1"
     local output="$2"
     local size="$3"
@@ -571,7 +561,6 @@ purge_cache () {
 
 # update lockscreen and wallpaper images
 update () {
-
     local images=("$@")
 
     echof act "Updating image cache..."
@@ -727,7 +716,6 @@ update () {
 
 # set wallpaper with effect
 wallpaper() {
-
     local effect="$1"
 
     # make wallpaper span displays
@@ -751,7 +739,6 @@ wallpaper() {
 
 # wrap echo with fancy prefix
 echof() {
-
     local prefix="$1"
     local message="$2"
 
