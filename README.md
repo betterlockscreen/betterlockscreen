@@ -1,3 +1,5 @@
+<img src="./logo.svg" height="200" alt="BLS-Logo" />
+
 # Betterlockscreen
 > fast and sweet looking lockscreen for linux systems with effects!
 
