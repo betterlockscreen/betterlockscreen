@@ -122,15 +122,14 @@ systemctl enable betterlockscreen@$USER
 
 ## Configuration
 
-You can customize Betterlockscreen for your needs, copy the config file from the examples-directory to `~/.config/betterlockscreenrc` and edit it accordingly.
-
-If no configuration-file is found, then the default configurations (which is equal to the example but currently hardcoded) will be used.
-
-If you have installed betterlockscreen from AUR package, then you can copy default config from docs
+You can customize Betterlockscreen for your needs, copy the config file from the examples-directory to the user-configuration directory `~/.config/betterlockscreen/` and edit it accordingly.
 
 ```sh
-cp /usr/share/doc/betterlockscreen/examples/betterlockscreenrc ~/.config
+mkdir -p ~/.config/betterlockscreen/
+cp /usr/share/doc/betterlockscreen/examples/betterlockscreenrc ~/.config/betterlockscreen/
 ```
+
+If no configuration-file is found, then the default configurations (which is equal to the example but hardcoded) will be used.
 
 ## Usage
 

@@ -11,7 +11,6 @@ pixel_scale=10,1000
 solid_color=333333
 wallpaper_cmd="feh --bg-fill"
 quiet=false
-# i3lockcolor_bin="i3lock-color" # Manually set command for i3lock-color
 
 # default theme
 loginbox=00000066
@@ -35,3 +34,15 @@ verifcolor=ffffffff
 wrongcolor=d23c3dff
 modifcolor=d23c3dff
 bgcolor=000000ff
+
+
+#
+# expert options (change at own risk!)
+#
+
+# i3lockcolor_bin="i3lock-color"      # Manually set command for i3lock-color
+# suspend_command="systemctl suspend" # Manually change action e.g. hibernate/suspend-command
+
+# i3lock-color - custom arguments
+# lockargs=() 						  # overwriting default "(-n)"
+# lockargs+=(--ignore-empty-password) # appending new argument

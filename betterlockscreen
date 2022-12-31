@@ -20,6 +20,7 @@ init_config () {
     description=""
     quiet=false
     i3lockcolor_bin="i3lock-color"
+    suspend_command="systemctl suspend"
 
     if ! cmd_exists "$i3lockcolor_bin" && cmd_exists "i3lock"; then
         i3lockcolor_bin="i3lock"
@@ -48,13 +49,29 @@ init_config () {
     modifcolor=d23c3dff
     bgcolor=000000ff
     wallpaper_cmd="feh --bg-fill"
-    time_format="%H:%M:%S"
 
     # read user config
-    USER_CONF="${XDG_CONFIG_HOME:-$HOME/.config}/betterlockscreenrc"
+    USER_CONF_DIR="${XDG_CONFIG_HOME:-$HOME/.config}"
+    USER_CONF="$USER_CONF_DIR/betterlockscreenrc"
+    SYS_CONF="/etc/betterlockscreenrc"
+    XDG_USER_CONF="$USER_CONF_DIR/betterlockscreen/betterlockscreenrc"
+
+    if [ -e "$SYS_CONF" ]; then
+        # shellcheck source=/dev/null
+        source "$SYS_CONF"
+    fi
+
     if [ -e "$USER_CONF" ]; then
+        echof error "Please, migrate your config $USER_CONF to $XDG_USER_CONF. Old location will soon be deprecated."
+        echof info "mkdir -p ~/.config/betterlockscreen/ && mv $USER_CONF $XDG_USER_CONF"
+
         # shellcheck source=/dev/null
         source "$USER_CONF"
+    fi
+
+    if [ -e "$XDG_USER_CONF" ]; then
+        # shellcheck source=/dev/null
+        source "$XDG_USER_CONF"
     fi
 
     if ! cmd_exists "$i3lockcolor_bin"; then
@@ -267,7 +284,7 @@ lockinit() {
 
     if [[ $runsuspend ]]; then 
         lockselect "$@" &
-        systemctl suspend
+        $suspend_command
         wait $!
     else
         lockselect "$@"
@@ -813,6 +830,8 @@ usage() {
     exit 1
 }
 
+lockargs+=(-n)
+
 init_config
 
 # show usage when no arguments passed
@@ -954,7 +973,6 @@ echof header "Betterlockscreen"
 [[ $runupdate ]] && update "${imagepaths[@]}"
 
 # Activate lockscreen
-lockargs+=(-n)
 [[ $runlock ]] && lockinit "$lockstyle" 
 
 exit 0
