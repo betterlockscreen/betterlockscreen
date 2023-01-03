@@ -298,3 +298,8 @@ Betterlockscreen is under [MIT](https://github.com/betterlockscreen/betterlocksc
 - Hat tip to anyone who's code was used
 - Thanks to those who contributed to make it better
 - Inspiration - [r/unixporn](https://www.reddit.com/r/unixporn)
+
+### Supported by
+<a href="https://jb.gg/OpenSourceSupport">
+  <img src="https://resources.jetbrains.com/storage/products/company/brand/logos/jb_beam.png" height="100" alt="JetBrains Logo (Main) logo" />
+</a>
