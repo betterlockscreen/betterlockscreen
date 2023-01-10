@@ -44,7 +44,9 @@ init_config () {
     layoutcolor=ffffffff
     keyhlcolor=d23c3dff
     bshlcolor=d23c3dff
+    veriftext="Verifying..."
     verifcolor=ffffffff
+    wrongtext="Failure!"
     wrongcolor=d23c3dff
     modifcolor=d23c3dff
     bgcolor=000000ff
@@ -182,13 +184,13 @@ lock() {
         --layout-size="$fontsm" \
         --verif-pos="ix+35:iy-34" \
         --verif-align 2 \
-        --verif-text="Verifying..." \
+        --verif-text="$veriftext" \
         --verif-color="$verifcolor" \
         --verif-font="$font" \
         --verif-size="$fontsm" \
         --wrong-pos="ix+24:iy-34" \
         --wrong-align 2 \
-        --wrong-text="Failure!" \
+        --wrong-text="$wrongtext" \
         --wrong-color="$wrongcolor" \
         --wrong-font="$font" \
         --wrong-size="$fontsm" \
@@ -248,13 +250,13 @@ failsafe() {
         --layout-size="$fontsm" \
         --verif-pos="ix+45:iy-35" \
         --verif-align 2 \
-        --verif-text="Verifying..." \
+        --verif-text="$veriftext" \
         --verif-color="$verifcolor" \
         --verif-font="$font" \
         --verif-size="$fontsm" \
         --wrong-pos="ix+45:iy-35" \
         --wrong-align 2 \
-        --wrong-text="Failure!" \
+        --wrong-text="$wrongtext" \
         --wrong-color="$wrongcolor" \
         --wrong-font="$font" \
         --wrong-size="$fontsm" \
