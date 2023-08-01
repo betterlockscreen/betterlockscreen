@@ -291,6 +291,11 @@ postlock() {
 
 # select effect and lock screen
 lockinit() {
+    if pgrep -u "$USER" "$i3lockcolor_bin"; then
+        echof error "i3lock already running"
+        exit 1
+    fi
+    
     echof act "Running prelock..."
     prelock
 
