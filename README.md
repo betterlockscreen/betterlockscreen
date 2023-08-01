@@ -9,7 +9,7 @@
   <a href="https://github.com/betterlockscreen/betterlockscreen/actions/workflows/main.yml?query=branch%3Amain"><img alt="GitHub Workflow Status (main)" src="https://img.shields.io/github/actions/workflow/status/betterlockscreen/betterlockscreen/main.yml?branch=main&label=main&style=for-the-badge"></a>
   <a href="https://github.com/betterlockscreen/betterlockscreen/actions/workflows/main.yml?query=branch%3Anext"><img alt="GitHub Workflow Status (next)" src="https://img.shields.io/github/actions/workflow/status/betterlockscreen/betterlockscreen/main.yml?branch=next&label=next&style=for-the-badge"></a>
   <a href="https://github.com/betterlockscreen/betterlockscreen/milestone/2"><img alt="GitHub milestone" src="https://img.shields.io/github/milestones/progress/betterlockscreen/betterlockscreen/2?style=for-the-badge"></a>
-  <a href="https://github.com/betterlockscreen/betterlockscreen/compare/v4.0.4...next"><img alt="GitHub commits since latest release (by date) for a branch" src="https://img.shields.io/github/commits-since/betterlockscreen/betterlockscreen/v4.0.4/next?style=for-the-badge"></a>
+  <a href="https://github.com/betterlockscreen/betterlockscreen/compare/v4.1.0...next"><img alt="GitHub commits since latest release (by date) for a branch" src="https://img.shields.io/github/commits-since/betterlockscreen/betterlockscreen/v4.1.0/next?style=for-the-badge"></a>
   <a href="https://github.com/betterlockscreen/betterlockscreen/blob/main/LICENSE"><img src="https://img.shields.io/github/license/betterlockscreen/betterlockscreen.svg?style=for-the-badge"></a>
 </div>
 
