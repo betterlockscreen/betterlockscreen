@@ -82,7 +82,7 @@ init_config () {
     fi
 
     # Please make sure to adjust this before release!
-    VERSION="4.0.4"
+    VERSION="4.1.0"
 
     # paths
     CACHE_DIR="${XDG_CACHE_HOME:-$HOME/.cache}/betterlockscreen"
@@ -291,6 +291,11 @@ postlock() {
 
 # select effect and lock screen
 lockinit() {
+    if pgrep -u "$USER" "$i3lockcolor_bin"; then
+        echof error "i3lock already running"
+        exit 1
+    fi
+    
     echof act "Running prelock..."
     prelock
 
