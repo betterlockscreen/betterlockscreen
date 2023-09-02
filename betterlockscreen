@@ -40,6 +40,8 @@ init_config () {
     insidewrongcolor=d23c3dff
     timecolor=ffffffff
     time_format="%H:%M:%S"
+    datecolor=ffffffff
+    date_format=""
     greetercolor=ffffffff
     layoutcolor=ffffffff
     keyhlcolor=d23c3dff
@@ -171,7 +173,12 @@ lock() {
         --time-color="$timecolor" \
         --time-font="$font" \
         --time-size="$fontlg" \
-        --date-str "" \
+        --date-pos="ix-265:iy-38" \
+        --date-align 1 \
+        --date-color="$datecolor" \
+        --date-font="$font" \
+        --date-size="$fontlg" \
+        --date-str="$date_format" \
         --greeter-pos="ix-265:iy+12" \
         --greeter-align 1 \
         --greeter-text "$locktext" \
@@ -237,7 +244,10 @@ failsafe() {
         --time-color="$timecolor" \
         --time-font="$font" \
         --time-size="$fontlg" \
-        --date-str "" \
+        --date-color="$datecolor" \
+        --date-font="$font" \
+        --date-size="$fontlg" \
+        --date-str="$date_format" \
         --greeter-pos="ix-265:iy+12" \
         --greeter-align 1 \
         --greeter-text "$locktext" \
@@ -828,6 +838,9 @@ usage() {
     echo "  --time-format <format>"
     echo "      to set the time format used by i3lock-color"
     echo
+    echo "  --date-format <format>"
+    echo "      to set the date format used by i3lock-color"
+    echo
     echo "  -- <ARGS>"
     echo "      Pass additional arguments to i3lock"
     echo
@@ -897,6 +910,11 @@ for arg in "$@"; do
 
         --time-format)
             time_format="$2"
+            shift 2
+            ;;
+
+        --date-format)
+            date_format="$2"
             shift 2
             ;;
 
