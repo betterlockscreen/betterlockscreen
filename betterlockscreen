@@ -56,7 +56,8 @@ init_config () {
     USER_CONF_DIR="${XDG_CONFIG_HOME:-$HOME/.config}"
     USER_CONF="$USER_CONF_DIR/betterlockscreenrc"
     SYS_CONF="/etc/betterlockscreenrc"
-    XDG_USER_CONF="$USER_CONF_DIR/betterlockscreen/betterlockscreenrc"
+    XDG_USER_CONF_DIR="$USER_CONF_DIR/betterlockscreen"
+    XDG_USER_CONF="$XDG_USER_CONF_DIR/betterlockscreenrc"
 
     if [ -e "$SYS_CONF" ]; then
         # shellcheck source=/dev/null
@@ -82,7 +83,7 @@ init_config () {
     fi
 
     # Please make sure to adjust this before release!
-    VERSION="4.1.0"
+    VERSION="4.2.0"
 
     # paths
     CACHE_DIR="${XDG_CACHE_HOME:-$HOME/.cache}/betterlockscreen"
@@ -131,9 +132,9 @@ prelock() {
         dunstctl set-paused true
     fi
 
-    if [ -e "$USER_CONF_DIR/custom-pre.sh" ]; then
+    if [ -e "$XDG_USER_CONF_DIR/custom-pre.sh" ]; then
         # shellcheck source=/dev/null
-        source "$USER_CONF_DIR/custom-pre.sh"
+        source "$XDG_USER_CONF_DIR/custom-pre.sh"
     fi
 }
 
@@ -283,9 +284,9 @@ postlock() {
         dunstctl set-paused false
     fi
 
-    if [ -e "$USER_CONF_DIR/custom-post.sh" ]; then
+    if [ -e "$XDG_USER_CONF_DIR/custom-post.sh" ]; then
         # shellcheck source=/dev/null
-        source "$USER_CONF_DIR/custom-post.sh"
+        source "$XDG_USER_CONF_DIR/custom-post.sh"
     fi
 }
 
@@ -847,7 +848,7 @@ usage() {
     exit 1
 }
 
-lockargs+=(-n)
+lockargs=(-n)
 
 init_config
 
@@ -855,7 +856,6 @@ init_config
 [[ "$1" = "" ]] && usage
 
 # process arguments
-lockargs=()
 for arg in "$@"; do
     [[ "${arg:0:1}" = '-' ]] || continue
 
