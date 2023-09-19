@@ -20,7 +20,7 @@ init_config () {
     description=""
     quiet=false
     i3lockcolor_bin="i3lock-color"
-    suspend_command="systemctl suspend"
+    suspend_command="loginctl suspend"
 
     if ! cmd_exists "$i3lockcolor_bin" && cmd_exists "i3lock"; then
         i3lockcolor_bin="i3lock"
