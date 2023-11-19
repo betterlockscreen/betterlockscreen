@@ -59,6 +59,7 @@ The script takes a directory or image, adds various effects and caches the image
 
 * [i3lock-color](https://github.com/Raymo111/i3lock-color) `>= 2.13.c.3`
 * [ImageMagick](https://imagemagick.org/)
+* [bc](https://www.gnu.org/software/bc/)
 * xdpyinfo, xrandr, xrdb and xset from [X.Org](https://www.x.org/)
 * (Optional) [Dunst](https://dunst-project.org/)
 * (Optional) [feh](https://feh.finalrewind.org/) for wallpaper-functionality
