@@ -114,7 +114,8 @@ init_config () {
 
     # Dunst
     DUNST_INSTALLED=false && [[ -e "$(command -v dunstctl)" ]] && DUNST_INSTALLED=true
-    DUNST_IS_PAUSED=false && [[ "$DUNST_INSTALLED" == "true" ]] && DUNST_IS_PAUSED=$(dunstctl is-paused)
+    DUNST_IS_RUNNING=false && [[ "$DUNST_INSTALLED" == "true" ]] && [[ "$(pgrep -c dunst)" -gt 0 ]] && DUNST_IS_RUNNING=true
+    DUNST_IS_PAUSED=false && [[ "$DUNST_IS_RUNNING" == "true" ]] && DUNST_IS_PAUSED=$(dunstctl is-paused)
 
     # Feh
     FEH_INSTALLED=false && [[ -e "$(command -v feh)" ]] && FEH_INSTALLED=true
@@ -128,7 +129,7 @@ prelock() {
     fi
 
     # If dusnt is already paused don't pause it again
-    if [[ "$DUNST_INSTALLED" == "true" && "$DUNST_IS_PAUSED" == "false" ]]; then
+    if [[ "$DUNST_IS_RUNNING" == "true" && "$DUNST_IS_PAUSED" == "false" ]]; then
         dunstctl set-paused true
     fi
 
@@ -280,7 +281,7 @@ postlock() {
     fi
 
     # If dunst already paused before locking don't unpause dunst
-    if [[ "$DUNST_INSTALLED" == "true" && "$DUNST_IS_PAUSED" == "false" ]]; then
+    if [[ "$DUNST_IS_RUNNING" == "true" && "$DUNST_IS_PAUSED" == "false" ]]; then
         dunstctl set-paused false
     fi
 
@@ -296,11 +297,11 @@ lockinit() {
         echof error "i3lock already running"
         exit 1
     fi
-    
+
     echof act "Running prelock..."
     prelock
 
-    if [[ $runsuspend ]]; then 
+    if [[ $runsuspend ]]; then
         lockselect "$@" &
         $suspend_command
         wait $!
@@ -990,6 +991,6 @@ echof header "Betterlockscreen"
 [[ $runupdate ]] && update "${imagepaths[@]}"
 
 # Activate lockscreen
-[[ $runlock ]] && lockinit "$lockstyle" 
+[[ $runlock ]] && lockinit "$lockstyle"
 
 exit 0
