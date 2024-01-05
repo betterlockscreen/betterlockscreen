@@ -140,17 +140,21 @@ prelock() {
 
 # lock screen with specified image
 lock() {
-    echof act "Locking screen..."
-
     local image="$1"
     local fontlg=32
     local fontmd=16
     local fontsm=12
 
+    if [ -f "$image" ]; then
+        echof act "Locking screen..."
+    else
+        echof act "Locking screen... (FAILSAFE MODE)"
+    fi
+
     $i3lockcolor_bin \
-        --image "$image" \
+        ${image:+-i "$image"} \
         --color "$bgcolor" \
-        --screen "$display_on" \
+        ${screen:+-i "$display_on"} \
         --ind-pos="x+310:y+h-80" \
         --radius=25 \
         --ring-width=5 \
@@ -207,71 +211,6 @@ lock() {
         "${lockargs[@]}"
 }
 
-# in case image isn't found
-failsafe() {
-    echof act "Locking screen... (FAILSAFE MODE)"
-
-    local fontlg=32
-    local fontmd=16
-    local fontsm=12
-
-    $i3lockcolor_bin \
-        --color "$bgcolor" \
-        --ind-pos="x+310:y+h-80" \
-        --radius=25 \
-        --ring-width=5 \
-        --inside-color="$insidecolor" \
-        --ring-color="$ringcolor" \
-        --separator-color=$separatorcolor \
-        --insidever-color="$insidevercolor" \
-        --insidewrong-color="$insidewrongcolor" \
-        --ringver-color="$ringvercolor" \
-        --ringwrong-color="$ringwrongcolor" \
-        --line-uses-inside \
-        --keyhl-color="$keyhlcolor" \
-        --bshl-color="$bshlcolor" \
-        --clock --force-clock \
-        --time-pos="ix-265:iy-10" \
-        --time-align 1 \
-        --time-str "$time_format" \
-        --time-color="$timecolor" \
-        --time-font="$font" \
-        --time-size="$fontlg" \
-        --date-str "" \
-        --greeter-pos="ix-265:iy+12" \
-        --greeter-align 1 \
-        --greeter-text "$locktext" \
-        --greeter-color="$greetercolor" \
-        --greeter-font="$font" \
-        --greeter-size="$fontmd" \
-        --layout-pos="ix-265:iy+32" \
-        --layout-align 1 \
-        --layout-color="$layoutcolor" \
-        --layout-font="$font" \
-        --layout-size="$fontsm" \
-        --verif-pos="ix+45:iy-35" \
-        --verif-align 2 \
-        --verif-text="$veriftext" \
-        --verif-color="$verifcolor" \
-        --verif-font="$font" \
-        --verif-size="$fontsm" \
-        --wrong-pos="ix+45:iy-35" \
-        --wrong-align 2 \
-        --wrong-text="$wrongtext" \
-        --wrong-color="$wrongcolor" \
-        --wrong-font="$font" \
-        --wrong-size="$fontsm" \
-        --modif-pos="ix+45:iy+43" \
-        --modif-align 2 \
-        --modif-size="$fontsm" \
-        --modif-color="$modifcolor" \
-        --noinput-text="" \
-        --pass-media-keys \
-        --pass-screen-keys \
-        --pass-volume-keys \
-        --pass-power-keys
-}
-
 # called after screen is unlocked
 postlock() {
     # restore default dpms timeout
@@ -314,13 +253,13 @@ lockinit() {
 
 lockselect() {
     case "$1" in
-        dim) if [ -f "$CUR_L_DIM" ]; then lock "$CUR_L_DIM"; else failsafe; fi ;;
-        blur) if [ -f "$CUR_L_BLUR" ]; then lock "$CUR_L_BLUR"; else failsafe; fi ;;
-        dimblur) if [ -f "$CUR_L_DIMBLUR" ]; then lock "$CUR_L_DIMBLUR"; else failsafe; fi ;;
-        pixel) if [ -f "$CUR_L_PIXEL" ]; then lock "$CUR_L_PIXEL"; else failsafe; fi ;;
-        dimpixel) if [ -f "$CUR_L_DIMPIXEL" ]; then lock "$CUR_L_DIMPIXEL"; else failsafe; fi ;;
-        color) if [ -f "$CUR_L_COLOR" ]; then lock "$CUR_L_COLOR"; else failsafe; fi ;;
-        *) if [ -f "$CUR_L_RESIZE" ]; then lock "$CUR_L_RESIZE"; else failsafe; fi ;;
+        dim) lock "$CUR_L_DIM" ;;
+        blur) lock "$CUR_L_BLUR" ;;
+        dimblur) lock "$CUR_L_DIMBLUR" ;;
+        pixel) lock "$CUR_L_PIXEL" ;;
+        dimpixel) lock "$CUR_L_DIMPIXEL" ;;
+        color) lock "$CUR_L_COLOR" ;;
+        *) lock "$CUR_L_RESIZE" ;;
     esac
 }
 
