@@ -10,6 +10,7 @@ cmd_exists () {
 init_config () {
     # default options
     display_on=0
+    resize=true
     span_image=false
     lock_timeout=300
     fx_list=(dim blur dimblur pixel dimpixel color)
@@ -314,6 +315,7 @@ lockinit() {
 
 lockselect() {
     case "$1" in
+        none) if [ -f "$CUR_W_RESIZE" ]; then lock "$CUR_W_RESIZE"; else failsafe; fi ;;
         dim) if [ -f "$CUR_L_DIM" ]; then lock "$CUR_L_DIM"; else failsafe; fi ;;
         blur) if [ -f "$CUR_L_BLUR" ]; then lock "$CUR_L_BLUR"; else failsafe; fi ;;
         dimblur) if [ -f "$CUR_L_DIMBLUR" ]; then lock "$CUR_L_DIMBLUR"; else failsafe; fi ;;
@@ -446,6 +448,7 @@ resize_and_render () {
     # effects
     for effect in "${fx_list[@]}"; do
         case $effect in
+            none) continue;;
             dim) fx_dim "$RES_RESIZE" "$RES_DIM";;
             blur) fx_blur "$RES_RESIZE" "$RES_BLUR" "$resolution";;
             dimblur) fx_dimblur "$RES_RESIZE" "$RES_DIMBLUR" "$resolution";;
@@ -462,6 +465,12 @@ base_resize() {
     local input="$1"
     local output="$2"
     local size="$3"
+
+    if ( ! $resize ); then
+        echof act "Copying base image..."
+        eval cp "$input" "$output"
+        return
+    fi
 
     echof act "Resizing base image..."
     eval convert "$input" \
@@ -757,6 +766,7 @@ wallpaper() {
 
     # set wallpaper
     case "$effect" in
+        none) wallpaper="$CUR_W_RESIZE";;
         dim) wallpaper="$CUR_W_DIM";;
         blur) wallpaper="$CUR_W_BLUR";;
         dimblur) wallpaper="$CUR_W_DIMBLUR";;
@@ -811,6 +821,12 @@ usage() {
     echo
     echo "  --off <N>"
     echo "      Turn display off after N seconds"
+    echo
+    echo "  --noresize"
+    echo "      Do not resize image to screen resolution"
+    echo
+    echo "  --nofx"
+    echo "      Disable all effects"
     echo
     echo "  --fx <EFFECT,EFFECT,EFFECT>"
     echo "      List of effects to generate"
@@ -924,6 +940,16 @@ for arg in "$@"; do
             keylayout="$2";
             lockargs+=(--keylayout "${keylayout:-0}")
             shift 2
+            ;;
+
+        --noresize)
+            resize=false
+            shift 1
+            ;;
+
+        --nofx)
+            fx_list=("none")
+            shift 1
             ;;
 
         --fx)
