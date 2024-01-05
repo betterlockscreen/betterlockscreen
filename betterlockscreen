@@ -739,7 +739,14 @@ update () {
         done
     fi
 
-    [[ -f "$CUR_W_RESIZE" ]] && eval "convert $CUR_W_RESIZE $PARAM_RECT $CUR_L_RESIZE"
+    if [ -f "$CUR_W_RESIZE" ]; then
+        if ( ! $resize ); then
+            eval "cp $CUR_W_RESIZE $CUR_L_RESIZE"
+        else
+            eval "convert $CUR_W_RESIZE $PARAM_RECT $CUR_L_RESIZE"
+        fi
+    fi
+
     [[ -f "$CUR_W_DIM" ]] && eval "convert $CUR_W_DIM $PARAM_RECT $CUR_L_DIM"
     [[ -f "$CUR_W_BLUR" ]] && eval "convert $CUR_W_BLUR $PARAM_RECT $CUR_L_BLUR"
     [[ -f "$CUR_W_DIMBLUR" ]] && eval "convert $CUR_W_DIMBLUR $PARAM_RECT $CUR_L_DIMBLUR"
