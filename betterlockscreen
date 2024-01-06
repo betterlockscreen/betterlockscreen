@@ -13,6 +13,13 @@ init_config () {
     span_image=false
     lock_timeout=300
     fx_list=(dim blur dimblur pixel dimpixel color)
+    shadow_x=$(logical_px 10 1)
+    shadow_y=$(logical_px 10 2)
+    rect_padding_x=$(logical_px 100 1)
+    rect_padding_y=$(logical_px 60 2)
+    padding_x=$(logical_px 15 1)
+    padding_y=$(logical_px 15 2)
+    loginbox_position="bottom-left"
     dim_level=40
     blur_level=1
     pixel_scale=10,1000
@@ -21,6 +28,42 @@ init_config () {
     quiet=false
     i3lockcolor_bin="i3lock-color"
     suspend_command="systemctl suspend"
+    radius="25"
+    time_pos="ix-265:iy-10"
+    greeter_pos="ix-265:iy+12"
+    layout_pos="ix-265:iy+32"
+    verif_pos="ix+35:iy-34"
+    wrong_pos="ix+24:iy-34"
+    modif_pos="ix+45:iy+43"
+
+    if [[ "${lockargs[*]}" =~ --radius=([0-9]+) ]]; then
+        radius_arg="${BASH_REMATCH[1]}"
+        radius=$(logical_px "$radius_arg" 1)
+    fi
+
+    if [[ "${lockargs[*]}" =~ --time_pos=([a-z0-9-]+) ]]; then
+        time_pos="${BASH_REMATCH[1]}"
+    fi
+
+    if [[ "${lockargs[*]}" =~ --greeter_pos=([a-z0-9-]+) ]]; then
+        greeter_pos="${BASH_REMATCH[1]}"
+    fi
+
+    if [[ "${lockargs[*]}" =~ --layout_pos=([a-z0-9-]+) ]]; then
+        layout_pos="${BASH_REMATCH[1]}"
+    fi
+
+    if [[ "${lockargs[*]}" =~ --verif_pos=([a-z0-9-]+) ]]; then
+        verif_pos="${BASH_REMATCH[1]}"
+    fi
+
+    if [[ "${lockargs[*]}" =~ --wrong_pos=([a-z0-9-]+) ]]; then
+        wrong_pos="${BASH_REMATCH[1]}"
+    fi
+
+    if [[ "${lockargs[*]}" =~ --modif_pos=([a-z0-9-]+) ]]; then
+        modif_pos="${BASH_REMATCH[1]}"
+    fi
 
     if ! cmd_exists "$i3lockcolor_bin" && cmd_exists "i3lock"; then
         i3lockcolor_bin="i3lock"
@@ -120,6 +163,48 @@ init_config () {
     FEH_INSTALLED=false && [[ -e "$(command -v feh)" ]] && FEH_INSTALLED=true
 }
 
+get_x_pos() {
+    echo "$1" | grep -oP 'ix-\K([0-9]+)' | bc
+}
+
+get_y_pos() {
+    echo "$1" | grep -oP 'iy-\K([0-9]+)' | bc
+}
+
+get_lock_width_height() {
+    local lock_positions=()
+    lock_positions+=("$time_pos")
+    lock_positions+=("$greeter_pos")
+    lock_positions+=("$layout_pos")
+    lock_positions+=("$verif_pos")
+    lock_positions+=("$wrong_pos")
+    lock_positions+=("$modif_pos")
+
+    lock_x_positions=()
+    lock_y_positions=()
+
+    for pos in "${lock_positions[@]}"; do
+        lock_x_positions+=("$(get_x_pos "$pos")")
+        lock_y_positions+=("$(get_y_pos "$pos")")
+    done
+
+    local min_x min_y max_x max_y
+
+    min_x=$(echo "${lock_x_positions[*]}" | tr ' ' '\n' | sort -n | head -n1)
+    min_y=$(echo "${lock_y_positions[*]}" | tr ' ' '\n' | sort -n | head -n1)
+    max_x=$(echo "${lock_x_positions[*]}" | tr ' ' '\n' | sort -n | tail -n1)
+    max_y=$(echo "${lock_y_positions[*]}" | tr ' ' '\n' | sort -n | tail -n1)
+
+    local lock_width lock_height
+    lock_width=$((max_x - min_x))
+    lock_height=$((max_y - min_y))
+
+    lock_width=${lock_width#-}
+    lock_height=${lock_height#-}
+
+    echo "$lock_width $lock_height"
+}
+
 # called before screen is locked
 prelock() {
     # set dpms timeout
@@ -146,13 +231,35 @@ lock() {
     local fontlg=32
     local fontmd=16
     local fontsm=12
+    local width height
+
+    width_height=$(get_display_width_height)
+    width=$(echo "$width_height" | cut -d ' ' -f1)
+    height=$(echo "$width_height" | cut -d ' ' -f2)
+
+    lock_width_height=$(get_lock_width_height)
+    lock_width=$(echo "$lock_width_height" | cut -d ' ' -f1)
+    lock_height=$(echo "$lock_width_height" | cut -d ' ' -f2)
+
+    rect_width=$((lock_width + rect_padding_x * 2))
+    rect_height=$((lock_height + rect_padding_y * 2))
+    rendered_rect_width=$((rect_width + shadow_x))
+    rendered_rect_height=$((rect_height + shadow_y))
+
+    case "$loginbox_position" in
+        "bottom-left") ind_pos="x+$padding_x+$(((rendered_rect_width + lock_width) / 2)):y+h-$((rendered_rect_height / 2))-$padding_y";;
+        "bottom-right") ind_pos="x-$padding_x-$(((rendered_rect_width - lock_width) / 2)):y+h-$((rendered_rect_height / 2))-$padding_y";;
+        "top-left") ind_pos="x+$padding_x+$(((rendered_rect_width + lock_width) / 2)):$rendered_rect_height/2+$padding_y+$shadow_y*2";;
+        "top-right") ind_pos="x-$padding_x-$(((rendered_rect_width - lock_width) / 2)):$rendered_rect_height/2+$padding_y+$shadow_y*2";;
+        "center") ind_pos="x+$(((width + lock_width) / 2 - shadow_x)):y+h-$((height / 2))";;
+    esac
 
     $i3lockcolor_bin \
         --image "$image" \
         --color "$bgcolor" \
         --screen "$display_on" \
-        --ind-pos="x+310:y+h-80" \
-        --radius=25 \
+        --ind-pos="$ind_pos" \
+        --radius="$radius" \
         --ring-width=5 \
         --inside-color="$insidecolor" \
         --ring-color="$ringcolor" \
@@ -165,37 +272,37 @@ lock() {
         --keyhl-color="$keyhlcolor" \
         --bshl-color="$bshlcolor" \
         --clock --force-clock \
-        --time-pos="ix-265:iy-10" \
+        --time-pos="$time_pos" \
         --time-align 1 \
         --time-str "$time_format" \
         --time-color="$timecolor" \
         --time-font="$font" \
         --time-size="$fontlg" \
         --date-str "" \
-        --greeter-pos="ix-265:iy+12" \
+        --greeter-pos="$greeter_pos" \
         --greeter-align 1 \
         --greeter-text "$locktext" \
         --greeter-color="$greetercolor" \
         --greeter-font="$font" \
         --greeter-size="$fontmd" \
-        --layout-pos="ix-265:iy+32" \
+        --layout-pos="$layout_pos" \
         --layout-align 1 \
         --layout-color="$layoutcolor" \
         --layout-font="$font" \
         --layout-size="$fontsm" \
-        --verif-pos="ix+35:iy-34" \
+        --verif-pos="$verif_pos" \
         --verif-align 2 \
         --verif-text="$veriftext" \
         --verif-color="$verifcolor" \
         --verif-font="$font" \
         --verif-size="$fontsm" \
-        --wrong-pos="ix+24:iy-34" \
+        --wrong-pos="$wrong_pos" \
         --wrong-align 2 \
         --wrong-text="$wrongtext" \
         --wrong-color="$wrongcolor" \
         --wrong-font="$font" \
         --wrong-size="$fontsm" \
-        --modif-pos="ix+45:iy+43" \
+        --modif-pos="$modif_pos" \
         --modif-align 2 \
         --modif-size="$fontsm" \
         --modif-color="$modifcolor" \
@@ -366,6 +473,30 @@ get_display_list () {
         IFS=' ' read -r -a info  <<< "$display"
         DISPLAY_LIST+=("$count ${info[3]} ${info[2]}")
     done
+}
+
+get_display_width_height() {
+    local width=0
+    local height=0
+
+    if [ $display_on -eq 0 ]; then
+        ALL_DIMS=$(xrandr --query | grep -w "connected" | grep -Po "\d+x\d+")
+
+        for dim in $ALL_DIMS; do
+            width=$(echo "$width + ${dim%x*}" | bc)
+            height=$(echo "$height + ${dim#*x}" | bc)
+        done
+
+        width=$(echo "$width / $(echo "$ALL_DIMS" | wc -w)" | bc)
+        height=$(echo "$height / $(echo "$ALL_DIMS" | wc -w)" | bc)
+    else
+        get_display_list
+        DIMS=$(echo "${DISPLAY_LIST[$display_on]}" | cut -d ' ' -f2- | grep -Po "\d+x\d+" | tr 'x' '\n')
+        width=$(echo "$DIMS" | head -n1)
+        height=$(echo "$DIMS" | tail -n1)
+    fi
+
+    echo "$width $height"
 }
 
 # populate $WALL_LIST depending on number of displays and images passed
@@ -555,16 +686,21 @@ fx_color() {
 create_loginbox () {
     RECTANGLE="$CUR_DIR/rectangle.png"
     local shadow="$CUR_DIR/shadow.png"
-    local width height
-    width=$(logical_px 340 1)
-    height=$(logical_px 100 2)
-    convert -size "$width"x"$height" xc:\#"$loginbox" -fill none "$RECTANGLE"
+
+    lock_width_height=$(get_lock_width_height)
+    lock_width=$(echo "$lock_width_height" | cut -d ' ' -f1)
+    lock_height=$(echo "$lock_width_height" | cut -d ' ' -f2)
+
+    rect_width=$((lock_width + rect_padding_x * 2))
+    rect_height=$((lock_height + rect_padding_y * 2))
+
+    convert -size "$rect_width"x"$rect_height" xc:\#"$loginbox" -fill none "$RECTANGLE"
     convert "$RECTANGLE" \
-        \( -clone 0 -background \#"$loginshadow" -shadow 100x5+0+0 \) +swap \
+        \( -clone 0 -background \#"$loginshadow" -shadow $rect_heightx5+0+0 \) +swap \
         -background none -layers merge +repage "$shadow"
     composite -compose Dst_Out -gravity center \
         "$RECTANGLE" "$shadow" -alpha Set "$shadow"
-    convert "$shadow" "$RECTANGLE" -geometry +10+10 -composite "$RECTANGLE"
+    convert "$shadow" "$RECTANGLE" -geometry +$shadow_x+$shadow_y -composite "$RECTANGLE"
     [[ "$shadow" ]] && rm "$shadow"
 }
 
@@ -644,9 +780,30 @@ update () {
             pos_x="${sym[0]}${val[0]}"
             pos_y="${sym[1]}${val[1]}"
 
-            rect_x=$((pos_x + $(logical_px 15 1)))
-            rect_y=$((pos_y + res_y - $(logical_px 140 2)))
-            positions+=("+$((rect_x))+$((rect_y))")
+            lock_width_height=$(get_lock_width_height)
+            lock_width=$(echo "$lock_width_height" | cut -d ' ' -f1)
+            lock_height=$(echo "$lock_width_height" | cut -d ' ' -f2)
+
+            rect_width=$((lock_width + rect_padding_x * 2 + shadow_x))
+            rect_height=$((lock_height + rect_padding_y * 2 + shadow_y))
+
+            case "$loginbox_position" in
+                "bottom-left") rect_x=$((pos_x + $padding_x)); rect_y=$((pos_y + res_y - padding_y - rect_height - shadow_y));;
+                "bottom-right") rect_x=$((pos_x + res_x - rect_width - padding_x)); rect_y=$((pos_y + res_y - padding_y - rect_height - shadow_y));;
+                "top-left") rect_x=$((pos_x + $padding_x)); rect_y=$((pos_y + $padding_y + shadow_y));;
+                "top-right") rect_x=$((pos_x + res_x - rect_width - padding_x)); rect_y=$((pos_y + $padding_y + shadow_y));;
+                "center") rect_x=$((pos_x + res_x / 2 - $rect_width / 2 - shadow_x)); rect_y=$((pos_y + res_y / 2 - $rect_height / 2 - shadow_y));;
+            esac
+
+            if [ "$rect_x" -gt 0 ]; then
+                rect_x="+$rect_x"
+            fi
+
+            if [ "$rect_y" -gt 0 ]; then
+                rect_y="+$rect_y"
+            fi
+
+            positions+=("$rect_x$rect_y")
 
             descrect_x=$((pos_x + res_x - descwidth - $(logical_px 15 1)))
             descrect_y=$((pos_y + res_y - descheight - $(logical_px 20 2)))
@@ -812,6 +969,9 @@ usage() {
     echo "  --off <N>"
     echo "      Turn display off after N seconds"
     echo
+    echo "  --position <top-left|top-right|bottom-left|bottom-right|center>"
+    echo "      Set position of loginbox"
+    echo
     echo "  --fx <EFFECT,EFFECT,EFFECT>"
     echo "      List of effects to generate"
     echo
@@ -923,6 +1083,11 @@ for arg in "$@"; do
         --show-layout)
             keylayout="$2";
             lockargs+=(--keylayout "${keylayout:-0}")
+            shift 2
+            ;;
+
+        --position)
+            loginbox_position="$2"
             shift 2
             ;;
 
