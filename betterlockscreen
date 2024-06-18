@@ -464,7 +464,7 @@ base_resize() {
     local size="$3"
 
     echof act "Resizing base image..."
-    eval convert "$input" \
+    eval magick "$input" \
         -resize "$size""^" \
         -gravity center \
         -extent "$size" \
@@ -477,7 +477,7 @@ fx_dim() {
     local output="$2"
 
     echof act "Rendering 'dim' effect..."
-    eval convert "$input" \
+    eval magick "$input" \
         -fill black -colorize "$dim_level"% \
         "$output"
 }
@@ -491,7 +491,7 @@ fx_blur() {
     echof act "Rendering 'blur' effect..."
     blur_shrink=$(echo "scale=2; 20 / $blur_level" | bc)
     blur_sigma=$(echo "scale=2; 0.6 * $blur_level" | bc)
-    eval convert "$input" \
+    eval magick "$input" \
         -filter Gaussian \
         -resize "$blur_shrink%" \
         -define "filter:sigma=$blur_sigma" \
@@ -508,7 +508,7 @@ fx_dimblur() {
     echof act "Rendering 'dimblur' effect..."
     blur_shrink=$(echo "scale=2; 20 / $blur_level" | bc)
     blur_sigma=$(echo "scale=2; 0.6 * $blur_level" | bc)
-    eval convert "$input" \
+    eval magick "$input" \
         -fill black -colorize "$dim_level"% \
         -filter Gaussian \
         -resize "$blur_shrink%" \
@@ -524,7 +524,7 @@ fx_pixel() {
 
     echof act "Rendering 'pixel' effect..."
     IFS=',' read -ra range <<< "$pixel_scale"
-    eval convert "$input" \
+    eval magick "$input" \
         -scale "${range[0]}"% -scale "${range[1]}"% \
         "$output"
 }
@@ -536,7 +536,7 @@ fx_dimpixel() {
 
     echof act "Rendering 'dimpixel' effect..."
     IFS=',' read -ra range <<< "$pixel_scale"
-    eval convert "$input" \
+    eval magick "$input" \
         -fill black -colorize "$dim_level"% \
         -scale "${range[0]}"% -scale "${range[1]}"% \
         "$output"
@@ -548,7 +548,7 @@ fx_color() {
     local size="$2"
 
     echof act "Rendering 'color' effect..."
-    eval convert -size "$size" canvas:\#"$solid_color" "$RES_COLOR"
+    eval magick -size "$size" canvas:\#"$solid_color" "$RES_COLOR"
 }
 
 # create loginbox rectangle, set "$RECTANGLE"
@@ -558,13 +558,13 @@ create_loginbox () {
     local width height
     width=$(logical_px 340 1)
     height=$(logical_px 100 2)
-    convert -size "$width"x"$height" xc:\#"$loginbox" -fill none "$RECTANGLE"
-    convert "$RECTANGLE" \
+    magick -size "$width"x"$height" xc:\#"$loginbox" -fill none "$RECTANGLE"
+    magick "$RECTANGLE" \
         \( -clone 0 -background \#"$loginshadow" -shadow 100x5+0+0 \) +swap \
         -background none -layers merge +repage "$shadow"
     composite -compose Dst_Out -gravity center \
         "$RECTANGLE" "$shadow" -alpha Set "$shadow"
-    convert "$shadow" "$RECTANGLE" -geometry +10+10 -composite "$RECTANGLE"
+    magick "$shadow" "$RECTANGLE" -geometry +10+10 -composite "$RECTANGLE"
     [[ "$shadow" ]] && rm "$shadow"
 }
 
@@ -572,13 +572,13 @@ create_loginbox () {
 create_description () {
     DESCRECT="$CUR_DIR/description.png"
     local shadow="$CUR_DIR/shadow.png"
-    convert -background none -family "$(fc-match "$font" family)" -style Normal -pointsize 14 -fill \#"$greetercolor" label:"\ $description\ " -bordercolor \#"$loginbox" -border 10 "$DESCRECT"
-    convert "$DESCRECT" \
+    magick -background none -family "$(fc-match "$font" family)" -style Normal -pointsize 14 -fill \#"$greetercolor" label:"\ $description\ " -bordercolor \#"$loginbox" -border 10 "$DESCRECT"
+    magick "$DESCRECT" \
         \( -clone 0 -background \#"$loginshadow" -shadow 100x5+0+0 \) +swap \
         -background none -layers merge +repage "$shadow"
     composite -compose Dst_Out -gravity center \
         "$DESCRECT" "$shadow" -alpha Set "$shadow"
-    convert "$shadow" "$DESCRECT" -geometry +10+10 -composite "$DESCRECT"
+    magick "$shadow" "$DESCRECT" -geometry +10+10 -composite "$DESCRECT"
     [[ "$shadow" ]] && rm "$shadow"
 }
 
@@ -698,22 +698,22 @@ update () {
         [[ -f "$RES_COLOR" ]] && eval "cp $RES_COLOR $CUR_W_COLOR"
     else
         echof act "Creating canvas: $TOTAL_SIZE"
-        [[ -f "$RES_RESIZE" ]] && eval "convert -size $TOTAL_SIZE 'xc:blue' $CUR_W_RESIZE"
-        [[ -f "$RES_DIM" ]] && eval "convert -size $TOTAL_SIZE 'xc:blue' $CUR_W_DIM"
-        [[ -f "$RES_BLUR" ]] && eval "convert -size $TOTAL_SIZE 'xc:blue' $CUR_W_BLUR"
-        [[ -f "$RES_DIMBLUR" ]] && eval "convert -size $TOTAL_SIZE 'xc:blue' $CUR_W_DIMBLUR"
-        [[ -f "$RES_PIXEL" ]] && eval "convert -size $TOTAL_SIZE 'xc:blue' $CUR_W_PIXEL"
-        [[ -f "$RES_DIMPIXEL" ]] && eval "convert -size $TOTAL_SIZE 'xc:blue' $CUR_W_DIMPIXEL"
-        [[ -f "$RES_COLOR" ]] && eval "convert -size $TOTAL_SIZE 'xc:blue' $CUR_W_COLOR"
+        [[ -f "$RES_RESIZE" ]] && eval "magick -size $TOTAL_SIZE 'xc:blue' $CUR_W_RESIZE"
+        [[ -f "$RES_DIM" ]] && eval "magick -size $TOTAL_SIZE 'xc:blue' $CUR_W_DIM"
+        [[ -f "$RES_BLUR" ]] && eval "magick -size $TOTAL_SIZE 'xc:blue' $CUR_W_BLUR"
+        [[ -f "$RES_DIMBLUR" ]] && eval "magick -size $TOTAL_SIZE 'xc:blue' $CUR_W_DIMBLUR"
+        [[ -f "$RES_PIXEL" ]] && eval "magick -size $TOTAL_SIZE 'xc:blue' $CUR_W_PIXEL"
+        [[ -f "$RES_DIMPIXEL" ]] && eval "magick -size $TOTAL_SIZE 'xc:blue' $CUR_W_DIMPIXEL"
+        [[ -f "$RES_COLOR" ]] && eval "magick -size $TOTAL_SIZE 'xc:blue' $CUR_W_COLOR"
 
         echof act "Rendering final wallpaper images..."
-        [[ -f "$CUR_W_RESIZE" ]] && eval "convert $CUR_W_RESIZE $PARAM_RESIZE $CUR_W_RESIZE"
-        [[ -f "$CUR_W_DIM" ]] && eval "convert $CUR_W_DIM $PARAM_DIM $CUR_W_DIM"
-        [[ -f "$CUR_W_BLUR" ]] && eval "convert $CUR_W_BLUR $PARAM_BLUR $CUR_W_BLUR"
-        [[ -f "$CUR_W_DIMBLUR" ]] && eval "convert $CUR_W_DIMBLUR $PARAM_DIMBLUR $CUR_W_DIMBLUR"
-        [[ -f "$CUR_W_PIXEL" ]] && eval "convert $CUR_W_PIXEL $PARAM_PIXEL $CUR_W_PIXEL"
-        [[ -f "$CUR_W_DIMPIXEL" ]] && eval "convert $CUR_W_DIMPIXEL $PARAM_DIMPIXEL $CUR_W_DIMPIXEL"
-        [[ -f "$CUR_W_COLOR" ]] && eval "convert $CUR_W_COLOR $PARAM_COLOR $CUR_W_COLOR"
+        [[ -f "$CUR_W_RESIZE" ]] && eval "magick $CUR_W_RESIZE $PARAM_RESIZE $CUR_W_RESIZE"
+        [[ -f "$CUR_W_DIM" ]] && eval "magick $CUR_W_DIM $PARAM_DIM $CUR_W_DIM"
+        [[ -f "$CUR_W_BLUR" ]] && eval "magick $CUR_W_BLUR $PARAM_BLUR $CUR_W_BLUR"
+        [[ -f "$CUR_W_DIMBLUR" ]] && eval "magick $CUR_W_DIMBLUR $PARAM_DIMBLUR $CUR_W_DIMBLUR"
+        [[ -f "$CUR_W_PIXEL" ]] && eval "magick $CUR_W_PIXEL $PARAM_PIXEL $CUR_W_PIXEL"
+        [[ -f "$CUR_W_DIMPIXEL" ]] && eval "magick $CUR_W_DIMPIXEL $PARAM_DIMPIXEL $CUR_W_DIMPIXEL"
+        [[ -f "$CUR_W_COLOR" ]] && eval "magick $CUR_W_COLOR $PARAM_COLOR $CUR_W_COLOR"
     fi
 
     echof act "Rendering final lockscreen images..."
@@ -730,13 +730,13 @@ update () {
         done
     fi
 
-    [[ -f "$CUR_W_RESIZE" ]] && eval "convert $CUR_W_RESIZE $PARAM_RECT $CUR_L_RESIZE"
-    [[ -f "$CUR_W_DIM" ]] && eval "convert $CUR_W_DIM $PARAM_RECT $CUR_L_DIM"
-    [[ -f "$CUR_W_BLUR" ]] && eval "convert $CUR_W_BLUR $PARAM_RECT $CUR_L_BLUR"
-    [[ -f "$CUR_W_DIMBLUR" ]] && eval "convert $CUR_W_DIMBLUR $PARAM_RECT $CUR_L_DIMBLUR"
-    [[ -f "$CUR_W_PIXEL" ]] && eval "convert $CUR_W_PIXEL $PARAM_RECT $CUR_L_PIXEL"
-    [[ -f "$CUR_W_DIMPIXEL" ]] && eval "convert $CUR_W_DIMPIXEL $PARAM_RECT $CUR_L_DIMPIXEL"
-    [[ -f "$CUR_W_COLOR" ]] && eval "convert $CUR_W_COLOR $PARAM_RECT $CUR_L_COLOR"
+    [[ -f "$CUR_W_RESIZE" ]] && eval "magick $CUR_W_RESIZE $PARAM_RECT $CUR_L_RESIZE"
+    [[ -f "$CUR_W_DIM" ]] && eval "magick $CUR_W_DIM $PARAM_RECT $CUR_L_DIM"
+    [[ -f "$CUR_W_BLUR" ]] && eval "magick $CUR_W_BLUR $PARAM_RECT $CUR_L_BLUR"
+    [[ -f "$CUR_W_DIMBLUR" ]] && eval "magick $CUR_W_DIMBLUR $PARAM_RECT $CUR_L_DIMBLUR"
+    [[ -f "$CUR_W_PIXEL" ]] && eval "magick $CUR_W_PIXEL $PARAM_RECT $CUR_L_PIXEL"
+    [[ -f "$CUR_W_DIMPIXEL" ]] && eval "magick $CUR_W_DIMPIXEL $PARAM_RECT $CUR_L_DIMPIXEL"
+    [[ -f "$CUR_W_COLOR" ]] && eval "magick $CUR_W_COLOR $PARAM_RECT $CUR_L_COLOR"
 
     [[ "$RECTANGLE" ]] && rm "$RECTANGLE"
     [[ "$DESCRECT" ]] && rm "$DESCRECT"
@@ -960,7 +960,7 @@ for arg in "$@"; do
             echo
             echo "Betterlockscreen: version: v$VERSION (dunst: $DUNST_INSTALLED, feh: $FEH_INSTALLED)"
             $i3lockcolor_bin --version
-            convert --version
+            magick --version
 
             if [[ "$DUNST_INSTALLED" == "true" ]]; then
                 dunstctl debug
