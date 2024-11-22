@@ -36,6 +36,7 @@ init_config () {
     # default theme
     loginbox=00000066
     loginshadow=00000000
+    loginradius=1
     locktext="Type password to unlock..."
     font="sans-serif"
     ringcolor=ffffffff
@@ -57,7 +58,6 @@ init_config () {
     wrongcolor=d23c3dff
     modifcolor=d23c3dff
     bgcolor=000000ff
-    loginradius=1
     wallpaper_cmd="feh --bg-fill"
 
     # read user config
