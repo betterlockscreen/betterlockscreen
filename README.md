@@ -225,7 +225,7 @@ Add this line to `.xinitrc`.
 # set desktop background with custom effect
 betterlockscreen -w dim
 
-# Alternative (set last used background)
+# alternative (set last used background)
 source ~/.fehbg
 ```
 
@@ -233,12 +233,12 @@ source ~/.fehbg
 
 Add this line to `~/.config/awesome/rc.lua`
 
-```sh
-# set desktop background with custom effect
-awful.spawn(betterlockscreen -w dim)
+```lua
+-- set desktop background with custom effect
+awful.spawn("betterlockscreen -w dim")
 
-# Alternative (set last used background)
-awful.spawn(source ~/.fehbg)
+-- alternative (set last used background) 
+awful.spawn("source ~/.fehbg")
 ```
 
 ### i3wm
@@ -249,7 +249,7 @@ Add this line to `~/.config/i3/config`
 # set desktop background with custom effect
 exec --no-startup-id betterlockscreen -w dim
 
-# Alternative (set last used background)
+# alternative (set last used background)
 exec --no-startup-id source ~/.fehbg
 ```
 
@@ -261,7 +261,7 @@ To lockscreen using keyboard shortcut
 
 Add this function to the keybinding sections at your `~/.config/awesome/rc.lua`
 
-```sh
+```lua
 awful.key(
     {modkey, "Shift"},
     "x",
