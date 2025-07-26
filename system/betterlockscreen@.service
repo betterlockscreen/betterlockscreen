@@ -1,5 +1,5 @@
 [Unit]
-Description = Lock screen when going to sleep/suspend
+Description=Lock screen when going to sleep/suspend
 Before=sleep.target
 Before=suspend.target
 
