@@ -6,7 +6,7 @@ Fixes # (issue)
 
 # How Has This Been Tested?
 
-Please describe the tests that you ran to verify your changes and include a os type and version.
+Please describe the tests that you ran to verify your changes and please include os type and version.
 
 # Checklist:
 
