@@ -24,7 +24,7 @@
   
   <a href="https://github.com/betterlockscreen/betterlockscreen/stargazers"><img alt="GitHub Repo stars" src="https://img.shields.io/github/stars/betterlockscreen/betterlockscreen?style=social"></a>
   <a href="https://github.com/betterlockscreen/betterlockscreen/fork"><img alt="GitHub forks" src="https://img.shields.io/github/forks/betterlockscreen/betterlockscreen?style=social"></a>
-  <a href="https://www.codetriage.com/betterlockscreen/betterlockscreen"><img src="https://www.codetriage.com/betterlockscreen/betterlockscreen/badges/users.svg"></a>
+  ![Static Badge](https://img.shields.io/badge/code_helpers-1-green)
 </div>
 <br />
 
