@@ -10,7 +10,7 @@
   <a href="https://github.com/betterlockscreen/betterlockscreen/actions/workflows/main.yml?query=branch%3Anext"><img alt="GitHub Workflow Status (next)" src="https://img.shields.io/github/actions/workflow/status/betterlockscreen/betterlockscreen/main.yml?branch=next&label=next&style=for-the-badge"></a>
   <a href="https://github.com/betterlockscreen/betterlockscreen/milestone/2"><img alt="GitHub milestone" src="https://img.shields.io/github/milestones/progress/betterlockscreen/betterlockscreen/2?style=for-the-badge"></a>
   <a href="https://github.com/betterlockscreen/betterlockscreen/compare/v4.3.0...next"><img alt="GitHub commits since latest release (by date) for a branch" src="https://img.shields.io/github/commits-since/betterlockscreen/betterlockscreen/v4.3.0/next?style=for-the-badge"></a>
-  <a href="https://github.com/betterlockscreen/betterlockscreen/blob/main/LICENSE"><img src="https://img.shields.io/github/license/betterlockscreen/betterlockscreen.svg?style=for-the-badge"></a>
+  <a href="https://github.com/betterlockscreen/betterlockscreen/blob/next/LICENSE"><img src="https://img.shields.io/github/license/betterlockscreen/betterlockscreen.svg?style=for-the-badge"></a>
 </div>
 
 <div align="center">
@@ -24,7 +24,7 @@
   
   <a href="https://github.com/betterlockscreen/betterlockscreen/stargazers"><img alt="GitHub Repo stars" src="https://img.shields.io/github/stars/betterlockscreen/betterlockscreen?style=social"></a>
   <a href="https://github.com/betterlockscreen/betterlockscreen/fork"><img alt="GitHub forks" src="https://img.shields.io/github/forks/betterlockscreen/betterlockscreen?style=social"></a>
-  <a href="https://www.codetriage.com/betterlockscreen/betterlockscreen"><img src="https://www.codetriage.com/betterlockscreen/betterlockscreen/badges/users.svg"></a>
+  ![Static Badge](https://img.shields.io/badge/code_helpers-1-green)
 </div>
 <br />
 
@@ -87,24 +87,24 @@ If you are using **Void Linux**, you can install [betterlockscreen](https://gith
 
 ### Installation Script
 
-We have created an automatic [install-script](https://github.com/betterlockscreen/betterlockscreen/blob/main/install.sh) for Betterlockscreen. The script is very simple and takes three parameters:
+We have created an automatic [install-script](https://github.com/betterlockscreen/betterlockscreen/blob/next/install.sh) for Betterlockscreen. The script is very simple and takes three parameters:
   * `<install-mode>`: (string) 'user' installs to '~/.local/bin/', 'system' installs to '/usr/local/bin'
   * `[<version>]`: (string) defaults to 'latest' which will determinate the latest tag from git or specified branch/tag
   * `[<systemd-service>]`: (boolean) defaults to 'false' - Whether to copy and enable system-service.
 
 For system-installation:
 ```sh
-wget https://raw.githubusercontent.com/betterlockscreen/betterlockscreen/main/install.sh -O - -q | sudo bash -s system
+wget https://raw.githubusercontent.com/betterlockscreen/betterlockscreen/next/install.sh -O - -q | sudo bash -s system
 ```
 
 For user-installation:
 ```sh
-wget https://raw.githubusercontent.com/betterlockscreen/betterlockscreen/main/install.sh -O - -q | bash -s user
+wget https://raw.githubusercontent.com/betterlockscreen/betterlockscreen/next/install.sh -O - -q | bash -s user
 ```
 
 ### Manual Installation
 
-Ỳou can download the latest release [here](https://github.com/betterlockscreen/betterlockscreen/releases), please ensure to fullfill the [system-requirements](#system-requirements)!
+You can download the latest release [here](https://github.com/betterlockscreen/betterlockscreen/releases), please ensure to fullfill the [system-requirements](#system-requirements)!
 
 You will need to copy "betterlockscreen" to you desired binary-directory, if you want to use the systemd-service you will need to copy the service-file from "system/" to the desired location on your system.
 
@@ -292,7 +292,7 @@ Please see [CONTRIBUTING.md](CONTRIBUTING.md).
 
 ## License
 
-Betterlockscreen is under [MIT](https://github.com/betterlockscreen/betterlockscreen/blob/main/LICENSE) license.
+Betterlockscreen is under [MIT](https://github.com/betterlockscreen/betterlockscreen/blob/next/LICENSE) license.
 
 ### Feel free to use and distribute
 

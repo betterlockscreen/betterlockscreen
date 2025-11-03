@@ -42,6 +42,7 @@ bgcolor=000000ff
 # expert options (change at own risk!)
 #
 
+# vlockall=FALSE                      # Manually set command for vlock
 # i3lockcolor_bin="i3lock-color"      # Manually set command for i3lock-color
 # suspend_command="systemctl suspend" # Manually change action e.g. hibernate/suspend-command
 
