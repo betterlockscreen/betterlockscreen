@@ -104,7 +104,7 @@ wget https://raw.githubusercontent.com/betterlockscreen/betterlockscreen/main/in
 
 ### Manual Installation
 
-Ỳou can download the latest release [here](https://github.com/betterlockscreen/betterlockscreen/releases), please ensure to fullfill the [system-requirements](#system-requirements)!
+You can download the latest release [here](https://github.com/betterlockscreen/betterlockscreen/releases), please ensure to fullfill the [system-requirements](#system-requirements)!
 
 You will need to copy "betterlockscreen" to you desired binary-directory, if you want to use the systemd-service you will need to copy the service-file from "system/" to the desired location on your system.
 
