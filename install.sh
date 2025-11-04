@@ -1,5 +1,24 @@
 #!/usr/bin/env bash
+check_os() {
+	os_name="null"
+	os_file="etc/os-release"
+	if [ -f $os_file ]; then
+		echo "found os type file"
+		if [ grep -c -q 'arch' $os_file -eq 1 ]; then
+			os_name="arch"
+		#elif grep -q '/kubepods' /proc/1/cgroup 2>/dev/null; then
+		#	os_name="Kubernetes"
+		#elif grep -q 'lxc' /proc/1/cgroup 2>/dev/null; then
+		#	os_name="LXC"
+		#elif grep -q 'VxID' /proc/self/status 2>/dev/null; then
+		#	os_name="OpenVZ"""
+		#elif grep -c 'arch' == 1; then
+			echo "os type is ARCH!"
+		fi
+	fi
+}
 
+check_os
 cmd_exists () {
     command -v "$1" >/dev/null
 }
