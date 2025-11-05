@@ -65,7 +65,7 @@ esac
 echof header "Betterlockscreen-Setup"
 
 if [[ ! -w $BL_INSTALL_DIR ]]; then
-	echof error "Unable to write to '$BL_INSTALL_DIR'!"
+	echof error "Error : Unable to write to '$BL_INSTALL_DIR', Please re-run with sudo command !"
 	exit 1
 fi
 
