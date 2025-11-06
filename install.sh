@@ -1,24 +1,87 @@
 #!/usr/bin/env bash
-check_os() {
-	os_name="null"
-	os_file="etc/os-release"
-	if [ -f $os_file ]; then
-		echo "found os type file"
-		if [ grep -c -q 'arch' $os_file -eq 1 ]; then
-			os_name="arch"
-		#elif grep -q '/kubepods' /proc/1/cgroup 2>/dev/null; then
-		#	os_name="Kubernetes"
-		#elif grep -q 'lxc' /proc/1/cgroup 2>/dev/null; then
-		#	os_name="LXC"
-		#elif grep -q 'VxID' /proc/self/status 2>/dev/null; then
-		#	os_name="OpenVZ"""
-		#elif grep -c 'arch' == 1; then
-			echo "os type is ARCH!"
-		fi
-	fi
+
+getout() {
+	echof error "installation cancelled. Exiting...."
+	sleep 1
+	exit 1
+	break
 }
 
-check_os
+auto_install() {
+	read -p "would you like to install ${DEPS[$key]} (y/n) : " value_auto_install	
+	bool_install={$value_auto_install,,}
+	while [ $value_auto_install != n ]
+	do	
+		bool_install=${value_auto_install,,}
+		echo "$bool_install"
+		if [ $bool_install == y ]; then
+			check_os
+			if [ install == "null" ]; then
+				exit 1
+			fi
+			sudo $install ${DEPS[$key]}
+			break
+		elif [ $bool_install != y ]; then
+			#read -p "Please enter a valid input (y/n) : " value_auto_install
+			echof error "Not a valid input"
+		elif [ $bool_install == n ]; then
+			echo "$bool_install"
+			getout; break
+		fi
+	done
+	if [ $bool_install == n ]; then
+		getout
+		exit 1
+		break
+	fi
+	#if [ $bool_install == y ]; then
+	#	check_os
+	#	sudo $install ${DEPS[$key]}
+	#elif [ $bool_install != y ]; then
+	#	#echof error "Please enter a valid input (y/n)"
+	#else
+	#	exit 1
+	#fi
+}
+check_os() {
+	os_name="null"
+	install="null"`
+	if [ -s /etc/os-release ]; then #modern device only, older is in development
+		echof act "checking os type...."
+		sleep .7
+		echof info "found os type file. Reading..."
+		sleep .7
+		if ! [[ $(ugrep -c "arch" /etc/os-release) -eq 0 ]]; then 
+			os_name="arch"
+			install="pacman -Sy --noconfirm"
+		elif ! [[ $(ugrep -c "debian" /etc/os-release) -eq 0 ]]; then
+			os_name="debian"
+			install="apt install"
+		elif ! [[ $(ugrep -c "fedora" /etc/os-release) -eq 0 ]]; then
+			os_name="fedora"
+			install="dnf install"
+		elif ! [[ $(ugrep -c "nix" /etc/os-release) -eq 0 ]]; then
+			os_name="nix-os"
+			install="nix-env -iA nixos."
+		elif ! [[ $(ugrep -c "gentoo" /etc/os-release) -eq 0 ]]; then
+			os_name="gentoo"
+			install="emerge"
+		elif ! [[ $(ugrep -c "void" /etc/os-release) -eq 0 ]]; then
+			os_name="void"
+			install="xbps-install"
+		else
+			echof error "can't detect os-type, this disabled the auto install of packages"
+			getout
+		fi
+		echof info "Detected os type is : $os_name"
+		echof info "installing packages using $install"
+		sleep 1
+	else
+		echof error "can't detect os-type"
+	fi
+
+}
+
 cmd_exists () {
     command -v "$1" >/dev/null
 }
@@ -62,10 +125,10 @@ case $1 in
 	;;
 esac
 
-echof header "Betterlockscreen-Setup"
+echof header "Welcome To Betterlockscreen Setup"
 
 if [[ ! -w $BL_INSTALL_DIR ]]; then
-	echof error "Unable to write to '$BL_INSTALL_DIR'!"
+	echof error "Error : Unable to write to '$BL_INSTALL_DIR', Please re-run with sudo command !"
 	exit 1
 fi
 
@@ -73,6 +136,7 @@ echof info "Checking system-requirements..."
 
 declare -A DEPS
 DEPS["ImageMagick"]="convert"
+DEPS["firefox"]="firefox"
 DEPS["i3lock-color"]="i3lock-color"
 DEPS["xdpyinfo"]="xdpyinfo"
 DEPS["xrdb"]="xrdb"
@@ -83,19 +147,22 @@ if ! cmd_exists DEPS["i3lock-color"] && cmd_exists "i3lock"; then
 fi
 
 for key in "${!DEPS[@]}"; do
-	[[ ! -e $(command -v "${DEPS[$key]}") ]] && echof error "Missing '$key' under binary named '${DEPS[$key]}'!" && exit 1
+	[[ ! -e $(command -v "${DEPS[$key]}") ]] && echof error "Missing '$key' under binary named '${DEPS[$key]}'!" && auto_install
 done
 
 echof ok "done!"
+sleep 1.5
+echof act "Downloading github packages"
 
 BLI_TEMP_DIR=$(mktemp -d)
 
-git clone https://github.com/betterlockscreen/betterlockscreen "$BLI_TEMP_DIR" &>/dev/null
+git clone https://github.com/betterlockscreen/betterlockscreen "$BLI_TEMP_DIR"
 cd "$BLI_TEMP_DIR" || exit 1
-
+echof ok "done!"
+sleep 1
 VERSION=$2
 if [[ $VERSION == "" ]] || [[ $VERSION == "latest" ]]; then
-	echof info "Determinate latest release... "
+	echof info "Checking latest release... "
 	VERSION=$(git describe --tags "$(git rev-list --tags --max-count=1)")
 	echof ok "done! ($VERSION)"
 fi
