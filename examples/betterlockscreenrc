@@ -15,6 +15,7 @@ quiet=false
 # default theme
 loginbox=00000066
 loginshadow=00000000
+loginradius=1
 locktext="Type password to unlock..."
 font="sans-serif"
 ringcolor=ffffffff

@@ -36,6 +36,7 @@ init_config () {
     # default theme
     loginbox=00000066
     loginshadow=00000000
+    loginradius=1
     locktext="Type password to unlock..."
     font="sans-serif"
     ringcolor=ffffffff
@@ -501,17 +502,24 @@ fx_color() {
 # create loginbox rectangle, set "$RECTANGLE"
 create_loginbox () {
     RECTANGLE="$CUR_DIR/rectangle.png"
+    local radius="$CUR_DIR/radius.png"
     local shadow="$CUR_DIR/shadow.png"
     local width height
     width=$(logical_px 340 1)
     height=$(logical_px 100 2)
     $convert_command -size "$width"x"$height" xc:\#"$loginbox" -fill none "$RECTANGLE"
+    $convert_command -size "$width"x"$height" xc:none \
+        -draw "roundrectangle 0,0,$width,$height,$loginradius,$loginradius" "$radius"
+    $convert_command "$RECTANGLE" -alpha Set "$radius" \
+    	  -compose Dst_In -gravity center -composite \
+    	   "$RECTANGLE"
     $convert_command "$RECTANGLE" \
         \( -clone 0 -background \#"$loginshadow" -shadow 100x5+0+0 \) +swap \
         -background none -layers merge +repage "$shadow"
     $composite_command -compose Dst_Out -gravity center \
         "$RECTANGLE" "$shadow" -alpha Set "$shadow"
     $convert_command "$shadow" "$RECTANGLE" -geometry +10+10 -composite "$RECTANGLE"
+    [[ "$radius" ]] && rm "$radius"
     [[ "$shadow" ]] && rm "$shadow"
 }
 
