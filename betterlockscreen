@@ -46,9 +46,11 @@ init_config () {
     insidevercolor=00000000
     ringwrongcolor=ffffffff
     insidewrongcolor=d23c3dff
+    date_format="%A %x"
     timecolor=ffffffff
+    datecolor=ffffffff
     time_format="%H:%M:%S"
-    greetercolor=ffffffff
+    greetercolor=000000ff
     layoutcolor=ffffffff
     keyhlcolor=d23c3dff
     bshlcolor=d23c3dff
@@ -151,8 +153,9 @@ prelock() {
 lock() {
     local image="$1"
     local fontlg=32
+    local fontdate=22
     local fontmd=16
-    local fontsm=12
+    local fontsm=15
 
     if [ -f "$image" ]; then
         echof act "Locking screen..."
@@ -179,13 +182,18 @@ lock() {
         --bshl-color="$bshlcolor" \
         --clock --force-clock \
         --time-pos="ix-265:iy-10" \
-        --time-align 1 \
-        --time-str "$time_format" \
+	--time-str "$time_format" \
         --time-color="$timecolor" \
         --time-font="$font" \
         --time-size="$fontlg" \
-        --date-str "" \
-        --greeter-pos="ix-265:iy+12" \
+        --time-align 1 \
+	--date-pos="ix-265:iy+12" \
+	--date-str "$date_format" \
+	--date-color="$datecolor" \
+        --date-font="$font" \
+        --date-size="$fontdate" \
+	--date-align 1 \
+        --greeter-pos="ix-265:iy+32" \
         --greeter-align 1 \
         --greeter-text "$locktext" \
         --greeter-color="$greetercolor" \
