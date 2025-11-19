@@ -1,9 +1,11 @@
-<img src="./logo.svg" height="200" alt="BLS-Logo" />
-
-# Betterlockscreen
-> fast and sweet looking lockscreen for linux systems with effects!
-
 <div align="center">
+  <img src="./logo.svg" height="200" alt="BLS-Logo" />
+
+  # Betterlockscreen
+
+  > fast and sweet looking lockscreen for linux systems with effects!
+
+
   <a href="https://github.com/betterlockscreen/betterlockscreen/milestone/2"><img alt="GitHub milestone" src="https://img.shields.io/github/milestones/progress/betterlockscreen/betterlockscreen/2?style=for-the-badge"></a>
   <a href="https://github.com/betterlockscreen/betterlockscreen/releases"><img alt="GitHub release (latest by date including pre-releases)" src="https://img.shields.io/github/v/release/betterlockscreen/betterlockscreen?include_prereleases&label=latest(dev)&style=for-the-badge"></a>
   <a href="https://github.com/betterlockscreen/betterlockscreen/actions/workflows/dev.yml?query=branch%3Amain"><img alt="GitHub Workflow Status (dev)" src="https://img.shields.io/github/actions/workflow/status/betterlockscreen/betterlockscreen/main.yml?branch=dev&label=dev&style=for-the-badge"></a><br>
