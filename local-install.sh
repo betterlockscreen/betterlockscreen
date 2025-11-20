@@ -142,14 +142,13 @@ done
 
 echof ok "done!"
 sleep 1.5
-BLI_TEMP_DIR=$(mktemp -d)
-CUR_DIR="$(pwd)/."
-echof info "copying file to temporary folder $BLI_TEMP_DIR from $CUR_DIR"
-sleep 2
-
-cp -a -R "$CUR_DIR" "$BLI_TEMP_DIR"
-cd "$BLI_TEMP_DIR" || exit 1
-echof ok "done!"
+if [ -f betterlockscreen ]; then
+	echof ok "found betterlockscreen file!"
+	sleep 1
+else 
+	echof error "cannot find betterlockscreen file, please make sure file is downloaded properly"
+	sleep 1
+fi
 sleep 1
 VERSION=$2
 if [[ $VERSION == "" ]] || [[ $VERSION == "latest" ]]; then

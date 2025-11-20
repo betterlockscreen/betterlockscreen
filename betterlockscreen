@@ -50,12 +50,12 @@ init_config () {
     timecolor=ffffffff
     datecolor=ffffffff
     time_format="%H:%M:%S"
-    greetercolor=000000ff
+    greetercolor=fffffff0
     layoutcolor=ffffffff
     keyhlcolor=d23c3dff
     bshlcolor=d23c3dff
     veriftext="Verifying..."
-    verifcolor=ffffffff
+    verifcolor=00ff00ff
     wrongtext="Failure!"
     wrongcolor=d23c3dff
     modifcolor=d23c3dff
@@ -764,6 +764,9 @@ usage() {
     echo "  -w --wall <EFFECT>"
     echo "      Set wallpaper with cached image"
     echo
+    echo "  -e --ignore-empty-password"
+    echo "      Disable ignore empty password provided by user"
+    echo
     echo "Additional arguments:"
     echo
     echo "  --display <N>"
@@ -851,6 +854,12 @@ for arg in "$@"; do
         -w | --wall)
             wallpaper "$2"
             shift 2
+            ;;
+
+	-e | --ignore-empty-password)
+	    lockargs+=("-e")
+            echof ok "Changing value of Ignoring empty password"
+	    shift 2
             ;;
 
         --wallpaper-cmd)
