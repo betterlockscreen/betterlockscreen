@@ -36,6 +36,7 @@ init_config () {
     # default theme
     loginbox=00000066
     loginshadow=00000000
+    loginradius=1
     locktext="Type password to unlock..."
     font="sans-serif"
     ringcolor=ffffffff
@@ -45,14 +46,16 @@ init_config () {
     insidevercolor=00000000
     ringwrongcolor=ffffffff
     insidewrongcolor=d23c3dff
+    date_format="%A %x"
     timecolor=ffffffff
+    datecolor=ffffffff
     time_format="%H:%M:%S"
-    greetercolor=ffffffff
+    greetercolor=fffffff0
     layoutcolor=ffffffff
     keyhlcolor=d23c3dff
     bshlcolor=d23c3dff
     veriftext="Verifying..."
-    verifcolor=ffffffff
+    verifcolor=00ff00ff
     wrongtext="Failure!"
     wrongcolor=d23c3dff
     modifcolor=d23c3dff
@@ -90,7 +93,7 @@ init_config () {
     fi
 
     # Please make sure to adjust this before release!
-    VERSION="4.3.0"
+    VERSION="4.4.1-beta-1"
 
     # paths
     CACHE_DIR="${XDG_CACHE_HOME:-$HOME/.cache}/betterlockscreen"
@@ -150,8 +153,9 @@ prelock() {
 lock() {
     local image="$1"
     local fontlg=32
+    local fontdate=22
     local fontmd=16
-    local fontsm=12
+    local fontsm=15
 
     if [ -f "$image" ]; then
         echof act "Locking screen..."
@@ -178,13 +182,18 @@ lock() {
         --bshl-color="$bshlcolor" \
         --clock --force-clock \
         --time-pos="ix-265:iy-10" \
-        --time-align 1 \
-        --time-str "$time_format" \
+	--time-str "$time_format" \
         --time-color="$timecolor" \
         --time-font="$font" \
         --time-size="$fontlg" \
-        --date-str "" \
-        --greeter-pos="ix-265:iy+12" \
+        --time-align 1 \
+	--date-pos="ix-265:iy+12" \
+	--date-str "$date_format" \
+	--date-color="$datecolor" \
+        --date-font="$font" \
+        --date-size="$fontdate" \
+	--date-align 1 \
+        --greeter-pos="ix-265:iy+32" \
         --greeter-align 1 \
         --greeter-text "$locktext" \
         --greeter-color="$greetercolor" \
@@ -501,17 +510,24 @@ fx_color() {
 # create loginbox rectangle, set "$RECTANGLE"
 create_loginbox () {
     RECTANGLE="$CUR_DIR/rectangle.png"
+    local radius="$CUR_DIR/radius.png"
     local shadow="$CUR_DIR/shadow.png"
     local width height
     width=$(logical_px 340 1)
     height=$(logical_px 100 2)
     $convert_command -size "$width"x"$height" xc:\#"$loginbox" -fill none "$RECTANGLE"
+    $convert_command -size "$width"x"$height" xc:none \
+        -draw "roundrectangle 0,0,$width,$height,$loginradius,$loginradius" "$radius"
+    $convert_command "$RECTANGLE" -alpha Set "$radius" \
+    	  -compose Dst_In -gravity center -composite \
+    	   "$RECTANGLE"
     $convert_command "$RECTANGLE" \
         \( -clone 0 -background \#"$loginshadow" -shadow 100x5+0+0 \) +swap \
         -background none -layers merge +repage "$shadow"
     $composite_command -compose Dst_Out -gravity center \
         "$RECTANGLE" "$shadow" -alpha Set "$shadow"
     $convert_command "$shadow" "$RECTANGLE" -geometry +10+10 -composite "$RECTANGLE"
+    [[ "$radius" ]] && rm "$radius"
     [[ "$shadow" ]] && rm "$shadow"
 }
 
@@ -748,6 +764,9 @@ usage() {
     echo "  -w --wall <EFFECT>"
     echo "      Set wallpaper with cached image"
     echo
+    echo "  -e --ignore-empty-password"
+    echo "      Disable ignore empty password provided by user"
+    echo
     echo "Additional arguments:"
     echo
     echo "  --display <N>"
@@ -835,6 +854,12 @@ for arg in "$@"; do
         -w | --wall)
             wallpaper "$2"
             shift 2
+            ;;
+
+	-e | --ignore-empty-password)
+	    lockargs+=("-e")
+            echof ok "Changing value of Ignoring empty password"
+	    shift 2
             ;;
 
         --wallpaper-cmd)

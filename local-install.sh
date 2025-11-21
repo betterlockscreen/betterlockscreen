@@ -142,13 +142,13 @@ done
 
 echof ok "done!"
 sleep 1.5
-echof act "Downloading github packages"
-
-BLI_TEMP_DIR=$(mktemp -d)
-
-git clone https://github.com/betterlockscreen/betterlockscreen "$BLI_TEMP_DIR"
-cd "$BLI_TEMP_DIR" || exit 1
-echof ok "done!"
+if [ -f betterlockscreen ]; then
+	echof ok "found betterlockscreen file!"
+	sleep 1
+else 
+	echof error "cannot find betterlockscreen file, please make sure file is downloaded properly"
+	sleep 1
+fi
 sleep 1
 VERSION=$2
 if [[ $VERSION == "" ]] || [[ $VERSION == "latest" ]]; then
