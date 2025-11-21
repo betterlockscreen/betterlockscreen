@@ -143,7 +143,8 @@ Run `betterlockscreen` and point it to either a directory (`betterlockscreen -u 
 
 ```sh
 Usage: betterlockscreen [-u <PATH>] [-l <EFFECT>] [-w <EFFECT>]
-
+  -q --quiet
+      Do not produce any text output on locking
   -u --update <PATH>
       Update lock screen image
 
