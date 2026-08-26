@@ -24,8 +24,9 @@ init_config () {
     convert_command="magick"
     composite_command="magick composite"
 
-    if ! cmd_exists "$i3lockcolor_bin" && cmd_exists "i3lock"; then
-        i3lockcolor_bin="i3lock"
+    if ! cmd_exists "$i3lockcolor_bin" || ! "$i3lockcolor_bin" --version 2>&1 | grep -q "Raymond Li"; then
+        echof error "Error: i3lock-color is required but was not found. Standard i3lock is not compatible with betterlockscreen."
+        exit 1
     fi
 
     if ! cmd_exists "magick"; then
