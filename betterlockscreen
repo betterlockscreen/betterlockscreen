@@ -411,7 +411,7 @@ base_resize() {
     local size="$3"
 
     echof act "Resizing base image..."
-    eval $convert_command "$input" \
+    "$convert_command" "$input" \
         -resize "$size""^" \
         -gravity center \
         -extent "$size" \
@@ -424,7 +424,7 @@ fx_dim() {
     local output="$2"
 
     echof act "Rendering 'dim' effect..."
-    eval $convert_command "$input" \
+    "$convert_command" "$input" \
         -fill black -colorize "$dim_level"% \
         "$output"
 }
@@ -438,7 +438,7 @@ fx_blur() {
     echof act "Rendering 'blur' effect..."
     blur_shrink=$(echo "scale=2; 20 / $blur_level" | bc)
     blur_sigma=$(echo "scale=2; 0.6 * $blur_level" | bc)
-    eval $convert_command "$input" \
+    "$convert_command" "$input" \
         -filter Gaussian \
         -resize "$blur_shrink%" \
         -define "filter:sigma=$blur_sigma" \
@@ -455,7 +455,7 @@ fx_dimblur() {
     echof act "Rendering 'dimblur' effect..."
     blur_shrink=$(echo "scale=2; 20 / $blur_level" | bc)
     blur_sigma=$(echo "scale=2; 0.6 * $blur_level" | bc)
-    eval $convert_command "$input" \
+    "$convert_command" "$input" \
         -fill black -colorize "$dim_level"% \
         -filter Gaussian \
         -resize "$blur_shrink%" \
@@ -471,7 +471,7 @@ fx_pixel() {
 
     echof act "Rendering 'pixel' effect..."
     IFS=',' read -ra range <<< "$pixel_scale"
-    eval $convert_command "$input" \
+    "$convert_command" "$input" \
         -scale "${range[0]}"% -scale "${range[1]}"% \
         "$output"
 }
@@ -483,7 +483,7 @@ fx_dimpixel() {
 
     echof act "Rendering 'dimpixel' effect..."
     IFS=',' read -ra range <<< "$pixel_scale"
-    eval $convert_command "$input" \
+    "$convert_command" "$input" \
         -fill black -colorize "$dim_level"% \
         -scale "${range[0]}"% -scale "${range[1]}"% \
         "$output"
@@ -566,11 +566,6 @@ update () {
     for ((i=0; i<${#DISPLAY_LIST[@]}; i++)); do
         display="${DISPLAY_LIST[$i]}"
         USER_WALL="${WALL_LIST[$i]}"
-
-        # escape spaces for IM
-        if echo "$USER_WALL" | grep -E -q "[[:space:]]"; then
-            USER_WALL="${USER_WALL// /\\ }"
-        fi
 
         IFS=' ' read -r -a dinfo  <<< "$display"
         local id="${dinfo[0]}"
